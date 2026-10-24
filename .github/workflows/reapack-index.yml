@@ -14,22 +14,27 @@ jobs:
     steps:
       - name: Checkout repozitorija
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Nastavitev Ruby okolja
+      - name: Namestitev Ruby okolja
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
 
+      - name: Namestitev Pandoc orodja
+        run: sudo apt-get install -y pandoc
+
       - name: Namestitev orodja reapack-index
         run: gem install reapack-index
 
-      - name: Izdelava index.xml
-        run: reapack-index
-
-      - name: Shranjevanje in objava (Commit)
+      - name: Konfiguracija Git uporabnika
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add index.xml
-          git commit -m "Update index.xml" || echo "Ni sprememb za objavo"
-          git push
+
+      - name: Izdelava index.xml
+        run: reapack-index --name "StripLink Ecosystem" --commit
+
+      - name: Push sprememb na GitHub
+        run: git push
