@@ -8,13 +8,28 @@ on:
 
 jobs:
   reapack-index:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - name: reapack-index
-        uses: cfillion/reapack-index@v1
+      - name: Checkout repozitorija
+        uses: actions/checkout@v4
+
+      - name: Nastavitev Ruby okolja
+        uses: ruby/setup-ruby@v1
         with:
-          index-path: index.xml
-          commit-message: "Update index.xml"
+          ruby-version: '3.2'
+
+      - name: Namestitev orodja reapack-index
+        run: gem install reapack-index
+
+      - name: Izdelava index.xml
+        run: reapack-index
+
+      - name: Shranjevanje in objava (Commit)
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add index.xml
+          git commit -m "Update index.xml" || echo "Ni sprememb za objavo"
+          git push
