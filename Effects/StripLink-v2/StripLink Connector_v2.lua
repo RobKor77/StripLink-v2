@@ -108,6 +108,7 @@ reaper.gmem_attach(NS)
 
 
 
+
 local last_reg_clear = 0
 
 local function GetProjectIndex()
