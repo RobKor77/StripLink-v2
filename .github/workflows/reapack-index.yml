@@ -1,0 +1,20 @@
+name: ReaPack Index
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  reapack-index:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: reapack-index
+        uses: cfillion/reapack-index@v1
+        with:
+          index-path: index.xml
+          commit-message: "Update index.xml"
