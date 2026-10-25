@@ -1,0 +1,47 @@
+name: ReaPack Index
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  reapack-index:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repozitorija
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Namestitev Ruby okolja
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Namestitev Pandoc orodja
+        run: sudo apt-get install -y pandoc
+
+      - name: Namestitev orodja reapack-index
+        run: gem install reapack-index
+
+      - name: Konfiguracija Git uporabnika
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Izdelava index.xml
+        run: |
+          echo "=== REPOSITORY FILES IN GIT ==="
+          git ls-files
+          echo "=== CHECK PACKAGE HEADERS ==="
+          reapack-index --check --verbose --warnings
+          echo "=== REBUILD INDEX ==="
+          reapack-index --name "StripLink Series" --rebuild --commit
+
+      - name: Push sprememb na GitHub
+        run: git push
