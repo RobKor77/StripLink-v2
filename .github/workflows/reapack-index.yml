@@ -39,7 +39,7 @@ jobs:
           echo "=== REPOSITORY FILES IN GIT ==="
           git ls-files
           echo "=== CHECK PACKAGE HEADERS ==="
-          reapack-index --check || true
+          reapack-index --check --verbose --warnings
           echo "=== REBUILD INDEX ==="
           reapack-index --name "StripLink Series" --rebuild --commit
 
