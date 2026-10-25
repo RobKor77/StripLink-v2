@@ -1,0 +1,21 @@
+StripLink Freeware License
+
+Copyright (c) 2026 Wormhole Labs.
+
+Permission to use
+
+StripLink may be used free of charge for personal and commercial purposes, including in commercial music production and other creative work.
+
+Permission to modify and redistribute
+
+You may copy, modify, adapt, and redistribute the original software and modified versions, provided that redistribution is free of charge and Wormhole Labs is credited as the original author. Modified versions must clearly identify the changes made.
+
+No commercial redistribution
+
+You may not sell StripLink or any modified or derivative version, charge for downloads or access to the software, include it in a paid software bundle, or otherwise charge a fee for the software itself or its distribution.
+
+This restriction does not prevent you from selling or earning money from creative work produced using StripLink.
+
+No warranty
+
+StripLink is provided "as is", without warranty of any kind, to the extent permitted by applicable law.
