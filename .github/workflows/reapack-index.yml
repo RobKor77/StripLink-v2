@@ -41,7 +41,7 @@ jobs:
           echo "=== CHECK PACKAGE HEADERS ==="
           reapack-index --check || true
           echo "=== REBUILD INDEX ==="
-          reapack-index --name "StripLink Series" --commit
+          reapack-index --name "StripLink Series" --rebuild --commit
 
       - name: Push sprememb na GitHub
         run: git push
