@@ -1,0 +1,4609 @@
+// @noindex
+// ============================================================================
+// StripLink Module v2
+// Developer: Wormhole Labs
+// Version: 2.0.0
+//
+// License & Copyright Information (Freeware):
+// StripLink is provided as freeware. You are fully permitted to use and 
+// modify this software for your personal workflow. However, it is strictly 
+// prohibited to sell, commercially repackage, or redistribute for profit 
+// this original version or any of its modified derivatives.
+// ============================================================================
+
+desc:StripLink Module v2
+options:gmem=striplink_v2.0
+
+num_inputs = 14;
+num_outputs = 2;
+
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+
+// ...................................................
+// SYSTEM & UTILITY (1 - 12)
+// ...................................................
+slider1:0<0,1000000,1>-Instance Hash (Internal)
+slider2:0<0,1000,1>-AssignedSlot (Internal)
+slider3:0<0,4294967295,1>-Instance GUID Hash (Internal)
+slider4:0<0,3,1>-Local TAB (MIDI)
+slider5:0<0,3,1>-Global TAB (MIDI)
+slider6:0<0,999,1>-TAB Colors (Internal)
+slider7:2236962<0,4294967295,1>-Layout Color EQ (Internal)
+slider8:2236962<0,4294967295,1>-Layout Color DYN (Internal)
+slider9:2236962<0,4294967295,1>-Layout Color FX (Internal)
+slider10:0<-12,12,0.1>-Input Gain (MIDI)
+slider11:1<0,1,1>-Auto Gain Power (MIDI)
+slider12:0<0,1,1>-Auto Gain Freeze (MIDI)
+
+// ....................................................
+// TAB 1: EQ (13 - 32) -> 12 Knobs, 8 Switches
+// ....................................................
+slider13:.5<0,1,.01>-Macro 1 (EQ)
+slider14:.5<0,1,.01>-Macro 2 (EQ)
+slider15:.5<0,1,.01>-Macro 3 (EQ)
+slider16:.5<0,1,.01>-Macro 4 (EQ)
+slider17:.5<0,1,.01>-Macro 5 (EQ)
+slider18:.5<0,1,.01>-Macro 6 (EQ)
+slider19:.5<0,1,.01>-Macro 7 (EQ)
+slider20:.5<0,1,.01>-Macro 8 (EQ)
+slider21:.5<0,1,.01>-Macro 9 (EQ)
+slider22:.5<0,1,.01>-Macro 10 (EQ)
+slider23:.5<0,1,.01>-Macro 11 (EQ)
+slider24:.5<0,1,.01>-Macro 12 (EQ)
+slider25:1<0,1,1>-Switch 1 (EQ)
+slider26:0<0,1,1>-Switch 2 (EQ)
+slider27:0<0,1,1>-Switch 3 (EQ)
+slider28:0<0,1,1>-Switch 4 (EQ)
+slider29:0<0,1,1>-Switch 5 (EQ)
+slider30:0<0,1,1>-Switch 6 (EQ)
+slider31:0<0,1,1>-Switch 7 (EQ)
+slider32:0<0,1,1>-Switch 8 (EQ)
+
+// ...................................................
+// TAB 2: DYN 1 - TOP (33 - 41) -> 5 Knobs, 4 Switches
+// ...................................................
+slider33:.5<0,1,.01>-Macro 13 (DYN 1)
+slider34:.5<0,1,.01>-Macro 14 (DYN 1)
+slider35:.5<0,1,.01>-Macro 15 (DYN 1)
+slider36:.5<0,1,.01>-Macro 16 (DYN 1)
+slider37:.5<0,1,.01>-Macro 17 (DYN 1)
+slider38:1<0,1,1>-Switch 9 (DYN 1)
+slider39:0<0,1,1>-Switch 10 (DYN 1)
+slider40:0<0,1,1>-Switch 11 (DYN 1)
+slider41:0<0,1,1>-Switch 12 (DYN 1)
+
+// .....................................................
+// TAB 2: DYN 2 - BOTTOM (42 - 50) -> 5 Knobs, 4 Switches
+// .....................................................
+slider42:.5<0,1,.01>-Macro 18 (DYN 2)
+slider43:.5<0,1,.01>-Macro 19 (DYN 2)
+slider44:.5<0,1,.01>-Macro 20 (DYN 2)
+slider45:.5<0,1,.01>-Macro 21 (DYN 2)
+slider46:.5<0,1,.01>-Macro 22 (DYN 2)
+slider47:1<0,1,1>-Switch 13 (DYN 2)
+slider48:0<0,1,1>-Switch 14 (DYN 2)
+slider49:0<0,1,1>-Switch 15 (DYN 2)
+slider50:0<0,1,1>-Switch 16 (DYN 2)
+
+// ....................................................
+// TAB 3: FX PRE - TOP (51 - 56) -> 3 Knobs, 3 Switches
+//.....................................................
+slider51:.5<0,1,.01>-Macro 23 (FX PRE)
+slider52:.5<0,1,.01>-Macro 24 (FX PRE)
+slider53:.5<0,1,.01>-Macro 25 (FX PRE)
+slider54:1<0,1,1>-Switch 17 (FX PRE)
+slider55:1<0,1,1>-Switch 18 (FX PRE)
+slider56:1<0,1,1>-Switch 19 (FX PRE)
+
+// ......................................................
+// TAB 3: FX POST - BOTTOM (57 - 68) -> 9 Knobs, 3 Switches
+// ......................................................
+slider57:.5<0,1,.01>-Macro 26 (FX POST)
+slider58:.5<0,1,.01>-Macro 27 (FX POST)
+slider59:.5<0,1,.01>-Macro 28 (FX POST)
+slider60:.5<0,1,.01>-Macro 29 (FX POST)
+slider61:.5<0,1,.01>-Macro 30 (FX POST)
+slider62:.5<0,1,.01>-Macro 31 (FX POST)
+slider63:.5<0,1,.01>-Macro 32 (FX POST)
+slider64:.5<0,1,.01>-Macro 33 (FX POST)
+slider65:.5<0,1,.01>-Macro 34 (FX POST)
+slider66:0<0,1,1>-Switch 20 (FX POST)
+slider67:0<0,1,1>-Switch 21 (FX POST)
+slider68:0<0,1,1>-Switch 22 (FX POST)
+
+slider69: -18<-24, 0, 0.1>-VU Calibration (dB)
+
+
+// pngs ....................................................
+
+// TAB Backgrounds
+filename:0,SL_Themes/StripLink Module v2/Analog Console/Backgrounds/Header_TAB_0.png
+filename:1,SL_Themes/StripLink Module v2/Analog Console/Backgrounds/Header_TAB_1.png
+filename:2,SL_Themes/StripLink Module v2/Analog Console/Backgrounds/Header_TAB_2.png
+filename:3,SL_Themes/StripLink Module v2/Analog Console/Backgrounds/Header_TAB_3.png
+
+// Knobs - Type 1
+filename:4,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_green_pos Type-1.png
+filename:5,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_green_neu Type-1.png
+filename:6,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_green_neg Type-1.png
+
+filename:7,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_blue_pos Type-1.png
+filename:8,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_blue_neu Type-1.png
+filename:9,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_blue_neg Type-1.png
+
+filename:10,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_red_pos Type-1.png
+filename:11,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_red_neu Type-1.png
+filename:12,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_red_neg Type-1.png
+
+filename:13,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_yellow_pos Type-1.png
+filename:14,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_yellow_neu Type-1.png
+filename:15,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_yellow_neg Type-1.png
+
+filename:16,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_white_pos Type-1.png
+filename:17,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_white_neu Type-1.png
+filename:18,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_white_neg Type-1.png
+
+filename:19,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_black_pos Type-1.png
+filename:20,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_black_neu Type-1.png
+filename:21,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_black_neg Type-1.png
+
+filename:22,SL_Themes/StripLink Module v2/Analog Console/Meters/GRmeter_1.png
+filename:23,SL_Themes/StripLink Module v2/Analog Console/Knobs/Selector.png
+filename:24,SL_Themes/StripLink Module v2/Analog Console/Meters/GRmeter_2.png
+filename:25,SL_Themes/StripLink Module v2/Analog Console/Meters/Analog VU Meter.png
+
+// Meters
+filename:26,SL_Themes/StripLink Module v2/Analog Console/Meters/Lock.png
+filename:27,SL_Themes/StripLink Module v2/Analog Console/Meters/Ring_Meter Type-1.png
+filename:28,SL_Themes/StripLink Module v2/Analog Console/Meters/VU_Slim_Meter.png
+
+// Additional elements
+filename:29,SL_Themes/StripLink Module v2/Analog Console/Knobs/Switch_1.png
+filename:30,SL_Themes/StripLink Module v2/Analog Console/Meters/Horizontal_Meter_bg_1.png
+filename:31,SL_Themes/StripLink Module v2/Analog Console/Meters/Vertical_Meter_bg_1.png
+filename:32,SL_Themes/StripLink Module v2/Analog Console/Meters/Analog_GR_Meter_1.png
+filename:33,SL_Themes/StripLink Module v2/Analog Console/Backgrounds/Separator_1.png
+filename:34,SL_Themes/StripLink Module v2/Analog Console/Backgrounds/Pannel_bg.png
+filename:35,SL_Themes/StripLink Module v2/Analog Console/Knobs/Group_bg.png
+filename:36,SL_Themes/StripLink Module v2/Analog Console/Knobs/Auto_gain.png
+filename:37,SL_Themes/StripLink Module v2/Analog Console/Meters/Input_Gain_bg.png
+
+// Knobs - Type 2
+filename:38,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_green_pos Type-2.png
+filename:39,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_green_neu Type-2.png
+filename:40,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_green_neg Type-2.png
+
+filename:41,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_blue_pos Type-2.png
+filename:42,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_blue_neu Type-2.png
+filename:43,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_blue_neg Type-2.png
+
+filename:44,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_red_pos Type-2.png
+filename:45,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_red_neu Type-2.png
+filename:46,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_red_neg Type-2.png
+
+filename:47,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_yellow_pos Type-2.png
+filename:48,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_yellow_neu Type-2.png
+filename:49,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_yellow_neg Type-2.png
+
+filename:50,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_white_pos Type-2.png
+filename:51,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_white_neu Type-2.png
+filename:52,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_white_neg Type-2.png
+
+filename:53,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_black_pos Type-2.png
+filename:54,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_black_neu Type-2.png
+filename:55,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob_black_neg Type-2.png
+
+// Knobs - Type 3+4
+filename:56,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob Type-3.png
+filename:57,SL_Themes/StripLink Module v2/Analog Console/Knobs/Knob Type-4.png
+
+// Switches
+filename:58,SL_Themes/StripLink Module v2/Analog Console/Knobs/Switch_2.png
+filename:59,SL_Themes/StripLink Module v2/Analog Console/Knobs/Switch_3.png
+filename:60,SL_Themes/StripLink Module v2/Analog Console/Knobs/Switch_4.png
+filename:61,SL_Themes/StripLink Module v2/Analog Console/Knobs/Switch_5.png
+filename:62,SL_Themes/StripLink Module v2/Analog Console/Knobs/Switch_6.png
+filename:63,SL_Themes/StripLink Module v2/Analog Console/Knobs/Switch_7.png
+filename:64,SL_Themes/StripLink Module v2/Analog Console/Knobs/Switch_8.png
+filename:65,SL_Themes/StripLink Module v2/Analog Console/Knobs/Switch_9.png
+
+
+@init
+
+ext_noinit = 1; // Prevents resetting on stop & window switch
+
+// borderless undecorated slot
+gfx_ext_flags |= 256; 
+// Hide tooltip over slot
+gfx_ext_flags |= 1024;
+
+dna_local_buf = 100000; 
+
+
+
+// .........................................................................
+
+layout_base = 5000;
+ui_stride = 20;
+ui_element_count = 0;
+
+// tebles for kixed coordinates for text
+static_lbl_x = 15000;
+static_lbl_y = 16000;
+static_lbl_align = 17000;
+force_text_recalc = 1;
+
+// Element 1: Knob
+layout_base[0] = 1;     // ID
+layout_base[1] = 1;     // Type
+layout_base[2] = 20;    // X
+layout_base[3] = 130;   // Y
+layout_base[4] = 10;    // Target Param ID
+
+// Element 2: Knob
+layout_base[20] = 2;
+layout_base[21] = 1;
+layout_base[22] = 80;
+layout_base[23] = 130;
+layout_base[24] = 11;
+
+// Element 3: Switch
+layout_base[40] = 3;
+layout_base[41] = 2;
+layout_base[42] = 40;
+layout_base[43] = 190;
+layout_base[44] = 12; 
+
+ovr_btn_buf = 35000;
+ovr_mtr_buf = 36000;
+grp_buf = 37000;
+ovr_loaded_from_disk = 0;
+
+
+
+// KNOB SIZE CONFIGURATION
+Target_knob_size = 54;
+
+// Lookup Table for knob types 
+img_map = 40000;
+img_map[0] = 16; // white pos type 1
+
+// Type 1
+_i = 0; while (_i < 18) ( img_map[_i + 1] = 4 + _i; _i += 1; );
+
+// Type 2
+_i = 0; while (_i < 18) ( img_map[19 + _i] = 38 + _i; _i += 1; );
+
+// Type 3)
+_i = 0; while (_i < 18) ( img_map[37 + _i] = 56; _i += 1; );
+
+// Type 4
+_i = 0; while (_i < 18) ( img_map[55 + _i] = 57; _i += 1; );
+
+
+
+// METER CONFIGURATION
+
+max_gr_db = 12; // GR meter range (6, 8, 12, 20)
+
+rms_window_ms = 300;
+rms_N = floor(srate * (rms_window_ms / 1000));
+rms_buf = 500000;
+rms_idx = 0;
+rms_sum_sq = 0;
+
+
+// VU BALLISTICS PARAMETERS
+cfg_vu_attack_ms = 50.0;
+cfg_vu_release_ms = 300.0;
+
+
+// Re-calibrate SRATE
+function update_srate() (
+    s_rate = (srate > 0) ? srate : 48000;
+
+    in_update_rate = floor(s_rate * 0.05);
+    rms_N = floor(s_rate * (rms_window_ms / 1000));
+
+    vu_att_coeff = 1.0 - exp(-1.0 / (s_rate * (cfg_vu_attack_ms / 1000.0)));
+    vu_rel_coeff = 1.0 - exp(-1.0 / (s_rate * (cfg_vu_release_ms / 1000.0)));
+
+    last_srate = srate;
+);
+
+// First call
+update_srate();
+
+
+// SYNCHRONIZATION .........................................................
+function sync_slot() (
+ p_base = gmem[100000];
+ base = p_base + slider2 * 500; 
+ addr_lock    = base + 1;
+ addr_status  = base + 2;
+ addr_seq     = base + 3;
+
+
+ // SECURITY CHECK ..........................................................
+ slot_valid = (slider3 > 0 && abs(slider3 - gmem[base + 497]) < 1) ? 1 : 0;
+
+);
+
+tr_idx_init = get_host_placement(p, f);
+    my_real_slot = (tr_idx_init >= 0) ? tr_idx_init + 1 : 0;
+    (my_real_slot > 0) ? (
+        slider2 = my_real_slot;
+    );
+    sync_slot();
+    
+    (base > 0) ? gmem[base + 496] = 1;
+
+function draw_text_centered(x, y, w_area, text, alpha_val) (
+  gfx_set(1, 1, 1, alpha_val);
+  gfx_measurestr(text, tw, th);
+  gfx_x = x + (w_area*UI_EFF_SCALE / 2) - (tw / 2);
+  gfx_y = y;
+  gfx_drawstr(text);
+);
+
+
+function draw_text_colored_centered(x, y, w_area, text, r, g, b, alpha_val) (
+  gfx_set(r, g, b, alpha_val); 
+  gfx_measurestr(text, tw, th);
+  gfx_x = x + (w_area*UI_EFF_SCALE / 2) - (tw / 2);
+  gfx_y = y;
+  gfx_drawstr(text);
+);
+
+
+function code_to_char(code) (
+  code >= 41 && code <= 66 ? (ret = code - 41 + 'A';) :
+  code >= 11 && code <= 36 ? (ret = code - 11 + 'a';) :
+  code >= 70 && code <= 79 ? (ret = code - 70 + '0';) :
+  code == 81 ? (ret = '+';) :
+  code == 82 ? (ret = '-';) :
+  code == 83 ? (ret = '/';) :
+  code == 84 ? (ret = '.';) :
+  code == 85 ? (ret = '(';) :
+  code == 86 ? (ret = ')';) :
+  ret = 32; ret;
+);
+
+
+function base50_to_char(code)
+(
+  code == 1 ? 32 : // Space
+  code >= 2 && code <= 27 ? (code - 2 + 65) : // A-Z
+  code >= 28 && code <= 37 ? (code - 28 + 48) : // 0-9
+  code == 38 ? 45 : // '-'
+  code == 39 ? 43 : // '+'
+  code == 40 ? 47 : // '/'
+  code == 41 ? 42 : // '*'
+  code == 42 ? 46 : // '.'
+  0;
+);
+
+function decode_to_str(v, target_str) 
+  local(ival, num_val, tmp, stack, count, c, len)
+(
+  strcpy(target_str, "");
+  v > 0 ? (
+    ival = floor(v); 
+    num_val = floor((v - ival) * 1000 + 0.5);
+
+    tmp = ival;
+    stack = 0;
+    count = 0;
+
+    while (tmp >= 1 && count < 9) ( 
+      c = tmp % 50;
+      stack = stack * 50 + c;
+      tmp = floor(tmp / 50);
+      count += 1;
+    );
+
+    while (stack >= 1) (
+      c = stack % 50;
+      c > 0 ? (
+        sprintf(#ch, "%c", base50_to_char(c));
+        strcat(target_str, #ch);
+      );
+      stack = floor(stack / 50);
+    );
+
+    // --- erase invisible speces ---
+    len = strlen(target_str);
+    while (len > 0 && str_getchar(target_str, len - 1) == 32) (
+        len -= 1;
+    );
+    str_setlen(target_str, len);
+    // .........................................................................
+
+    num_val > 0 ? (
+      sprintf(#n_str, " %d", num_val);
+      strcat(target_str, #n_str);
+    );
+  );
+);
+
+function get_sl_idx(btn) (
+  (btn >= 1 && btn <= 56) ? btn + 12 : 
+  (btn == 68) ? 11 : // Auto Gain Power
+  0; 
+);
+
+
+//  COLLISION SYSTEM ......
+function rectIn(xIn_, yIn_, wIn, hIn)
+  instance (xIn yIn, widthIn, heightIn)
+(
+  xIn = xIn_;
+  yIn = yIn_;
+  widthIn = wIn;
+  heightIn = hIn;
+);
+
+
+function get_unit_str(unit_id)
+
+instance (#cached_unit)
+(
+  strcpy(#cached_unit, "");
+  (unit_id == 1) ? strcpy(#cached_unit, "Hz");
+  (unit_id == 2) ? strcpy(#cached_unit, "dB");
+  (unit_id == 3) ? strcpy(#cached_unit, "ms");
+  (unit_id == 4) ? strcpy(#cached_unit, "%");
+  (unit_id == 5) ? strcpy(#cached_unit, ":1");
+  #cached_unit;
+);
+
+function collision()
+  instance (xIn yIn widthIn heightIn)
+(
+
+  // Ignore clicks in header area (Y < 100)
+
+  gmem[p_base + 206] ? 0 : (
+    mouse_y > (100 * UI_EFF_SCALE + vu_y_offset_base) &&
+    mouse_x > xIn && mouse_x < xIn + widthIn &&
+    mouse_y > yIn && mouse_y < yIn + heightIn
+  )
+);
+
+
+// SEPARATOR (Type 6) ..................................................................
+function separator_dynamic(xIn, yIn, shape_val, wIn, hIn) 
+  local(widthIn, heightIn, img_w, img_h, src_frame_h, num_frames, draw_h, draw_y)
+(
+     widthIn = wIn * UI_EFF_SCALE; 
+     heightIn = hIn * UI_EFF_SCALE; // hitbox
+     
+     num_frames = 11; // styles
+     gfx_getimgdim(33, img_w, img_h);
+     
+     (img_w > 0 && img_h > 0) ? (
+
+         src_frame_h = floor(img_h / num_frames);
+         shape_val = max(0, min(10, shape_val));
+         
+         // proportionlal height... 
+         draw_h = (widthIn / img_w) * src_frame_h;
+         
+
+         // centre img...
+         draw_y = yIn - ((draw_h - heightIn) * 0.5); 
+         
+         gfx_a = 1.0 * g_sec_a; 
+         
+         gfx_blit(33, 1, 0,  
+                  0, shape_val * src_frame_h,
+                  img_w, src_frame_h,
+                  xIn, draw_y,
+                  widthIn, draw_h);
+     );
+);
+
+// LEVEL METER PRE AMP ...................
+function level_meter(xIn, yIn, wIn, hIn) 
+  local(p_base, local_base, vu_mode, addr_lvl, lvl_lin, lvl_db, fill_w, is_over, tw, th, widthIn, heightIn, fixed_fill_w, fixed_x_start, fixed_h, scale_val, min_db, target_right_edge)
+  instance(text_peak_db, hold_timer, next_window_max, last_inst_vu_mode)
+(
+    p_base = gmem[100000];
+    local_base = p_base + slider2 * 500; 
+    is_track_selected = gmem[local_base + 9]; 
+    
+    widthIn = wIn * UI_EFF_SCALE; 
+    heightIn = hIn * UI_EFF_SCALE;
+
+ 
+    this.rectIn(xIn, yIn, widthIn, heightIn);
+    is_over = this.collision();
+    
+    // PNG meter BG ---
+    gfx_a = 1.0 * g_sec_a; 
+    gfx_getimgdim(30, bg_w, bg_h); // Preberemo dimenzije slike št. 30
+    (bg_w > 0 && bg_h > 0) ? (
+     gfx_blit(30, 1, 0, 0, 0, bg_w, bg_h, xIn, yIn, widthIn, heightIn);
+    );
+
+    // LUA TRIGGER (Right click)
+    (mouse_cap & 2 && !lastRightMouse && is_over) ? (
+
+        gmem[p_base + 0] += 1;
+        gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+        gmem[p_base + 5] = 101; 
+        gmem[p_base + 7] = 4; // CMD 4
+        g_consumed = 1;       
+
+    );
+
+     global_meter_mode = gmem[p_base + 202];
+     ((is_track_selected > 0 || global_meter_mode == 1) && slider2 > 0) ? (
+
+          // SIGNAL ROUTING ....................................................
+          vu_mode = gmem[local_base + 336];
+
+          (vu_mode == 0) ? lvl_lin = pre_in_peak :
+          (vu_mode == 1) ? lvl_lin = pre_out_peak :
+                           lvl_lin = chain_out_peak;
+
+          min_db = 48; 
+          lvl_db = (lvl_lin > 0.00001) ? 20 * log10(lvl_lin) : -144;
+          
+          scale_val = (lvl_db + min_db) / min_db;
+          scale_val = max(0, min(1, scale_val));
+          fill_w = scale_val * widthIn;
+
+          gfx_a = 1.0 * g_sec_a; 
+
+         
+          // DRAW METER BAR
+          (fill_w > 1) ? (
+          
+              gfx_a = 1.0 * g_sec_a; 
+
+              fixed_fill_w = floor(fill_w);       
+              fixed_x_start = floor(xIn); 
+              fixed_h = floor(heightIn);
+
+
+              gfx_getimgdim(24, img_w, img_h);
+              src_fill_w = scale_val * img_w;
+              gfx_blit(24, 1, 0,  
+                       0, 1, src_fill_w, 9,
+                       fixed_x_start, yIn,
+                       fixed_fill_w, fixed_h);
+          );
+
+          // RESET ON MENU SWITCH
+          (vu_mode != this.last_inst_vu_mode) ? (
+              this.text_peak_db = -144;
+              this.next_window_max = -144;
+              this.hold_timer = 0;
+              this.last_inst_vu_mode = vu_mode;
+          );
+
+
+          // PEAK-HOLD FOR TEXT
+
+          (lvl_db > this.text_peak_db || this.text_peak_db == 0) ? (
+              this.text_peak_db = lvl_db;
+              this.next_window_max = -144;
+              this.hold_timer = 30; // hold peak
+          ) : (
+
+              // accumulate max ONLY for the upcoming window
+              (this.next_window_max == 0) ? this.next_window_max = -144;
+              this.next_window_max = max(this.next_window_max, lvl_db);
+              
+
+              this.hold_timer -= 1;
+              (this.hold_timer <= 0) ? (
+              
+                  // drop peak to highest value captured during wait
+                  this.text_peak_db = this.next_window_max;
+                  this.next_window_max = -144;
+                  this.hold_timer = 30;
+              );
+          );
+
+          // DRAW TEXT
+          (this.text_peak_db > -100) ? (
+              gfx_set(1, 1, 1, 0.5 * g_sec_a);
+              sprintf(#v_txt, "%.1f dB", this.text_peak_db); 
+              gfx_measurestr(#v_txt, tw, th);
+              target_right_edge = xIn + widthIn; 
+              gfx_x = target_right_edge - tw; 
+              gfx_y = yIn + heightIn - 1*UI_EFF_SCALE;
+              gfx_drawstr(#v_txt);
+          );
+
+
+          // Hover effect
+          (is_over && was_dragging == 0) ? (
+
+              gfx_set(1, 1, 1, 0.2 * g_sec_a);
+              gfx_rect(xIn, yIn, widthIn, heightIn, 0);  
+          );
+     );
+);
+
+function draw_group_indicator(cx, cy, grp_val)
+local(gw, gh, g_r)
+(
+
+    cx = floor(cx + 0.5);
+    cy = floor(cy + 0.5);
+
+    (grp_val > 0) ? (
+        grp_val == 1 ? strcpy(#g_txt, "A") : 
+        grp_val == 2 ? strcpy(#g_txt, "B") :
+        grp_val == 3 ? strcpy(#g_txt, "C") : 
+        grp_val == 4 ? strcpy(#g_txt, "D") :
+        grp_val == 5 ? strcpy(#g_txt, "E") : strcpy(#g_txt, "F");
+
+        gfx_setfont(1, "Calibri", floor(font_sz_calc), 'b');
+        gfx_measurestr(#g_txt, gw, gh);
+        
+        g_r = floor(7 * UI_EFF_SCALE + 0.5); 
+        
+        gfx_set(0, 0, 0, 0.6 * g_sec_a);
+        gfx_circle(cx, cy, g_r, 1);
+        
+        gfx_set(1.0, 0.7, 0.1, 0.9 * g_sec_a);
+        
+        gfx_x = floor(cx - (gw / 2) + 0.5);
+        gfx_y = floor(cy - (gh / 2) + 0.5);
+        
+        gfx_drawstr(#g_txt);
+        
+        gfx_setfont(1, "Calibri", font_sz_calc);
+    );
+);
+
+
+// SLIM HORIZONTAL VU METER .........................................................................
+function slim_horizontal_meter(xIn, yIn) 
+  local(p_base, local_base, vu_mode, vu_lin, target_0vu_dbfs, vu_dbfs, vu_val, norm_vu, scale_val,
+        wIn, hIn, pad_x, track_w, track_y, tick_x, is_track_selected, global_meter_mode, global_vu_style,
+        raw_x, base_a, eff_alpha, led_x, led_y, led_r, sig_led_x, sig_led_y, sig_led_r, is_over, peak_lin)
+  instance(peak_alpha, float_peak_x, float_hold_timer, last_float_vu_mode)
+(
+
+     p_base = gmem[100000];
+     local_base = p_base + slider2 * 500; 
+
+     global_vu_style = gmem[p_base + 208];
+
+     // Only proceed if Slim mode (1) is active
+     (global_vu_style == 1) ? (
+      
+          wIn = UI_W;
+          hIn = UI_W * 0.24; // EXACT height of the image (30/125 ratio)
+
+          // Define collision area for the tooltip
+          this.rectIn(xIn, yIn, wIn, hIn);
+          // Ročna detekcija, ki obide blokado headerja
+          is_over = (!gmem[p_base + 206]) && 
+                    (mouse_x > xIn && mouse_x < xIn + wIn && 
+                     mouse_y > yIn && mouse_y < yIn + hIn);
+
+          // Always draw slim meter bg
+          gfx_a = 1.0;
+          gfx_blit(28, 1, 0, 0, 0, 125, 30, xIn, yIn, wIn, hIn); 
+          
+
+          // cpture before any gfx_set calls alter system gfx_a
+          base_a = gfx_a;
+
+
+          // only caluclate and draw needla if meter active
+
+          is_track_selected = gmem[local_base + 9];
+          global_meter_mode = gmem[p_base + 202];
+
+
+          ((is_track_selected > 0 || global_meter_mode == 1) && slider2 > 0) ? (
+
+
+              // SIGNAL ROUTING ..................................................
+              vu_mode = gmem[local_base + 336];
+              (vu_mode == 0) ? (
+                  vu_lin = pre_in_vu;
+                  peak_lin = pre_in_peak;
+                  
+              ) : (vu_mode == 1) ? (
+                  vu_lin = pre_out_vu;
+                  peak_lin = pre_out_peak;
+              ) : (
+
+                  vu_lin = chain_out_vu;
+                  peak_lin = chain_out_peak;
+              );
+
+
+              // MATH
+              target_0vu_dbfs = slider69; 
+              (target_0vu_dbfs > 0 || target_0vu_dbfs < -48) ? target_0vu_dbfs = -18; 
+              
+
+              vu_dbfs = (vu_lin > 0.000001) ? 20 * log10(vu_lin) : -144;
+              vu_val = vu_dbfs - target_0vu_dbfs;
+              vu_val = max(-20, min(3, vu_val)); // Clamp range
+
+
+              // CALIBRATION (Piecewise Linear Interpolation)
+              // Maps exact VU values to exact pixels on the 125px base image
+
+              vu_val <= -5 ? (
+                  raw_x = 10 + (vu_val + 20) * 1.5333; // From -20VU (10px) to -5VU (33px)
+              ) : vu_val <= 0 ? (
+                  raw_x = 33 + (vu_val + 5) * 4.4;     // From -5VU (33px) to 0VU (55px)
+              ) : (
+                  raw_x = 55 + (vu_val) * 7.0;         // From 0VU (55px) to +3VU (76px)
+              );
+
+
+               // DRAW NEEDLE TICK MARK
+               // Adjust track_y to position the needle vertically over the groove
+               track_y = yIn + (hIn / 2) - (6 * UI_EFF_SCALE); 
+               tick_x = xIn + (raw_x * UI_EFF_SCALE); 
+               
+
+               // FLOATING PEAK (Peak Hold)
+               (vu_mode != this.last_float_vu_mode) ? (
+                   this.float_peak_x = 0;
+                   this.last_float_vu_mode = vu_mode;
+               );
+ 
+               (tick_x >= this.float_peak_x || this.float_peak_x == 0) ? (
+                   this.float_peak_x = tick_x;
+                   this.float_hold_timer = 30; // ~1s hold at 30fps
+               ) : (
+
+                   this.float_hold_timer -= 1;
+                   (this.float_hold_timer <= 0) ? (
+
+                       this.float_peak_x = tick_x + (this.float_peak_x - tick_x) * 0.92;
+                   );
+               );
+
+               this.float_peak_x = max(this.float_peak_x, tick_x); 
+
+ 
+
+               // FLOATING PEAK DRAWING
+               gfx_set(1.0, 0.3, 0.0, 0.7);
+
+               gfx_rect(this.float_peak_x + (1.5 * UI_EFF_SCALE), track_y - (4 * UI_EFF_SCALE), 3.0 * UI_EFF_SCALE, 22 * UI_EFF_SCALE, 1);
+   
+
+               // MAIN NEEDLE DRAWING
+               gfx_set(1.0, 1.0, 1.0, 0.85);
+               gfx_rect(tick_x - (2 * UI_EFF_SCALE), track_y - (4 * UI_EFF_SCALE), 4 * UI_EFF_SCALE, 22 * UI_EFF_SCALE, 1);      
+
+
+              // LED INDICATORS (Right Side)
+              
+              // PEAK WARNING LED (Top Right)
+              (peak_lin >= global_peak_thresh_lin) ? (
+                  this.peak_alpha = 3.0; // Increased memory for longer hold time
+              );
+              this.peak_alpha = max(0, this.peak_alpha * 0.95);
+
+              (this.peak_alpha > 0.01) ? (
+                  eff_alpha = min(1.0, this.peak_alpha);
+                  led_x = xIn + wIn - 30 * UI_EFF_SCALE;
+                  led_y = yIn + 8 * UI_EFF_SCALE;
+                  led_r = 2.5 * UI_EFF_SCALE;
+
+                  gfx_set(1.0, 0.0, 0.0, eff_alpha);
+                  gfx_circle(led_x, led_y, led_r, 1);
+              );
+
+
+              // SIGNAL MODE LED (Pre In / Pre Out / Chain Out)
+
+              // Green = Pre In, Blue = Pre Out, Yellow = Chain Out
+
+              (vu_mode == 0) ? gfx_set(0.0, 0.7, 0.0, 0.85) :       
+              (vu_mode == 1) ? gfx_set(0.3, 0.5, 1.0, 0.85) :   
+                               gfx_set(1.0, 0.8, 0.0, 0.85);     
+
+
+              sig_led_x = xIn + wIn - 30 * UI_EFF_SCALE;
+              sig_led_y = yIn + 20 * UI_EFF_SCALE;
+              sig_led_r = 2.5 * UI_EFF_SCALE;
+
+
+              gfx_circle(sig_led_x, sig_led_y, sig_led_r, 1);
+
+
+              // TOOLTIP 
+
+              (is_over && was_dragging == 0) ? (
+                  vu_mode == 0 ? strcpy(#mode_str, "Pre In") :
+                  vu_mode == 1 ? strcpy(#mode_str, "Pre Out") :
+                                 strcpy(#mode_str, "Chain Out");
+                  
+
+                  sprintf(#global_tooltip, "Source: %s\nRef: %d dBFS\nPeak LED: %.1f dBFS", #mode_str, target_0vu_dbfs, global_peak_thresh_db);
+                  show_tooltip = 1;
+              );
+          );
+     );
+);
+
+
+
+// .........................................................................
+// ANALOG VU METER
+
+function analog_vu_meter(xIn, yIn) 
+  local(p_base, local_base, vu_mode, vu_lin, target_0vu_dbfs, vu_dbfs, vu_val, norm_vu,
+        curve, scale_val, frame_idx, is_over, widthIn, heightIn, src_frame_w, src_frame_h,
+        num_frames, tw, th, peak_lin)
+  instance(peak_alpha) // LED fade memory
+(
+     p_base = gmem[100000];
+     local_base = p_base + slider2 * 500; 
+     is_track_selected = gmem[local_base + 9];
+
+
+     num_frames = 51;   
+     gfx_getimgdim(25, img_w, img_h);
+
+
+     src_frame_w = img_w;
+     src_frame_h = floor(img_h / num_frames);
+
+     
+     widthIn = 125 * UI_EFF_SCALE; 
+     heightIn = (widthIn / src_frame_w) * src_frame_h;
+
+     this.rectIn(xIn, yIn, widthIn, heightIn);
+     // Ročna detekcija, ki obide blokado headerja
+     is_over = (!gmem[p_base + 206]) && 
+               (mouse_x > xIn && mouse_x < xIn + widthIn && 
+                mouse_y > yIn && mouse_y < yIn + heightIn);
+
+
+    // LUA TRIGGER (Right click opens Menu 99)
+    (mouse_cap & 2 && !lastRightMouse && is_over) ? (
+        gmem[p_base + 0] += 1;
+        gmem[p_base + 4] = slider2; 
+        gmem[p_base + 6] = p;
+        gmem[p_base + 5] = 99; // Menu 99
+        gmem[p_base + 7] = 3;  // CMD 3
+        g_consumed = 1;
+    );
+
+     global_meter_mode = gmem[p_base + 202];
+
+     ((is_track_selected > 0 || global_meter_mode == 1) && slider2 > 0) ? (
+     
+          // Read signal source
+          vu_mode = gmem[local_base + 336];
+
+          (vu_mode == 0) ? (
+              vu_lin = pre_in_vu;                  // PRE In (smooth)
+              peak_lin = pre_in_peak;              // PRE In (peak)
+          ) : (vu_mode == 1) ? (
+              vu_lin = pre_out_vu;                 // PRE Out (smooth)
+              peak_lin = pre_out_peak;             // PRE Out (peak)
+          ) : (
+              vu_lin = chain_out_vu;               // Chain Out (smooth)
+              peak_lin = chain_out_peak;           // Chain Out (peak)
+          );
+
+
+          // LINEAR CALIBRATION ..................
+          target_0vu_dbfs = slider69; 
+          (target_0vu_dbfs > 0 || target_0vu_dbfs < -48) ? target_0vu_dbfs = -18; 
+
+          vu_dbfs = (vu_lin > 0.000001) ? 20 * log10(vu_lin) : -144;
+          vu_val = vu_dbfs - target_0vu_dbfs;
+          vu_val = max(-20, min(3, vu_val)); // Limit range
+          
+
+          // Interpolation across exact frame positions
+          vu_val <= -10 ? (
+              raw_frame = 0 + (vu_val + 20) * 0.7;   // From -20 VU (frame 0) to -10 (fr 7)
+          ) : vu_val <= -5 ? (
+              raw_frame = 7 + (vu_val + 10) * 2.0;   // From -10 (fr 7) to -5 (fr 17)
+          ) : vu_val <= 0 ? (
+              raw_frame = 17 + (vu_val + 5) * 3.6;   // From -5 (fr 17) to 0 (fr 35)
+          ) : (
+              raw_frame = 35 + (vu_val) * 5.0;       // From 0 (fr 35) to +3 (fr 50)
+          );
+
+          
+          frame_idx = floor(raw_frame + 0.5);
+          frame_idx = max(0, min(50, frame_idx));
+
+          gfx_a = 1.0 * g_sec_a;
+          
+          // DRAW NEEDLE
+          gfx_blit(25, 1, 0,  
+                  0, frame_idx * src_frame_h,
+                  src_frame_w, src_frame_h,
+                  xIn, yIn,
+                  widthIn, heightIn);
+
+
+          // TAP POINT LED
+          (vu_mode == 0) ? gfx_set(0, 0.7, 0, gfx_a * 0.75) :      
+          (vu_mode == 1) ? gfx_set(0.3, 0.5, 1.0, gfx_a * 0.75) :    
+                           gfx_set(1.0, 0.8, 0.0, gfx_a * 0.75);     
+
+
+          // LED
+          gfx_circle(xIn + 26 * UI_EFF_SCALE, yIn + 10 * UI_EFF_SCALE, 3.0 * UI_EFF_SCALE, 1);
+
+          gfx_set(1, 1, 1, gfx_a * 0.5);
+          gfx_setfont(1, "Calibri", floor(font_sz_calc * 0.9));
+          sprintf(#vu_num, "%d dBFS", target_0vu_dbfs);
+          gfx_x = xIn + 7 * UI_EFF_SCALE;
+          gfx_y = yIn + heightIn - (18 * UI_EFF_SCALE);
+          gfx_drawstr(#vu_num);
+          
+
+          // Revert font back
+          gfx_setfont(1, "Calibri", font_sz_calc);
+
+          // PEAK WARNING LED
+          (peak_lin >= global_peak_thresh_lin) ? (
+              this.peak_alpha = 3.0; // Increased for longer hold time
+          );
+
+          this.peak_alpha = max(0, this.peak_alpha * 0.95);
+          
+
+          (this.peak_alpha > 0.01) ? (
+              eff_alpha = min(1.0, this.peak_alpha) * gfx_a;
+              led_x = xIn + widthIn - 23 * UI_EFF_SCALE;
+              led_y = yIn + 10 * UI_EFF_SCALE;
+              led_r = 3.0 * UI_EFF_SCALE;
+              
+              gfx_set(1.0, 0.0, 0.0, eff_alpha);
+              gfx_circle(led_x, led_y, led_r, 1);
+              gfx_circle(led_x, led_y, led_r, 1);
+              gfx_circle(led_x, led_y, led_r, 1); // 3 times because of antialiasing
+          );
+              
+
+          // TOOLTIP
+          (is_over && was_dragging == 0) ? (
+              vu_mode == 0 ? strcpy(#mode_str, "Pre In") :
+              vu_mode == 1 ? strcpy(#mode_str, "Pre Out") :
+                             strcpy(#mode_str, "Chain Out");
+              
+
+              sprintf(#global_tooltip, "Source: %s\nRef: %d dBFS\nPeak LED: %.1f dBFS", #mode_str, target_0vu_dbfs, global_peak_thresh_db);
+              show_tooltip = 1;
+          );
+     );
+);
+
+
+// ...............................................................................
+// GAIN REDUCTION METER
+
+function gr_meter(el_ptr, xIn, yIn, meter_num, wIn, hIn) 
+  local(p_base, active_slot, local_base, addr_gr, addr_text, engine_mode, gr_db, gr_text, scale_val, fill_w, is_over, tw, th, widthIn, heightIn, img_w, img_h, fixed_x_end, fixed_fill_w, fixed_x_start, fixed_h, src_fill_w, src_x_start, is_gate, is_exp, abs_gr, min_db, draw_ltr, target_right_edge, bg_w, bg_h, dx, dy)
+(
+     dx = el_ptr[15] * UI_EFF_SCALE;
+     dy = el_ptr[16] * UI_EFF_SCALE;
+
+     p_base = gmem[100000];
+     local_base = p_base + slider2 * 500; 
+     is_track_selected = gmem[local_base + 9];
+
+     widthIn = wIn * UI_EFF_SCALE; 
+     heightIn = hIn * UI_EFF_SCALE;
+
+     this.rectIn(xIn, yIn, widthIn, heightIn);
+     is_over = this.collision();
+
+     gfx_a = 1.0 * g_sec_a; 
+     gfx_getimgdim(30, bg_w, bg_h);
+     (bg_w > 0 && bg_h > 0) ? (
+         gfx_blit(30, 1, 0, 0, 0, bg_w, bg_h, xIn, yIn, widthIn, heightIn);
+     );
+
+    (mouse_cap & 2 && !lastRightMouse && is_over && builder_mode_global == 0) ? (
+        gmem[p_base + 0] += 1;
+        gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+        gmem[p_base + 5] = (meter_num == 1) ? 99 : 100;
+        gmem[p_base + 7] = 4; 
+        g_consumed = 1;
+    );
+
+     global_meter_mode = gmem[p_base + 202];
+
+     ((is_track_selected > 0 || global_meter_mode == 1) && slider2 > 0) ? (
+          (meter_num == 1) ? (
+              addr_gr     = local_base + 320;
+              addr_text   = local_base + 321;
+              engine_mode = gmem[local_base + 328]; 
+          ) : (
+              addr_gr     = local_base + 322;
+              addr_text   = local_base + 323;
+              engine_mode = gmem[local_base + 329]; 
+          );
+
+          gr_db = gmem[addr_gr];
+          gr_text = gmem[addr_text];
+
+          is_gate = (engine_mode == 2);
+          is_exp  = (engine_mode == 3); 
+
+          // scale for Gate
+          is_gate ? (
+              min_db = 24; 
+              abs_gr = abs(gr_db);
+              scale_val = min(1, max(0, abs_gr / min_db));
+          ) : (
+              abs_gr = abs(gr_db);
+              scale_val = min(1, max(0, abs_gr / max_gr_db));
+          );
+
+          fill_w = scale_val * widthIn;
+
+          gfx_a = 1.0 * g_sec_a; 
+          (fill_w > 0.1) ? ( 
+              fixed_fill_w = floor(fill_w);        
+              fixed_h = floor(heightIn);
+
+              gfx_getimgdim(22, img_w, img_h);
+              src_fill_w = scale_val * img_w;
+
+              draw_ltr = (is_gate || is_exp);
+              fixed_x_start = draw_ltr ? floor(xIn) : floor(xIn + widthIn) - fixed_fill_w;
+              src_x_start   = draw_ltr ? 0 : img_w - src_fill_w;
+
+              gfx_blit(22, 1, 0,  
+                      src_x_start, 1, 
+                      src_fill_w, 9,
+                      fixed_x_start, yIn,
+                      fixed_fill_w, fixed_h);
+          );
+
+
+          // TEXT ...............
+          builder_mode_global == 1 ? (
+              gfx_set(1, 1, 1, 0.5 * g_sec_a);
+              sprintf(#v_txt, "-12.0 dB"); 
+              gfx_measurestr(#v_txt, tw, th);
+              gfx_x = xIn + dx; 
+              gfx_y = yIn + dy + heightIn - 1 * UI_EFF_SCALE; 
+              gfx_drawstr(#v_txt);
+          ) : is_gate ? (
+              (abs(gr_text) > 0.1) ? (
+                  gfx_set(1, 1, 1, 0.5 * g_sec_a);
+                  sprintf(#v_txt, "+%.1f dB", abs(gr_text)); 
+                  gfx_measurestr(#v_txt, tw, th);
+                  gfx_x = xIn + dx; 
+                  gfx_y = yIn + dy + heightIn - 1 * UI_EFF_SCALE;
+                  gfx_drawstr(#v_txt);
+              );
+          ) : (
+              (abs(gr_text) > 0.1) ? (
+                  gfx_set(1, 1, 1, 0.5 * g_sec_a);
+                  is_exp ? sprintf(#v_txt, "+%.1f dB", abs(gr_text)) : sprintf(#v_txt, "-%.1f dB", abs(gr_text)); 
+                  gfx_measurestr(#v_txt, tw, th);
+                  gfx_x = xIn + dx; 
+                  gfx_y = yIn + dy + heightIn - 1 * UI_EFF_SCALE;
+                  gfx_drawstr(#v_txt);
+              );
+          );
+
+          (is_over && was_dragging == 0) ? (
+             gfx_set(1, 1, 1, 0.2 * g_sec_a);
+             gfx_rect(xIn, yIn, widthIn + 1.5 * UI_EFF_SCALE, heightIn, 0); 
+          );
+     );
+);
+
+
+// ...........................................................................
+// GAIN REDUCTION METER (VERTICAL)
+function vertical_gr_meter(el_ptr, xIn, yIn, meter_num, wIn, hIn) 
+  local(p_base, active_slot, local_base, addr_gr, addr_text, engine_mode, gr_db, gr_text, scale_val, fill_h, is_over, tw, th, widthIn, heightIn, img_w, img_h, fixed_y_end, fixed_fill_h, fixed_y_start, fixed_w, src_fill_h, src_y_start, is_gate, is_exp, abs_gr, min_db, draw_ttb, dx, dy)
+(
+      dx = el_ptr[15] * UI_EFF_SCALE;
+      dy = el_ptr[16] * UI_EFF_SCALE;
+
+      p_base = gmem[100000];
+      local_base = p_base + slider2 * 500; 
+      is_track_selected = gmem[local_base + 9];
+      
+      widthIn = wIn * UI_EFF_SCALE; 
+      heightIn = hIn * UI_EFF_SCALE;
+      
+      this.rectIn(xIn, yIn, widthIn, heightIn);
+      is_over = this.collision();
+      
+      gfx_a = 1.0 * g_sec_a; 
+      gfx_getimgdim(31, bg_w, bg_h);
+      (bg_w > 0 && bg_h > 0) ? (
+         gfx_blit(31, 1, 0, 0, 0, bg_w, bg_h, xIn, yIn, widthIn, heightIn);
+      );
+      
+      (mouse_cap & 2 && !lastRightMouse && is_over && builder_mode_global == 0) ? (
+        gmem[p_base + 0] += 1;
+        gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+        gmem[p_base + 5] = (meter_num == 1) ? 99 : 100;
+        gmem[p_base + 7] = 4; 
+        g_consumed = 1;
+      );
+
+     global_meter_mode = gmem[p_base + 202];
+
+     ((is_track_selected > 0 || global_meter_mode == 1) && slider2 > 0) ? (
+          (meter_num == 1) ? (
+              addr_gr     = local_base + 320;
+              addr_text   = local_base + 321;
+              engine_mode = gmem[local_base + 328]; 
+          ) : (
+              addr_gr     = local_base + 322;
+              addr_text   = local_base + 323;
+              engine_mode = gmem[local_base + 329]; 
+          );
+
+          gr_db = gmem[addr_gr];
+          gr_text = gmem[addr_text];
+          
+          is_gate = (engine_mode == 2);
+          is_exp  = (engine_mode == 3); 
+          
+          is_gate ? (
+              min_db = 48; 
+              scale_val = (gr_db + min_db) / min_db;
+              scale_val = max(0, min(1, scale_val));
+          ) : (
+              abs_gr = abs(gr_db);
+              scale_val = min(1, max(0, abs_gr / max_gr_db));
+          );
+          
+          fill_h = scale_val * heightIn;
+          
+          gfx_a = 1.0 * g_sec_a; 
+          (fill_h > 0.1) ? ( 
+              fixed_fill_h = floor(fill_h);        
+              fixed_w = floor(widthIn);
+
+              gfx_getimgdim(22, img_w, img_h);
+              src_fill_h = scale_val * img_h;
+              
+              fixed_y_start = floor(yIn);
+              src_y_start   = 0;
+
+              gfx_blit(22, 1, 0,  
+                      0, src_y_start, 
+                      img_w, src_fill_h,
+                      xIn, fixed_y_start,
+                      fixed_w, fixed_fill_h);
+          );
+
+          // TEKST (already corrected for Builder)
+          
+          builder_mode_global == 1 ? (
+              // ... in builder always draw placeholder txt!
+              gfx_set(1, 1, 1, 0.5 * g_sec_a);
+              sprintf(#v_txt, "-12.0"); 
+              gfx_measurestr(#v_txt, tw, th);
+              gfx_x = xIn + dx + (widthIn / 2) - (tw / 2) - 3 * UI_EFF_SCALE; 
+              gfx_y = yIn + dy + heightIn - 2 * UI_EFF_SCALE;
+              gfx_drawstr(#v_txt);
+          ) : is_gate ? (
+              (gr_text > -100) ? (
+                  gfx_set(1, 1, 1, 0.5 * g_sec_a);
+                  sprintf(#v_txt, "%.1f", gr_text); 
+                  gfx_measurestr(#v_txt, tw, th);
+                  gfx_x = xIn + dx + (widthIn / 2) - (tw / 2 - 3 * UI_EFF_SCALE); 
+                  gfx_y = yIn + dy + heightIn - 2 * UI_EFF_SCALE;
+                  gfx_drawstr(#v_txt);
+              );
+          ) : (
+              (abs(gr_text) > 0.1) ? (
+                  gfx_set(1, 1, 1, 0.5 * g_sec_a);
+                  is_exp ? sprintf(#v_txt, "+%.1f", abs(gr_text)) : sprintf(#v_txt, "-%.1f", abs(gr_text)); 
+                  gfx_measurestr(#v_txt, tw, th);
+                  gfx_x = xIn + dx + (widthIn / 2) - (tw / 2) - 3 * UI_EFF_SCALE; 
+                  gfx_y = yIn + dy + heightIn - 2 * UI_EFF_SCALE;
+                  gfx_drawstr(#v_txt);
+              );
+          );
+          
+          (is_over && was_dragging == 0) ? (
+             gfx_set(1, 1, 1, 0.2 * g_sec_a);
+             gfx_rect(xIn + 1 * UI_EFF_SCALE, yIn, widthIn, heightIn, 0); 
+          );
+     );
+);
+
+
+// ......................................................................
+// ANALOG GAIN REDUCTION METER
+function analog_gr_meter(el_ptr, xIn, yIn, meter_num, wIn, hIn) 
+  local(p_base, local_base, addr_gr, engine_mode, gr_db, scale_val, frame_idx, is_over, widthIn, heightIn, img_w, img_h, src_frame_w, src_frame_h, num_frames, target_val, needle_val, hold_timer, builder_mode_global, anim_buf)
+(
+     p_base = gmem[100000];
+     local_base = p_base + slider2 * 500; 
+     is_track_selected = gmem[local_base + 9];
+     builder_mode_global = gmem[local_base + 428];
+     
+     
+     anim_buf = 45000; 
+
+     // read needle
+     builder_mode_global == 0 ? (
+         target_val = anim_buf[meter_num * 3 + 0];
+         needle_val = anim_buf[meter_num * 3 + 1];
+         hold_timer = anim_buf[meter_num * 3 + 2];
+     ) : (
+         target_val = 0;
+         needle_val = 0;
+         hold_timer = 0;
+     );
+     
+     widthIn = wIn * UI_EFF_SCALE; 
+     num_frames = 51;   
+     gfx_getimgdim(32, img_w, img_h); 
+     
+     (img_w > 0 && img_h > 0) ? (
+         src_frame_w = img_w;
+         src_frame_h = floor(img_h / num_frames);
+         heightIn = (widthIn / src_frame_w) * src_frame_h;
+     ) : (
+         heightIn = hIn * UI_EFF_SCALE; 
+     );
+
+     this.rectIn(xIn, yIn, widthIn, heightIn);
+     is_over = this.collision();
+
+    // right click - open only in builder
+    (mouse_cap & 2 && !lastRightMouse && is_over && builder_mode_global == 0) ? (
+        gmem[p_base + 0] += 1;
+        gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+        gmem[p_base + 5] = (meter_num == 1) ? 99 : 100;
+        gmem[p_base + 7] = 4; // CMD 4
+        g_consumed = 1;
+    );
+
+     global_meter_mode = gmem[p_base + 202];
+
+     ((is_track_selected > 0 || global_meter_mode == 1) && slider2 > 0 && builder_mode_global == 0) ? (
+          (meter_num == 1) ? (
+              addr_gr = local_base + 320;
+              engine_mode = gmem[local_base + 328]; // PREBEREMO NAČIN (DYN 1)
+          ) : (
+              addr_gr = local_base + 322;
+              engine_mode = gmem[local_base + 329]; // PREBEREMO NAČIN (DYN 2)
+          );
+
+          gr_db = gmem[addr_gr];
+
+          // don't use analog GR for gate!
+          (engine_mode == 2) ? (
+              gr_db = 0;
+              target_val = 0;
+              needle_val = 0;
+              hold_timer = 0;
+          );
+
+          // Target point 
+          scale_val = min(1, max(0, abs(gr_db) / 20)); // Fixed to 20 because of static PNG!
+          
+          // PEAK HOLD
+          (scale_val >= target_val) ? (
+              target_val = scale_val;
+              hold_timer = 6; 
+          ) : (
+              hold_timer -= 1;
+              (hold_timer <= 0) ? target_val = scale_val;
+          );
+
+          // Smooth needle movement
+          (target_val >= needle_val) ? (
+              needle_val += (target_val - needle_val) * 0.60;
+          ) : (
+              needle_val += (target_val - needle_val) * 0.30;
+          );
+  
+          frame_idx = 50 - floor(needle_val * 50 + 0.5);
+          frame_idx = max(0, min(50, frame_idx));
+     ) : (
+          needle_val += (0 - needle_val) * 0.15;
+          target_val = 0; 
+          frame_idx = 50 - floor(needle_val * 50 + 0.5);
+          frame_idx = max(0, min(50, frame_idx));
+     );
+
+     // save physics back to mem
+     builder_mode_global == 0 ? (
+         anim_buf[meter_num * 3 + 0] = target_val;
+         anim_buf[meter_num * 3 + 1] = needle_val;
+         anim_buf[meter_num * 3 + 2] = hold_timer;
+     );
+
+     (img_w > 0 && img_h > 0) ? (
+         gfx_a = 1.0 * g_sec_a; 
+         gfx_blit(32, 1, 0,  
+                 0, frame_idx * src_frame_h,
+                 src_frame_w, src_frame_h,
+                 xIn, yIn,
+                 widthIn, heightIn);
+     );
+     
+     (is_over && was_dragging == 0) ? (
+        gfx_set(1, 1, 1, 0.1 * g_sec_a);
+        gfx_rect(xIn, yIn, widthIn, heightIn, 0); 
+     );
+);
+
+
+
+// ........................................................................
+function tube_dynamic(el_ptr, sl_idx, btn_idx, addr_v, addr_lock, addr_n, addr_d, addr_s) 
+local(state_ptr, dragging, xOld, valOld, last_click_time, l_seq, init_done, steps_cache, widthIn, heightIn, is_over, cur_seq, cur_name_code, raw_status, this_unit_id, this_status, is_linked, this_alpha, fill_w, v_val, v, abs_v, current_time, mouse_diff, step, el_x, el_y, xIn, yIn, target_w, target_h, builder_mode, div_val, actual_v, new_val, col_idx, c_r, c_g, c_b, elem_idx, c_x, c_y, draw_tw, draw_th, final_n, v_raw, v_id, str_slot, grid, raw_x, raw_y, text_alpha, c_a, el_type)
+(
+    target_w = el_ptr[5] > 0 ? el_ptr[5] : 45;
+    target_h = el_ptr[6] > 0 ? el_ptr[6] : 15;
+    widthIn = target_w * UI_EFF_SCALE; 
+    heightIn = target_h * UI_EFF_SCALE;
+
+    // read coordinates
+    el_x = el_ptr[2]; el_y = el_ptr[3];
+    xIn = el_x * UI_EFF_SCALE; yIn = el_y * UI_EFF_SCALE + vu_y_offset;
+
+    state_ptr       = el_ptr + 10;
+    dragging        = state_ptr[0];
+    xOld            = state_ptr[1];
+    valOld          = state_ptr[2];
+    last_click_time = state_ptr[3];
+    l_seq           = state_ptr[4];
+    init_done       = state_ptr[7];
+
+    init_done == 0 ? ( init_done = 1; last_click_time = 0; l_seq = -1; );
+
+    is_over = gmem[p_base + 206] ? 0 : (
+        mouse_y > (100 * UI_EFF_SCALE + vu_y_offset_base) && 
+        mouse_x > xIn && mouse_x < xIn + widthIn && 
+        mouse_y > yIn && mouse_y < yIn + heightIn
+    );
+    
+    ext_steps_base = gmem[100000] + 60000 + (slider2 * 100);
+    steps_cache = gmem[ext_steps_base + (btn_idx - 1)];
+    div_val = (steps_cache > 1) ? (steps_cache - 1) : 0;
+
+    raw_status = gmem[addr_s];
+    this_unit_id = floor(raw_status / 1000);
+    this_status = raw_status % 1000;
+    is_linked = this_status >= 100;
+
+    cur_seq = gmem[base + 3]; 
+    cur_name_code = gmem[addr_n];
+    str_slot = 200 + btn_idx; 
+    
+    (cur_seq != l_seq) ? (
+        l_seq = cur_seq;
+        cur_name_code > 0 ? decode_to_str(cur_name_code, str_slot) : (!is_linked ? strcpy(str_slot, "") : 0);
+    );
+
+    this_alpha = (is_linked ? 1.0 : g_dim_sw) * g_sec_a;
+    text_alpha = (is_linked ? g_dim_txt_link : g_dim_txt) * g_sec_a;
+    
+    elem_idx = floor((el_ptr - layout_base) / 20 + 0.5);
+    builder_mode = gmem[base + 428];
+
+    // ............................................................................
+    // Mouse interaction
+
+    builder_mode == 1 ? (
+        // LAYOUT BUILDER MODE
+        (leftMouse && !lastLeftMouse && builder_drag_target == elem_idx) ? (
+            ((time_precise() - last_click_time < 0.25 || altDown) && builder_drag_mode == 2) ? (
+                el_ptr[15] = 0; el_ptr[16] = 0; 
+                last_click_time = 0; dragging = 0;
+                force_text_recalc = 1;
+            ) : (
+                last_click_time = time_precise(); dragging = 1;
+                builder_drag_mode == 1 ? (
+                    state_ptr[1] = (mouse_x / UI_EFF_SCALE) - el_ptr[2];
+                    state_ptr[2] = ((mouse_y - vu_y_offset) / UI_EFF_SCALE) - el_ptr[3];
+                    builder_start_x = el_ptr[2]; builder_start_y = el_ptr[3];
+                ) : (
+                    state_ptr[1] = (mouse_x / UI_EFF_SCALE) - el_ptr[15];
+                    state_ptr[2] = ((mouse_y - vu_y_offset) / UI_EFF_SCALE) - el_ptr[16];
+                    builder_start_x = el_ptr[15]; builder_start_y = el_ptr[16];
+                );
+            );
+        );
+        (!leftMouse) ? dragging = 0;
+        
+        dragging == 1 ? (
+            current_dragging = 1; grid = builder_grid; 
+            force_text_recalc = 1; // refresh during mouse drag
+            
+            raw_x = (mouse_x / UI_EFF_SCALE) - state_ptr[1];
+            raw_y = ((mouse_y - vu_y_offset) / UI_EFF_SCALE) - state_ptr[2];
+            
+            ctrlDown ? (
+                abs(raw_x - builder_start_x) > abs(raw_y - builder_start_y) ? raw_y = builder_start_y : raw_x = builder_start_x; 
+            );
+            
+            builder_drag_mode == 1 ? (
+                el_ptr[2] = floor(raw_x / grid + 0.5) * grid;
+                el_ptr[3] = floor(raw_y / grid + 0.5) * grid;
+                xIn = el_ptr[2] * UI_EFF_SCALE; yIn = el_ptr[3] * UI_EFF_SCALE + vu_y_offset;
+            ) : (
+                el_ptr[15] = floor(raw_x / grid + 0.5) * grid;
+                el_ptr[16] = floor(raw_y / grid + 0.5) * grid;
+            );
+        );
+    ) : (
+        // normal (play) mode
+        (is_over && mouse_wheel != 0) ? (
+            step = (div_val > 0) ? (1 / div_val) : (ctrlDown ? (0.005 * global_mouse_std * fine_mult) : (0.02 * global_mouse_std));
+            
+            new_val = max(0, min(1, slider(sl_idx) + (mouse_wheel > 0 ? step : -step)));
+            slider(sl_idx) = new_val;
+            gmem[addr_v] = new_val;
+            
+            sl_idx > 0 ? slider_automate(2^(sl_idx-1));
+            
+            gmem[base + 1] = btn_idx; mouse_wheel = 0; g_consumed = 1; 
+        );
+
+        (is_over && !lastLeftMouse) ? (
+            leftMouse ? (
+                current_time = time_precise();
+                (current_time - last_click_time < 0.25) ? (
+                    p_base = gmem[100000]; gmem[p_base + 0] += 1; gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+                    gmem[p_base + 5] = btn_idx; gmem[p_base + 7] = 9; g_consumed = 1; last_click_time = 0; dragging = 0;
+                ) : ( 
+                    last_click_time = current_time; dragging = 1; xOld = mouse_x; valOld = slider(sl_idx); g_consumed = 1;
+                );
+            ) : (rightMouse && !lastRightMouse && !g_consumed && current_page != 0) ? (
+                p_base = gmem[100000]; gmem[p_base + 0] += 1; gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+                gmem[p_base + 5] = btn_idx; gmem[p_base + 7] = altDown ? 6 : (shiftDown ? 10 : (ctrlDown ? 2 : 1)); g_consumed = 1; 
+            );
+        );   
+
+        dragging ? (
+            current_dragging = 1;
+            leftMouse ? (
+                (lastLeftMouse) ? g_consumed = 1; gmem[base + 1] = btn_idx; mouse_diff = mouse_x - xOld; 
+                abs(mouse_diff) > 0 ? (
+                     step = ctrlDown ? (0.004 * global_mouse_std * fine_mult) : (0.03 * global_mouse_std);
+                     valOld = max(0, min(1, valOld + (mouse_diff * step)));
+                     
+                     (div_val > 0) ? (
+                         actual_v = floor(valOld * div_val + 0.5) / div_val;
+                         slider(sl_idx) = actual_v; gmem[addr_v] = actual_v;
+                     ) : (
+                         slider(sl_idx) = valOld; gmem[addr_v] = valOld;
+                     );
+                     
+                     sl_idx > 0 ? slider_automate(2^(sl_idx-1));
+                     xOld = mouse_x;
+                );
+            ) : ( dragging = 0; gmem[base + 1] = 0; );
+        );
+        
+        (!dragging && sl_idx > 0 && slot_valid == 1) ? ( 
+            slider(sl_idx) = gmem[addr_v]; 
+            slider_last[sl_idx] = gmem[addr_v]; 
+        );
+    ); 
+
+
+    // Gaphics....................................................................................
+    col_idx = this_status % 100;
+    col_idx >= 4  && col_idx <= 6  ? ( c_r = 0.0; c_g = 0.5; c_b = 1.0; ) : // Blue
+    col_idx >= 7  && col_idx <= 9  ? ( c_r = 0.9; c_g = 0.1; c_b = 0.1; ) : // Red
+    col_idx >= 10 && col_idx <= 12 ? ( c_r = 0.9; c_g = 0.8; c_b = 0.0; ) : // Yellow
+    col_idx >= 13 && col_idx <= 15 ? ( c_r = 0.8; c_g = 0.8; c_b = 0.8; ) : // White
+    col_idx >= 16 && col_idx <= 18 ? ( c_r = 0.4; c_g = 0.4; c_b = 0.4; ) : // Grey
+                                     ( c_r = 0.0; c_g = 0.8; c_b = 0.0; );  // DEFAULT Green
+
+    gfx_set(0, 0, 0, 0.8 * g_sec_a); gfx_rect(xIn, yIn, widthIn, heightIn, 1); 
+    gfx_set(1, 1, 1, 0.15 * g_sec_a); gfx_rect(xIn, yIn, widthIn, heightIn, 0); 
+    
+    v_val = max(0, min(1, gmem[addr_v])); 
+    fill_w = v_val * (widthIn - 4); 
+    
+    gfx_set(c_r, c_g, c_b, this_alpha * 0.85); 
+    gfx_rect(xIn + 1, yIn + 1, fill_w, heightIn - 2, 1);
+    
+    gfx_set(1, 1, 1, this_alpha * 0.20); 
+    gfx_rect(xIn + 1, yIn + 1, fill_w, floor((heightIn - 2) * .4), 1);
+
+    // TEKST
+    final_n = strlen(str_slot) > 0 ? str_slot : sprintf(#id_txt, "ID:%d", btn_idx);
+    strcpy(#draw_str, final_n);
+
+    (dragging || (is_over && was_dragging == 0)) ? (
+        v_raw = gmem[addr_d]; 
+        (v_raw > 1000000) ? (
+            v_id = floor(v_raw); #disp_val = ""; decode_to_str(v_id, #disp_val);
+        ) : (
+            strcpy(#unit, get_unit_str(this_unit_id)); 
+            abs_v = abs(v_raw);
+            (abs_v >= 1000) ? (
+                v_raw /= 1000; abs_v /= 1000;
+                (this_unit_id == 1) ? strcpy(#unit, "kHz") : ( 
+                    strlen(#unit) == 0 ? strcpy(#unit, "k") : ( strcpy(#tmp_u, "k"); strcat(#tmp_u, #unit); strcpy(#unit, #tmp_u); )
+                );
+            );
+            (abs_v >= 100) ? sprintf(#disp_val, "%.0f %s", v_raw, #unit) : 
+            (abs_v >= 10)  ? sprintf(#disp_val, "%.1f %s", v_raw, #unit) : 
+                             sprintf(#disp_val, "%.2f %s", v_raw, #unit);
+        );
+        
+        user_tooltips == 1 && builder_mode == 0 ? (
+            strlen(str_slot) > 0 ? ( strcpy(#global_tooltip, str_slot); strcat(#global_tooltip, ": "); strcat(#global_tooltip, #disp_val);
+            ) : ( sprintf(#global_tooltip, "ID:%d: %s", btn_idx, #disp_val); );
+            show_tooltip = 1; 
+        ) : ( 
+            strcpy(#draw_str, #disp_val); 
+        );
+    );
+
+    // read anchor and alignment from table
+    elem_idx = floor((el_ptr - layout_base) / 20 + 0.5);
+    c_x = static_lbl_x[elem_idx];
+    c_y = static_lbl_y[elem_idx];
+    c_a = static_lbl_align[elem_idx];
+
+    gfx_set(1, 1, 1, text_alpha); 
+    gfx_measurestr(#draw_str, draw_tw, draw_th);
+    
+    // apply direction of text
+    el_type = el_ptr[1];
+    c_a == 1 || (c_a == 0 && el_type == 2) ? (
+        gfx_x = c_x - draw_tw;       // LEFT - anchor is on the right side
+    ) : c_a == 2 ? (
+        gfx_x = c_x;                 // RIGHT - anchor is on the left
+    ) : (
+        gfx_x = c_x - (draw_tw / 2); // MID - upper an lower side alignment
+    );
+    
+    gfx_y = c_y; 
+    gfx_drawstr(#draw_str);
+
+    // .........................................................................
+    // SAVE STATE (draw group in normal mode)
+
+    state_ptr[0] = dragging; 
+    state_ptr[3] = last_click_time; 
+    state_ptr[4] = l_seq; 
+    state_ptr[7] = init_done;
+
+    builder_mode == 0 ? (
+        grp_val = grp_buf[btn_idx];
+        (grp_val > 0) ? draw_group_indicator(xIn + widthIn + 6 * UI_EFF_SCALE, yIn + ((heightIn-2) * 0.5), grp_val);
+        
+        state_ptr[1] = xOld; 
+        state_ptr[2] = valOld; 
+    );
+);
+
+
+// ..............................................................................
+function switch_dynamic(el_ptr, sl_idx, btn_idx, addr_v, addr_lock, addr_n, addr_d, addr_s) 
+local(state_ptr, dragging, last_click_time, builder_start_x, builder_start_y, raw_x, raw_y, grid, str_slot, widthIn, heightIn, is_over, cur_seq, cur_name_code, raw_status, this_status, is_linked, this_alpha, text_alpha, v_val, builder_mode, final_n, draw_tw, draw_th, c_x, c_y, elem_idx, el_x, el_y, xIn, yIn, target_w, target_h, l_seq, init_done, is_dimmer, eff_sec_a, img_w, img_h, src_frame_h, frame_idx, color_val, img_idx, grp_val, c_a, el_type) 
+(
+    // read coordinates and state
+    target_w = el_ptr[5] > 0 ? el_ptr[5] : 32;
+    target_h = el_ptr[6] > 0 ? el_ptr[6] : 25;
+    widthIn = target_w * UI_EFF_SCALE; 
+    heightIn = target_h * UI_EFF_SCALE;
+
+    el_x = el_ptr[2]; el_y = el_ptr[3];
+    xIn = el_x * UI_EFF_SCALE; yIn = el_y * UI_EFF_SCALE + vu_y_offset;
+
+    state_ptr = el_ptr + 10; 
+    dragging = state_ptr[0];
+    last_click_time = state_ptr[3];
+    l_seq = state_ptr[4]; 
+    init_done = state_ptr[7];
+    str_slot = 200 + btn_idx;
+
+    init_done == 0 ? ( init_done = 1; l_seq = -1; last_click_time = 0; dragging = 0; );
+
+    cur_seq = gmem[base + 3]; cur_name_code = gmem[addr_n];
+    (cur_seq != l_seq) ? (
+        l_seq = cur_seq;
+        cur_name_code > 0 ? decode_to_str(cur_name_code, str_slot) : strcpy(str_slot, "");
+    );
+
+    v_val = gmem[addr_v]; raw_status = gmem[addr_s];
+    this_status = raw_status % 1000; is_linked = this_status >= 100;
+
+    color_val = this_status % 100;
+    img_idx = (color_val == 2) ? 58 : 
+              (color_val == 3) ? 59 : 
+              (color_val == 4) ? 60 : 
+              (color_val == 5) ? 61 :
+              (color_val == 6) ? 62 :
+              (color_val == 7) ? 63 :
+              (color_val == 8) ? 64 :
+              (color_val == 9) ? 65 : 29; // 29 default
+
+    is_dimmer = el_ptr[9];
+    eff_sec_a = (is_dimmer == 1) ? 1.0 : g_sec_a; 
+
+    this_alpha = (is_linked ? 1.0 : g_dim_sw) * eff_sec_a;
+    is_over = gmem[p_base + 206] ? 0 : (
+        mouse_y > (100 * UI_EFF_SCALE + vu_y_offset_base) && 
+        mouse_x > xIn && mouse_x < xIn + widthIn && 
+        mouse_y > yIn && mouse_y < yIn + heightIn
+    );
+
+    elem_idx = floor((el_ptr - layout_base) / 20 + 0.5);
+    builder_mode = gmem[base + 428];
+
+
+    // Mouse interaction
+    builder_mode == 1 ? (
+        //  LAYOUT BUILDER MODE
+        (leftMouse && !lastLeftMouse && builder_drag_target == elem_idx) ? (
+            ((time_precise() - last_click_time < 0.25 || altDown) && builder_drag_mode == 2) ? (
+                el_ptr[15] = 0; el_ptr[16] = 0; 
+                last_click_time = 0; dragging = 0;
+                force_text_recalc = 1;
+            ) : (
+                last_click_time = time_precise(); dragging = 1;
+                builder_drag_mode == 1 ? (
+                    state_ptr[1] = (mouse_x / UI_EFF_SCALE) - el_ptr[2];
+                    state_ptr[2] = ((mouse_y - vu_y_offset) / UI_EFF_SCALE) - el_ptr[3];
+                    builder_start_x = el_ptr[2]; builder_start_y = el_ptr[3];
+                ) : (
+                    state_ptr[1] = (mouse_x / UI_EFF_SCALE) - el_ptr[15];
+                    state_ptr[2] = ((mouse_y - vu_y_offset) / UI_EFF_SCALE) - el_ptr[16];
+                    builder_start_x = el_ptr[15]; builder_start_y = el_ptr[16];
+                );
+            );
+        );
+        (!leftMouse) ? dragging = 0;
+
+        dragging == 1 ? (
+            current_dragging = 1; grid = builder_grid;
+            force_text_recalc = 1;
+            raw_x = (mouse_x / UI_EFF_SCALE) - state_ptr[1];
+            raw_y = ((mouse_y - vu_y_offset) / UI_EFF_SCALE) - state_ptr[2];
+
+            ctrlDown ? (
+                abs(raw_x - builder_start_x) > abs(raw_y - builder_start_y) ? raw_y = builder_start_y : raw_x = builder_start_x; 
+            );
+
+            builder_drag_mode == 1 ? (
+                el_ptr[2] = floor(raw_x / grid + 0.5) * grid;
+                el_ptr[3] = floor(raw_y / grid + 0.5) * grid;
+                xIn = el_ptr[2] * UI_EFF_SCALE; yIn = el_ptr[3] * UI_EFF_SCALE + vu_y_offset;
+            ) : (
+                el_ptr[15] = floor(raw_x / grid + 0.5) * grid;
+                el_ptr[16] = floor(raw_y / grid + 0.5) * grid;
+            );
+        );
+    ) : (
+        // NORMAL (Play) MODE
+        (is_over) ? (
+            (leftMouse) ? (
+                (!lastLeftMouse) ? (
+                    gmem[base + 1] = btn_idx; v_val = (v_val < 0.5) ? 1 : 0; gmem[addr_v] = v_val;
+                    sl_idx > 0 ? ( slider(sl_idx) = v_val; slider_automate(2^(sl_idx-1)); );
+                );
+            ) : (rightMouse && !lastRightMouse && !g_consumed && current_page != 0) ? (
+                p_base = gmem[100000]; gmem[p_base + 0] += 1; gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+                gmem[p_base + 5] = btn_idx; 
+                gmem[p_base + 7] = altDown ? 6 : (shiftDown ? 10 : (ctrlDown ? 2 : 1)); 
+                g_consumed = 1; 
+            );
+        );
+        (!leftMouse && gmem[base + 1] == btn_idx) ? ( gmem[base + 1] = 0; );
+        // Mirror GMEM -> slider every frame (same as knobs), so the slider never goes stale
+        // and a JSFX reload (theme change) cannot push an outdated switch value back.
+        (sl_idx > 0 && slot_valid == 1) ? (
+            slider(sl_idx) = gmem[addr_v];
+            slider_last[sl_idx] = gmem[addr_v];
+        );
+    );
+
+    // ......................................................................
+    // Graphics
+
+    gfx_getimgdim(img_idx, img_w, img_h);
+
+    (img_w > 0 && img_h > 0) ? (
+        src_frame_h = floor(img_h / 2); 
+        frame_idx = (v_val > 0.5) ? 0 : 1; 
+
+        gfx_a = this_alpha;
+        gfx_blit(img_idx, 1, 0, 
+                 0, frame_idx * src_frame_h, 
+                 img_w, src_frame_h,          
+                 xIn, yIn, widthIn, heightIn);
+    ) : (
+        gfx_a = this_alpha; 
+        gfx_blit(img_idx, 1, 0, 0, 0, 32, 25, xIn, yIn, widthIn, heightIn);
+    );
+
+    
+    // Additive Blending Hover effect
+    (is_over && was_dragging == 0) ? ( 
+        gfx_mode = 1;
+        gfx_a = 0.25 * g_sec_a; // intensity...
+        
+        gfx_blit(img_idx, 1, 0, 
+                 0, frame_idx * src_frame_h, 
+                 img_w, src_frame_h,          
+                 xIn, yIn, widthIn, heightIn);
+                 
+        gfx_mode = 0; // reset!
+    );
+    
+// Text (Smart Anchors)
+    final_n = strlen(str_slot) > 0 ? str_slot : sprintf(#id_t, "ID:%d", btn_idx);
+    strcpy(#draw_str, final_n);
+    text_alpha = (is_linked ? g_dim_txt_link : g_dim_txt) * eff_sec_a;
+
+    // Show tooltip or value on hover
+    (dragging || (is_over && was_dragging == 0)) ? (
+        strcpy(#disp_val, v_val > 0.5 ? "ON" : "OFF");
+        
+        user_tooltips == 1 && builder_mode == 0 ? (
+            strcpy(#global_tooltip, final_n); 
+            strcat(#global_tooltip, ": "); 
+            strcat(#global_tooltip, #disp_val);
+            show_tooltip = 1; 
+        ) : ( 
+            strcpy(#draw_str, #disp_val); 
+        );
+    );
+
+    // read anchor and alignmentE
+    c_x = static_lbl_x[elem_idx];
+    c_y = static_lbl_y[elem_idx];
+    c_a = static_lbl_align[elem_idx];
+
+    gfx_set(1, 1, 1, text_alpha); 
+    gfx_measurestr(#draw_str, draw_tw, draw_th);
+
+    //aplly direction of txt...
+    el_type = el_ptr[1];
+    c_a == 1 || (c_a == 0 && el_type == 2) ? (
+        gfx_x = c_x - draw_tw;       // letf
+    ) : c_a == 2 ? (
+        gfx_x = c_x;                 // right
+    ) : (
+        gfx_x = c_x - (draw_tw / 2); // mid
+    );
+    
+    gfx_y = c_y; 
+    gfx_drawstr(#draw_str);
+
+    // .........................................................................
+    // SAVE STATE
+
+    state_ptr[0] = dragging;
+    state_ptr[3] = last_click_time;
+    state_ptr[4] = l_seq; 
+    state_ptr[7] = init_done;
+
+    builder_mode == 0 ? (
+        grp_val = grp_buf[btn_idx];
+        (grp_val > 0) ? draw_group_indicator(xIn + widthIn + 6 * UI_EFF_SCALE, yIn + ((heightIn - 2) * 0.5), grp_val);
+    );
+    
+    (sl_idx > 0 && slot_valid == 1) ? (
+        slider(sl_idx) = gmem[addr_v];
+        slider_last[sl_idx] = gmem[addr_v];
+    );
+
+);
+
+
+
+// AUTO GAIN HOLD LOCK .................................................................
+
+function ag_lock_button(xIn, yIn) 
+
+local(addr_ag, addr_hold, ag_on, hold_on, is_over, img_w, img_h)
+
+instance(widthIn, heightIn)
+(
+    addr_ag = base + 78;
+    addr_hold = base + 79;
+    ag_on = gmem[addr_ag];
+
+
+    // Draw when active!
+    (ag_on > 0.5) ? (
+        hold_on = gmem[addr_hold];
+        widthIn = 17 * UI_EFF_SCALE;
+        heightIn = 17 * UI_EFF_SCALE;
+
+        this.rectIn(xIn, yIn, widthIn, heightIn);
+        is_over = this.collision();
+
+
+        // Tooltip
+        (is_over && was_dragging == 0) ? (
+            strcpy(#global_tooltip, hold_on ? "AG: Frozen" : "AG: Learning");
+            show_tooltip = 1;
+        );
+
+        // Click
+        (is_over && leftMouse && !lastLeftMouse) ? (
+            gmem[addr_hold] = (hold_on == 0) ? 1 : 0;
+            slider(12) = gmem[addr_hold];
+            slider_automate(2^11);
+            g_consumed = 1;
+        );
+
+ 
+        // Hover bg
+        (is_over && was_dragging == 0) ? (
+            gfx_set(1, 1, 1, 0.15 * g_sec_a);
+            gfx_rect(xIn - 2*UI_EFF_SCALE, yIn - 2*UI_EFF_SCALE, widthIn + 4*UI_EFF_SCALE, heightIn + 4*UI_EFF_SCALE, 1);
+        );
+        
+
+        // PNG graphics
+        gfx_a = (hold_on ? 1.0 : 0.3) * g_sec_a;
+        gfx_getimgdim(26, img_w, img_h);
+        gfx_blit(26, 1, 0, 0, 0, img_w, img_h, xIn-UI_EFF_SCALE, yIn, widthIn, heightIn);
+    );
+
+    slider(12) = gmem[addr_hold];
+    slider_last[12] = gmem[addr_hold];
+);
+
+
+// OVR POWER LED .................................................................
+
+function ovr_power_led(xIn, yIn, btn_idx, sec_name) 
+local(addr_v, addr_s, this_status, is_linked, this_alpha, is_over, v_val, sl_idx) 
+instance (widthIn, heightIn, init_done, last_click_time) 
+
+(
+     sl_idx = get_sl_idx(btn_idx);
+     
+     // hover effect (15x15 px converted)
+     widthIn = 22.5 * UI_EFF_SCALE; 
+     heightIn = 22.5 * UI_EFF_SCALE;
+
+     
+     this.rectIn(xIn - widthIn/2 + 1.5*UI_EFF_SCALE, yIn - heightIn/2 + 1.5*UI_EFF_SCALE, widthIn, heightIn); 
+
+     init_done == 0 ? ( init_done = 1; );
+
+
+     addr_v = base + 11  + (btn_idx - 1);
+     addr_s = base + 150 + (btn_idx - 1); 
+
+     v_val = gmem[addr_v]; 
+     raw_status = gmem[addr_s];
+     this_status = raw_status % 1000;
+     is_linked = this_status >= 100;
+
+     // AUTO GAIN - exlusively for AG (Id 68) - doesn't have status
+     is_linked = (this_status >= 100 || btn_idx == 68);
+         
+
+     // GLOBAL ALPHA
+     this_alpha = (is_linked ? 1.0 : 0.2) * g_sec_a;
+
+    
+     is_over = this.collision();
+
+     // TOOLTIP
+     (is_over && was_dragging == 0) ? (
+         strcpy(#global_tooltip, sec_name);
+         strcat(#global_tooltip, v_val > 0.5 ? ": ON" : ": OFF");
+         show_tooltip = 1; 
+     );
+
+
+    // CLICKS
+    (is_over) ? (
+         (leftMouse) ? (
+             (!lastLeftMouse) ? (
+                 (btn_idx == 68) ? (
+                     // Send CMD 22 to Lua to validate Auto Gain logic
+                     p_base = gmem[100000];
+                     gmem[p_base + 0] += 1;
+                     gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+                     gmem[p_base + 5] = btn_idx;
+                     gmem[p_base + 7] = 22; // CMD 22
+                     g_consumed = 1;
+                     
+
+                     // Toggle local status for immediate UI feedback + MIDI Learn
+                     gmem[base + 1] = btn_idx; 
+                     v_val = (v_val < 0.5) ? 1 : 0;
+                     gmem[addr_v] = v_val;
+
+                     sl_idx > 0 ? (
+                         slider(sl_idx) = v_val;
+                         slider_automate(2^(sl_idx-1));
+                     );
+                 ) : (
+
+                     // Normal toggle for EQ, DYN, FX
+                     gmem[base + 1] = btn_idx; 
+                     v_val = (v_val < 0.5) ? 1 : 0;
+                     gmem[addr_v] = v_val;
+                     sl_idx > 0 ? (
+                         slider(sl_idx) = v_val;
+                         slider_automate(2^(sl_idx-1));
+                     );
+                 );
+             );
+         ) : (rightMouse && !lastRightMouse && !g_consumed) ? (
+             g_consumed = 1;
+         );
+     );
+
+     (!leftMouse && gmem[base + 1] == btn_idx) ? ( gmem[base + 1] = 0; );
+
+
+
+     // DRAW HOVER
+
+     (is_over && was_dragging == 0) ? (
+       gfx_set(1, 1, 1, 0.15 * g_sec_a);
+       gfx_circle(xIn, yIn, 9 * UI_EFF_SCALE, 1);
+     );
+
+     
+     // DRAW LED BACKGROUND
+     //gfx_set(0, 0, 0, 0.4 * this_alpha);
+     //gfx_circle(xIn, yIn, 4.5*UI_EFF_SCALE, 1);
+
+     v_val > 0.5 ? (
+       // RED for AG freeze
+       (btn_idx == 68 && gmem[base + 79] == 1) ? (
+           gfx_set(1, 0, 0, this_alpha * 0.2); 
+           gfx_circle(xIn, yIn, 6*UI_EFF_SCALE, 1);
+           gfx_set(1, 0.2, 0.2, this_alpha); 
+           gfx_circle(xIn, yIn, 3*UI_EFF_SCALE, 1);
+       ) : (
+           // Green for AG (not frozen)
+           gfx_set(1, 1, 0, this_alpha * 0.2); 
+           gfx_circle(xIn, yIn, 6*UI_EFF_SCALE, 1);
+           gfx_set(0, 1, 0, this_alpha); 
+           gfx_circle(xIn, yIn, 3*UI_EFF_SCALE, 1);
+       );
+     );
+
+     
+     (sl_idx > 0 && slot_valid == 1) ? (
+         slider(sl_idx) = gmem[addr_v];
+         slider_last[sl_idx] = gmem[addr_v];
+     );
+);
+
+
+// KNOB ...................................................................
+function knob_dynamic(el_ptr, p_size, sl_idx, btn_idx, addr_v, addr_l, addr_n, addr_d, addr_s, target_size) 
+local(state_ptr, dragging, yOld, valOld, last_click_time, l_seq, init_done, steps_cache, widthIn, heightIn, is_over, cur_seq, cur_name_code, raw_status, unit_id, this_status, l_img, is_linked, img_idx, this_alpha, text_alpha, div_val, step, new_val, mouse_diff, sens, actual_v, kframe, final_n, v_raw, v_id, abs_v, str_slot, el_x, el_y, xIn, yIn, raw_x, raw_y, grid, builder_mode, elem_idx, c_x, c_y, draw_tw, draw_th, c_a, el_type) 
+(
+  target_size == 0 ? target_size = p_size;
+  widthIn = target_size * UI_EFF_SCALE;
+  heightIn = target_size * UI_EFF_SCALE;
+
+  // read coordinates and state
+  el_x = el_ptr[2];
+  el_y = el_ptr[3];
+  xIn = el_x * UI_EFF_SCALE;
+  yIn = el_y * UI_EFF_SCALE + vu_y_offset;
+
+  state_ptr       = el_ptr + 10;
+  dragging        = state_ptr[0];
+  yOld            = state_ptr[1];
+  valOld          = state_ptr[2];
+  last_click_time = state_ptr[3];
+  l_seq           = state_ptr[4];
+  init_done       = state_ptr[7];
+
+  init_done == 0 ? ( init_done = 1; last_click_time = 0; l_seq = -1; );
+
+  is_over = gmem[p_base + 206] ? 0 : (
+    mouse_y > (100 * UI_EFF_SCALE + vu_y_offset_base) &&
+    mouse_x > xIn && mouse_x < xIn + widthIn &&
+    mouse_y > yIn && mouse_y < yIn + heightIn
+  );
+  
+  ext_steps_base = gmem[100000] + 60000 + (slider2 * 100);
+  steps_cache = gmem[ext_steps_base + (btn_idx - 1)]; 
+
+  raw_status = gmem[addr_s];
+  unit_id = floor(raw_status / 1000);
+  this_status = raw_status % 1000;
+  
+  color_val = this_status % 100;
+  img_idx = img_map[color_val]; 
+  is_linked = (this_status >= 100);
+
+  cur_seq = gmem[base + 3];
+  cur_name_code = gmem[addr_n];
+  str_slot = 200 + btn_idx; 
+  
+  (cur_seq != l_seq) ? (
+    l_seq = cur_seq;
+    cur_name_code > 0 ? ( decode_to_str(cur_name_code, str_slot);
+    ) : ( !is_linked ? strcpy(str_slot, ""); );
+  ); 
+  
+  this_alpha = ((dragging || is_over) ? 1.0 : (is_linked ? 1.0 : g_dim_knob)) * g_sec_a;
+  text_alpha = (is_linked ? g_dim_txt_link : g_dim_txt) * g_sec_a;
+  div_val = (steps_cache > 1) ? (steps_cache - 1) : 0;
+  
+  elem_idx = floor((el_ptr - layout_base) / 20 + 0.5);
+  builder_mode = gmem[base + 428];
+
+  // .........................................................................
+  // Mouse interact ... combined for builder & "normal"
+  
+  builder_mode == 1 ? (
+      // LAYOUT BUILDER MODE
+      (leftMouse && !lastLeftMouse && builder_drag_target == elem_idx) ? (
+          ((time_precise() - last_click_time < 0.25 || altDown) && builder_drag_mode == 2) ? (
+              el_ptr[15] = 0; el_ptr[16] = 0; // Reset offset (DX/DY)
+              last_click_time = 0; dragging = 0;
+              force_text_recalc = 1;
+          ) : (
+              last_click_time = time_precise(); dragging = 1;
+              builder_drag_mode == 1 ? (
+                  state_ptr[1] = (mouse_x / UI_EFF_SCALE) - el_ptr[2];
+                  state_ptr[2] = ((mouse_y - vu_y_offset) / UI_EFF_SCALE) - el_ptr[3];
+                  builder_start_x = el_ptr[2]; builder_start_y = el_ptr[3];
+              ) : (
+                  state_ptr[1] = (mouse_x / UI_EFF_SCALE) - el_ptr[15];
+                  state_ptr[2] = ((mouse_y - vu_y_offset) / UI_EFF_SCALE) - el_ptr[16];
+                  builder_start_x = el_ptr[15]; builder_start_y = el_ptr[16];
+              );
+          );
+      );
+      (!leftMouse) ? dragging = 0;
+      
+      dragging == 1 ? (
+          current_dragging = 1; grid = builder_grid;
+          force_text_recalc = 1;
+          
+          raw_x = (mouse_x / UI_EFF_SCALE) - state_ptr[1];
+          raw_y = ((mouse_y - vu_y_offset) / UI_EFF_SCALE) - state_ptr[2];
+          
+          ctrlDown ? (
+              abs(raw_x - builder_start_x) > abs(raw_y - builder_start_y) ? raw_y = builder_start_y : raw_x = builder_start_x; 
+          );
+          
+          builder_drag_mode == 1 ? (
+              el_ptr[2] = floor(raw_x / grid + 0.5) * grid;
+              el_ptr[3] = floor(raw_y / grid + 0.5) * grid;
+              xIn = el_ptr[2] * UI_EFF_SCALE; yIn = el_ptr[3] * UI_EFF_SCALE + vu_y_offset;
+          ) : (
+              el_ptr[15] = floor(raw_x / grid + 0.5) * grid;
+              el_ptr[16] = floor(raw_y / grid + 0.5) * grid;
+          );
+      );
+  ) : (
+      // Normal mode
+      (is_over && mouse_wheel != 0) ? (
+          step = (div_val > 0) ? (1 / div_val) : (ctrlDown ? (0.001 * global_mouse_std * fine_mult) : (0.01 * global_mouse_std));
+          slider(sl_idx) = max(0, min(1, slider(sl_idx) + (mouse_wheel > 0 ? step : -step)));
+          gmem[addr_v] = slider(sl_idx); gmem[addr_l] = btn_idx;
+          mouse_wheel = 0; g_consumed = 1;
+      );
+
+      (is_over && !lastLeftMouse) ? (
+          leftMouse ? (
+              (time_precise() - last_click_time < 0.25) ? (
+                  p_base = gmem[100000]; gmem[p_base + 0] += 1; gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+                  gmem[p_base + 5] = btn_idx; gmem[p_base + 7] = 9; g_consumed = 1;
+                  last_click_time = 0; dragging = 0;
+              ) : (
+                  last_click_time = time_precise(); dragging = 1; yOld = mouse_y; valOld = slider(sl_idx); g_consumed = 1;
+              ); 
+          ) : (rightMouse && !lastRightMouse && !g_consumed && current_page != 0) ? (
+              p_base = gmem[100000]; gmem[p_base + 0] += 1; gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+              gmem[p_base + 5] = btn_idx; gmem[p_base + 7] = altDown ? 6 : (shiftDown ? 10 : (ctrlDown ? 2 : 1)); 
+              g_consumed = 1; 
+          );
+      );
+      
+      dragging ? (
+        current_dragging = 1;
+        leftMouse ? (
+            (lastLeftMouse) ? g_consumed = 1;
+            gmem[addr_l] = btn_idx;
+            mouse_diff = yOld - mouse_y;
+            abs(mouse_diff) > 0 ? (
+                sens = ctrlDown ? (0.0004 * global_mouse_std * fine_mult) : (0.004 * global_mouse_std);
+                valOld = max(0, min(1, valOld + (mouse_diff * sens)));
+                yOld = mouse_y;
+                (div_val > 0) ? (
+                    actual_v = floor(valOld * div_val + 0.5) / div_val;
+                    slider(sl_idx) = actual_v; gmem[addr_v] = actual_v;
+                ) : (
+                    slider(sl_idx) = valOld; gmem[addr_v] = valOld;
+                );
+            );
+        ) : ( dragging = 0; gmem[addr_l] = 0; );
+      );
+      
+      (!dragging && slot_valid == 1) ? ( 
+          slider(sl_idx) = gmem[addr_v]; 
+          slider_last[sl_idx] = gmem[addr_v];
+      );
+  );
+
+  // ............................................................................
+  // Graphics
+
+  gfx_x = xIn; gfx_y = yIn; gfx_a = this_alpha;
+  kframe = floor(slider(sl_idx) * 50);
+  
+  // Glavni izris gumba
+  gfx_blit(img_idx, 1, 0, 0, kframe * p_size, p_size, p_size, xIn, yIn, widthIn, heightIn);
+
+  // Additive Blending Hover (Popolna rešitev brez utripanja)
+  (((is_over && (was_dragging == 0 || !leftMouse)) || dragging) && builder_mode == 0) ? (
+      gfx_mode = 1;
+      gfx_a = 0.25 * g_sec_a; // intensity
+      gfx_blit(img_idx, 1, 0, 0, kframe * p_size, p_size, p_size, xIn, yIn, widthIn, heightIn);
+      gfx_mode = 0; // reset!
+  );
+  
+  final_n = strlen(str_slot) > 0 ? str_slot : sprintf(#id_txt, "ID:%d", btn_idx);
+  strcpy(#draw_str, final_n);
+
+  (dragging || (is_over && was_dragging == 0)) ? (
+      v_raw = gmem[addr_d]; 
+      (v_raw > 1000000) ? (
+          v_id = floor(v_raw); #disp_val = ""; decode_to_str(v_id, #disp_val);
+      ) : (
+          strcpy(#unit, get_unit_str(unit_id)); abs_v = abs(v_raw);
+          (abs_v >= 1000) ? (
+              v_raw /= 1000; abs_v /= 1000;
+              (unit_id == 1) ? strcpy(#unit, "kHz") : (
+                  strlen(#unit) == 0 ? strcpy(#unit, "k") : ( strcpy(#tmp_u, "k"); strcat(#tmp_u, #unit); strcpy(#unit, #tmp_u); );
+              );
+          );
+          (abs_v >= 100) ? sprintf(#disp_val, "%.0f %s", v_raw, #unit) :
+          (abs_v >= 10)  ? sprintf(#disp_val, "%.1f %s", v_raw, #unit) : sprintf(#disp_val, "%.2f %s", v_raw, #unit);
+      );
+
+      user_tooltips == 1 && builder_mode == 0 ? (
+          strlen(str_slot) > 0 ? ( strcpy(#global_tooltip, str_slot); strcat(#global_tooltip, ": "); strcat(#global_tooltip, #disp_val);
+          ) : ( sprintf(#global_tooltip, "ID:%d: %s", btn_idx, #disp_val); );
+          show_tooltip = 1; 
+      ) : ( 
+          strcpy(#draw_str, #disp_val); 
+      );
+  );
+
+  // read anchor and alignment
+  elem_idx = floor((el_ptr - layout_base) / 20 + 0.5);
+  c_x = static_lbl_x[elem_idx];
+  c_y = static_lbl_y[elem_idx];
+  c_a = static_lbl_align[elem_idx];
+
+  gfx_set(1, 1, 1, text_alpha); 
+  gfx_measurestr(#draw_str, draw_tw, draw_th);
+  
+  // aplly direction logic...
+  el_type = el_ptr[1];
+  c_a == 1 || (c_a == 0 && el_type == 2) ? (
+      gfx_x = c_x - draw_tw;       // left
+  ) : c_a == 2 ? (
+      gfx_x = c_x;                 // right
+  ) : (
+      gfx_x = c_x - (draw_tw / 2); // mid
+  );
+  
+  gfx_y = c_y; 
+  gfx_drawstr(#draw_str);
+
+  // ..........................................................................
+  // SAVE (draw grupe only in mnormal mode)
+
+  state_ptr[0] = dragging;
+  state_ptr[3] = last_click_time;
+  state_ptr[4] = l_seq;
+  state_ptr[7] = init_done;
+
+  builder_mode == 0 ? (
+      grp_val = grp_buf[btn_idx];
+      (grp_val > 0) ? draw_group_indicator(xIn + widthIn - 4*UI_EFF_SCALE, yIn + 4*UI_EFF_SCALE, grp_val);
+      
+      // preserve mouse anchor  (yOld in valOld), when not in Builder
+      state_ptr[1] = yOld;
+      state_ptr[2] = valOld;
+  );
+);
+
+
+
+function selector(el_ptr, xIn, yIn, p_size, sl_idx, btn_idx, addr_v, addr_l, addr_n, addr_d, addr_s) 
+local(cur_seq, cur_name_code, raw_status, is_linked, text_alpha, builder_mode, step_amt, new_val, p_base, click_i, img_idx, active_i, i, btn_x, is_active, btn_x_left, pressed_l, btn_x_right, pressed_r, final_n, this_unit_id, v_id, abs_v, is_stepper, num_steps, cur_step, next_step, px_x, px_y, px_w15, px_w18, px_press, custom_steps, state_ptr, raw_x, raw_y, grid, elem_idx, c_x, c_y, draw_tw, draw_th, grp_val, dragging, is_over, str_slot, l_seq, init_done, widthIn, heightIn, steps_cache, v_raw, last_click_time, active_btns, c_a, el_type, ext_steps_base) 
+(
+  // coor and state
+  xIn = el_ptr[2] * UI_EFF_SCALE;
+  yIn = el_ptr[3] * UI_EFF_SCALE + vu_y_offset;
+  
+  custom_steps = el_ptr[7];
+  (custom_steps >= 2 && custom_steps <= 20) ? (
+    steps_cache = custom_steps;
+  ) : (
+    ext_steps_base = gmem[100000] + 60000 + (slider2 * 100);
+    steps_cache = gmem[ext_steps_base + (btn_idx - 1)]; 
+  );
+
+  active_btns = (steps_cache >= 2 && steps_cache <= 6) ? steps_cache : 2;
+  widthIn = active_btns * 15 * UI_EFF_SCALE;
+  heightIn = 18 * UI_EFF_SCALE;
+
+  state_ptr = el_ptr + 10;
+  dragging = state_ptr[0];
+  last_click_time = state_ptr[3];
+  l_seq = state_ptr[4];
+  init_done = state_ptr[7];
+
+  init_done == 0 ? ( 
+    init_done = 1; last_click_time = 0; dragging = 0; l_seq = -1;
+  ); 
+  
+  is_over = gmem[p_base + 206] ? 0 : (
+    mouse_y > (100 * UI_EFF_SCALE + vu_y_offset_base) && 
+    mouse_x > xIn && mouse_x < xIn + widthIn && 
+    mouse_y > yIn && mouse_y < yIn + heightIn
+  );
+  
+  v_raw = gmem[addr_d];
+  raw_status = gmem[addr_s];
+  is_linked = ((raw_status % 1000) >= 100);
+
+  cur_seq = gmem[base + 3];
+  cur_name_code = gmem[addr_n];
+  str_slot = 200 + btn_idx;
+
+  (cur_seq != l_seq) ? ( 
+      l_seq = cur_seq; 
+      cur_name_code > 0 ? decode_to_str(cur_name_code, str_slot) : (!is_linked ? strcpy(str_slot, "") : 0); 
+  ); 
+
+  text_alpha = (is_linked ? g_dim_txt_link : g_dim_txt) * g_sec_a; 
+
+  elem_idx = floor((el_ptr - layout_base) / 20 + 0.5);
+  builder_mode = gmem[base + 428];
+
+  // ..........................................................................
+  // Mouse interact
+
+  builder_mode == 1 ? (
+      // LAYOUT BUILDER MODE
+      (leftMouse && !lastLeftMouse && builder_drag_target == elem_idx) ? (
+          ((time_precise() - last_click_time < 0.25 || altDown) && builder_drag_mode == 2) ? (
+              el_ptr[15] = 0; el_ptr[16] = 0; 
+              last_click_time = 0; dragging = 0;
+              force_text_recalc = 1;
+          ) : (
+              last_click_time = time_precise(); dragging = 1;
+              builder_drag_mode == 1 ? (
+                  state_ptr[1] = (mouse_x / UI_EFF_SCALE) - el_ptr[2];
+                  state_ptr[2] = ((mouse_y - vu_y_offset) / UI_EFF_SCALE) - el_ptr[3];
+                  builder_start_x = el_ptr[2]; builder_start_y = el_ptr[3];
+              ) : (
+                  state_ptr[1] = (mouse_x / UI_EFF_SCALE) - el_ptr[15];
+                  state_ptr[2] = ((mouse_y - vu_y_offset) / UI_EFF_SCALE) - el_ptr[16];
+                  builder_start_x = el_ptr[15]; builder_start_y = el_ptr[16];
+              );
+          );
+      );
+      (!leftMouse) ? dragging = 0;
+      
+      dragging == 1 ? (
+          current_dragging = 1; grid = builder_grid;
+          force_text_recalc = 1;
+          raw_x = (mouse_x / UI_EFF_SCALE) - state_ptr[1];
+          raw_y = ((mouse_y - vu_y_offset) / UI_EFF_SCALE) - state_ptr[2];
+          
+          ctrlDown ? (
+              abs(raw_x - builder_start_x) > abs(raw_y - builder_start_y) ? raw_y = builder_start_y : raw_x = builder_start_x; 
+          );
+          
+          builder_drag_mode == 1 ? (
+              el_ptr[2] = floor(raw_x / grid + 0.5) * grid;
+              el_ptr[3] = floor(raw_y / grid + 0.5) * grid;
+              xIn = el_ptr[2] * UI_EFF_SCALE; yIn = el_ptr[3] * UI_EFF_SCALE + vu_y_offset;
+          ) : (
+              el_ptr[15] = floor(raw_x / grid + 0.5) * grid;
+              el_ptr[16] = floor(raw_y / grid + 0.5) * grid;
+          );
+      );
+  ) : (
+      // NORMAL MODE
+      num_steps = steps_cache;
+      
+      (is_over && mouse_wheel != 0) ? (
+          (num_steps > 1) ? (
+              cur_step = min(num_steps - 1, floor(slider(sl_idx) * num_steps + 0.0001));
+              next_step = max(0, min(num_steps - 1, cur_step + (mouse_wheel > 0 ? 1 : -1)));
+              new_val = next_step / (num_steps - 1);
+          ) : (
+              step_amt = shiftDown ? 0.25 : (ctrlDown ? 0.01 : 0.05);
+              new_val = max(0, min(1, slider(sl_idx) + (mouse_wheel > 0 ? step_amt : -step_amt)));
+          );
+          slider(sl_idx) = new_val; gmem[addr_v] = new_val; gmem[addr_l] = btn_idx; 
+          slider_automate(2^(sl_idx-1));
+          mouse_wheel = 0; g_consumed = 1; 
+      );
+
+      (is_over && leftMouse && !lastLeftMouse) ? (
+          (time_precise() - last_click_time < 0.25) ? (
+              p_base = gmem[100000]; gmem[p_base + 0] += 1; gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+              gmem[p_base + 5] = btn_idx; gmem[p_base + 7] = 9; g_consumed = 1; 
+              last_click_time = 0; dragging = 0;
+          ) : (
+              last_click_time = time_precise();
+              gmem[addr_l] = btn_idx;
+              
+              (num_steps >= 2 && num_steps <= 6) ? (
+                  click_i = floor((mouse_x - xIn) / (15 * UI_EFF_SCALE));
+                  (click_i >= 0 && click_i < num_steps) ? (
+                      new_val = click_i / (num_steps - 1);
+                      slider(sl_idx) = new_val; gmem[addr_v] = new_val;
+                      slider_automate(2^(sl_idx-1));
+                      g_consumed = 1;
+                  );
+              ) : (
+                  (mouse_x < xIn + 15 * UI_EFF_SCALE) ? (
+                      dragging = 1; 
+                      (num_steps > 1) ? (
+                          cur_step = min(num_steps - 1, floor(slider(sl_idx) * num_steps + 0.0001));
+                          next_step = max(0, cur_step - 1);
+                          new_val = next_step / (num_steps - 1);
+                      ) : (
+                          step_amt = shiftDown ? 0.25 : (ctrlDown ? 0.01 : 0.05);
+                          new_val = max(0, slider(sl_idx) - step_amt);
+                      );
+                      slider(sl_idx) = new_val; gmem[addr_v] = new_val;
+                      slider_automate(2^(sl_idx-1));
+                      g_consumed = 1;
+                  ) : (mouse_x >= xIn + 15 * UI_EFF_SCALE && mouse_x < xIn + 30 * UI_EFF_SCALE) ? (
+                      dragging = 2; 
+                      (num_steps > 1) ? (
+                          cur_step = min(num_steps - 1, floor(slider(sl_idx) * num_steps + 0.0001));
+                          next_step = min(num_steps - 1, cur_step + 1);
+                          new_val = next_step / (num_steps - 1);
+                      ) : (
+                          step_amt = shiftDown ? 0.25 : (ctrlDown ? 0.01 : 0.05);
+                          new_val = min(1, slider(sl_idx) + step_amt);
+                      );
+                      slider(sl_idx) = new_val; gmem[addr_v] = new_val;
+                      slider_automate(2^(sl_idx-1));
+                      g_consumed = 1;
+                  );
+              );
+          );
+      ) : (is_over && rightMouse && !lastRightMouse && !g_consumed) ? (
+          p_base = gmem[100000]; gmem[p_base + 0] += 1; gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+          gmem[p_base + 5] = btn_idx; gmem[p_base + 7] = 1; g_consumed = 1; 
+      );
+      
+      !leftMouse ? ( dragging = 0; gmem[addr_l] = 0; );
+      
+      (!dragging && slot_valid == 1) ? ( 
+          slider(sl_idx) = gmem[addr_v]; 
+          slider_last[sl_idx] = gmem[addr_v];
+      );
+  );
+
+  // ...........................................................
+  // Graphics
+  px_x = floor(xIn + 0.5); px_y = floor(yIn + 0.5);
+  px_w15 = floor(15 * UI_EFF_SCALE + 0.5); px_w18 = floor(18 * UI_EFF_SCALE + 0.5);
+  px_press = max(1, floor(3 * UI_EFF_SCALE + 0.5)); 
+
+  gfx_set(0, 0, 0, 0.8 * g_sec_a);
+  gfx_rect(px_x, px_y + 3*UI_EFF_SCALE, floor(active_btns * px_w15), px_w15 - 2*UI_EFF_SCALE, 1);
+  
+  img_idx = 23;
+  
+  (steps_cache >= 2 && steps_cache <= 6) ? (
+      active_i = floor(slider(sl_idx) * (steps_cache - 1) + 0.5);
+      i = 0;
+      while(i < steps_cache) (
+          btn_x = floor(xIn + (i * px_w15) + 0.5);
+          is_active = (i == active_i);
+          
+          is_active ? (
+              gfx_a = 0.7 * (is_linked ? 1.0 : 0.3) * g_sec_a;
+              gfx_blit(img_idx, 1, 0, 0, 0, 15, 15, btn_x + 2*UI_EFF_SCALE, px_y + px_press, px_w15, px_w15 - px_press);
+          ) : (
+              gfx_a = 1.0 * (is_linked ? 1.0 : 0.3) * g_sec_a;
+              gfx_blit(img_idx, 1, 0, 0, 0, 18, 18, btn_x, px_y, px_w18, px_w18);
+          );
+          
+          // Additive Blending Hover za posamezen korak selektorja
+          (is_over && was_dragging == 0 && mouse_x >= btn_x && mouse_x < btn_x + px_w15) ? (
+              gfx_mode = 1;
+              gfx_a = 0.25 * g_sec_a; // Moč posvetlitve
+              is_active ? (
+                  gfx_blit(img_idx, 1, 0, 0, 0, 15, 15, btn_x + 2*UI_EFF_SCALE, px_y + px_press, px_w15, px_w15 - px_press);
+              ) : (
+                  gfx_blit(img_idx, 1, 0, 0, 0, 18, 18, btn_x, px_y, px_w18, px_w18);
+              );
+              gfx_mode = 0;
+          );
+          
+          i += 1;
+      );
+  ) : (
+      btn_x_left = px_x;
+      pressed_l = (dragging == 1);
+      gfx_a = 1.0 * (is_linked ? 1.0 : 0.3) * g_sec_a;
+      
+      pressed_l ? (
+          gfx_blit(img_idx, 1, 0, 0, 0, 15, 15, btn_x_left, px_y + px_press, px_w15, px_w15 - px_press);
+          draw_text_centered(btn_x_left, px_y + max(1, floor(1 * UI_EFF_SCALE + 0.5)), 15, "<", gfx_a); 
+      ) : (
+          gfx_blit(img_idx, 1, 0, 0, 0, 18, 18, btn_x_left, px_y, px_w18, px_w18);
+          draw_text_centered(btn_x_left, px_y - max(1, floor(1 * UI_EFF_SCALE + 0.5)), 15, "<", gfx_a);
+      );
+      
+      // Additive hover left knob (<)
+      (is_over && was_dragging == 0 && mouse_x >= btn_x_left && mouse_x < btn_x_left + px_w15) ? (
+          gfx_mode = 1; gfx_a = 0.25 * g_sec_a;
+          pressed_l ? gfx_blit(img_idx, 1, 0, 0, 0, 15, 15, btn_x_left, px_y + px_press, px_w15, px_w15 - px_press) : 
+                      gfx_blit(img_idx, 1, 0, 0, 0, 18, 18, btn_x_left, px_y, px_w18, px_w18);
+          gfx_mode = 0;
+      );
+      
+      btn_x_right = floor(xIn + (15 * UI_EFF_SCALE) + 0.5);
+      pressed_r = (dragging == 2);
+      
+      gfx_a = 1.0 * (is_linked ? 1.0 : 0.3) * g_sec_a;
+      
+      pressed_r ? (
+          gfx_blit(img_idx, 1, 0, 0, 0, 15, 15, btn_x_right, px_y + px_press, px_w15, px_w15 - px_press);
+          draw_text_centered(btn_x_right + UI_EFF_SCALE, px_y + max(1, floor(1 * UI_EFF_SCALE + 0.5)), 15, ">", gfx_a);
+      ) : (
+          gfx_blit(img_idx, 1, 0, 0, 0, 18, 18, btn_x_right, px_y, px_w18, px_w18);
+          draw_text_centered(btn_x_right + UI_EFF_SCALE, px_y - max(1, floor(1 * UI_EFF_SCALE + 0.5)), 15, ">", gfx_a);
+      );
+      
+      // Additive hover right knob (>)
+      (is_over && was_dragging == 0 && mouse_x >= btn_x_right && mouse_x < btn_x_right + px_w15) ? (
+          gfx_mode = 1; gfx_a = 0.25 * g_sec_a;
+          pressed_r ? gfx_blit(img_idx, 1, 0, 0, 0, 15, 15, btn_x_right, px_y + px_press, px_w15, px_w15 - px_press) : 
+                      gfx_blit(img_idx, 1, 0, 0, 0, 18, 18, btn_x_right, px_y, px_w18, px_w18);
+          gfx_mode = 0;
+      )
+  );
+
+  //TEXT (Smart Anchors) .................................................................
+  final_n = strlen(str_slot) > 0 ? str_slot : sprintf(#id_t, "ID:%d", btn_idx); 
+  strcpy(#draw_str, final_n);
+  is_stepper = !(steps_cache >= 2 && steps_cache <= 6);
+
+  (dragging || (is_over && was_dragging == 0)) ? (
+      (v_raw > 1000000) ? (
+          v_id = floor(v_raw); #disp_val = ""; decode_to_str(v_id, #disp_val);
+      ) : (is_stepper && steps_cache > 1) ? (
+          cur_step = min(steps_cache, floor(slider(sl_idx) * (steps_cache - 1) + 0.5) + 1);
+          sprintf(#disp_val, "%d", cur_step);
+      ) : (
+          this_unit_id = floor(raw_status / 1000);
+          strcpy(#unit, get_unit_str(this_unit_id)); 
+          abs_v = abs(v_raw);
+          (abs_v >= 1000) ? (
+              v_raw /= 1000; abs_v /= 1000;
+              (this_unit_id == 1) ? strcpy(#unit, "kHz") : (
+                  strlen(#unit) == 0 ? strcpy(#unit, "k") : ( strcpy(#tmp_u, "k"); strcat(#tmp_u, #unit); strcpy(#unit, #tmp_u); );
+              );
+          );
+          (v_raw == floor(v_raw)) ? sprintf(#disp_val, "%.0f %s", v_raw, #unit) :
+          (abs_v >= 100)          ? sprintf(#disp_val, "%.0f %s", v_raw, #unit) :
+          (abs_v >= 10)           ? sprintf(#disp_val, "%.1f %s", v_raw, #unit) : 
+                                    sprintf(#disp_val, "%.2f %s", v_raw, #unit);
+      );
+
+      user_tooltips == 1 && builder_mode == 0 ? (
+          strlen(str_slot) > 0 ? ( strcpy(#global_tooltip, str_slot); strcat(#global_tooltip, ": "); strcat(#global_tooltip, #disp_val);
+          ) : ( sprintf(#global_tooltip, "ID:%d: %s", btn_idx, #disp_val); );
+          show_tooltip = 1; 
+      ) : (
+          strcpy(#draw_str, #disp_val);
+      );
+  );
+
+  // read anchor and alignment
+  c_x = static_lbl_x[elem_idx];
+  c_y = static_lbl_y[elem_idx];
+  c_a = static_lbl_align[elem_idx];
+
+  gfx_set(1, 1, 1, text_alpha); 
+  gfx_measurestr(#draw_str, draw_tw, draw_th);
+  
+  // apply text direction logic
+  el_type = el_ptr[1];
+  c_a == 1 || (c_a == 0 && el_type == 2) ? (
+      gfx_x = c_x - draw_tw;       // left
+  ) : c_a == 2 ? (
+      gfx_x = c_x;                 // right
+  ) : (
+      gfx_x = c_x - (draw_tw / 2); // center
+  );
+  
+  gfx_y = c_y; 
+  gfx_drawstr(#draw_str);
+
+  // .......................................................................... 
+  // SAVE STATE
+  state_ptr[0] = dragging;
+  state_ptr[3] = last_click_time;
+  state_ptr[4] = l_seq; 
+  state_ptr[7] = init_done;
+
+  builder_mode == 0 ? (
+      grp_val = grp_buf[btn_idx];
+      (grp_val > 0) ? draw_group_indicator(xIn - 8 * UI_EFF_SCALE, yIn + ((heightIn - 2) * 0.5), grp_val);
+  );
+);
+
+
+
+// ... INPUT GAIN MODULE ..................................
+function input_gain_module(xIn, yIn, wIn)
+instance(dragging, xOld, valOld, is_over, tw, th, window_peak, display_peak, frame_counter, last_click_time)
+local(local_scale, h_meter, y_slider, h_slider_track, h_slider_grip, w_slider_grip, padding, travel_w, bg_w, bg_h)
+(
+    local_scale = wIn / (71 * UI_EFF_SCALE);
+
+    h_meter = 9 * UI_EFF_SCALE * local_scale;          
+    y_slider = yIn + 15 * UI_EFF_SCALE * local_scale;   
+    h_slider_track = 3 * UI_EFF_SCALE * local_scale;   
+    h_slider_grip = 9 * UI_EFF_SCALE * local_scale;    
+    w_slider_grip = 6 * UI_EFF_SCALE * local_scale;    
+    
+    padding = 3 * UI_EFF_SCALE * local_scale; 
+    travel_w = wIn - w_slider_grip - (padding * 2);
+
+    // Hitbox sedaj upošteva lokalno povečavo
+    this.rectIn(xIn, yIn, wIn, 30 * UI_EFF_SCALE * local_scale); 
+    is_over = this.collision();
+
+    // ................................................................
+    // DRAW BACKGROUND
+
+    gfx_a = 1.0 * g_sec_a; 
+    gfx_getimgdim(37, bg_w, bg_h);
+    (bg_w > 0 && bg_h > 0) ? (
+
+        gfx_blit(37, 1, 0, 0, 0, bg_w, bg_h, xIn, yIn, wIn, 18 * UI_EFF_SCALE * local_scale);
+    );
+
+    // MOUSE HANDLING
+    builder_mode_global == 0 ? (
+        (is_over && !lastLeftMouse) ? (
+            leftMouse ? (
+                (time_precise() - last_click_time < 0.25) ? (
+                    slider10 = 0; 
+                    g_consumed = 1;
+                    last_click_time = 0;
+                    dragging = 0;
+                ) : (
+                    last_click_time = time_precise();
+                    dragging = 1;
+                    xOld = mouse_x;
+                    valOld = slider10;
+                );
+            );
+        );
+    
+        (is_over && mouse_wheel != 0) ? (
+            //step = ctrlDown ? 0.1 : 0.5;
+            step = ctrlDown ? (0.1 * global_mouse_std * fine_mult) : (0.5 * global_mouse_std);
+            slider10 = max(-12, min(12, slider10 + (mouse_wheel > 0 ? step : -step)));
+            mouse_wheel = 0;
+            g_consumed = 1;
+        );
+        
+        // Right click to enter text-value (CMD 23)
+        (is_over && rightMouse && !lastRightMouse && !g_consumed) ? (
+            p_base = gmem[100000];
+            gmem[p_base + 0] += 1;
+            gmem[p_base + 4] = slider2; 
+            gmem[p_base + 6] = p;
+            gmem[p_base + 7] = 23; // CMD 23
+            g_consumed = 1;
+        );
+    
+        dragging ? (
+            current_dragging = 1;
+            leftMouse ? (
+                mouse_diff = mouse_x - xOld;
+                abs(mouse_diff) > 0 ? (
+                    db_per_pixel = 24 / travel_w;
+                    //sens = ctrlDown ? (db_per_pixel * 0.1) : db_per_pixel;
+                    sens = ctrlDown ? (db_per_pixel * global_mouse_fine * global_mouse_std) : (db_per_pixel * global_mouse_std);
+                    slider10 = max(-12, min(12, valOld + mouse_diff * sens));
+                    xOld = mouse_x;
+                    valOld = slider10;
+                );
+            ) : (
+                dragging = 0;
+            );
+        );
+    ) : (
+        dragging = 0;
+    );
+
+
+    // DISPLAY RMS BAR
+    rms_db = (rms_val > 0.00001) ? 20 * log10(rms_val) : -60;
+    min_db = 48; 
+    scale_val = max(0, min(1, (rms_db + min_db) / min_db));
+    fill_w = scale_val * wIn;
+
+    (fill_w > 1) ? (
+        gfx_a = 1.0 * g_sec_a; 
+        fixed_fill_w = floor(fill_w);       
+        fixed_x_start = floor(xIn); 
+        fixed_h = floor(h_meter);
+        
+
+        gfx_getimgdim(24, img_w, img_h);
+        src_fill_w = scale_val * img_w;
+
+        gfx_blit(24, 1, 0,  
+                 0, 1, src_fill_w, 9,
+                 fixed_x_start, yIn + UI_EFF_SCALE,
+                 fixed_fill_w, fixed_h);
+    );
+
+    // REFERENCE TICKS (Scale markings)
+    top_pad = 1 * UI_EFF_SCALE * local_scale; 
+    tick_y_start = yIn + top_pad;
+    tick_y_end = yIn + h_meter;
+
+    // Clip point 0 dB  - Red line
+    tick_0_x = floor(xIn + wIn) - 1 * UI_EFF_SCALE * local_scale;
+    gfx_set(1, 0.2, 0.2, 0.4 * g_sec_a);
+    gfx_line(tick_0_x, tick_y_start, tick_0_x, tick_y_end);
+
+    // -6 dB - Green line
+    tick_6_x = floor(xIn + ((-6 + min_db) / min_db) * wIn);
+    gfx_set(.5, 1, .5, 0.2 * g_sec_a);
+    gfx_line(tick_6_x, tick_y_start, tick_6_x, tick_y_end);
+
+    // -18 dB - Green line
+    tick_18_x = floor(xIn + ((-18 + min_db) / min_db) * wIn);
+    gfx_set(.5, 1, .5, 0.3 * g_sec_a);
+    gfx_line(tick_18_x, tick_y_start, tick_18_x, tick_y_end);
+
+
+    // PEAK INDICATOR (Thin red line)
+    peak_db = (in_meter > 0.00001) ? 20 * log10(in_meter) : -60;
+    peak_scale = max(0, min(1, (peak_db + min_db) / min_db));
+
+    (peak_scale > 0) ? (
+        peak_x = floor(xIn + peak_scale * wIn) - 3 * UI_EFF_SCALE * local_scale; // Odmik v levo
+        gfx_set(1, 0.2, 0.2, 0.85 * g_sec_a);
+        
+        gfx_line(peak_x, tick_y_start, peak_x, tick_y_end);
+        gfx_line(peak_x + 1, tick_y_start, peak_x + 1, tick_y_end); 
+    );
+
+    // GRIP
+    grip_pos = (xIn + padding) + ((slider10 + 12) / 24) * travel_w;
+    gfx_set(0.9, 0.9, 0.9, (is_over || dragging ? 1.0 : 0.7) * g_sec_a);
+    gfx_rect(grip_pos, y_slider - floor(h_slider_grip/2) + 1, w_slider_grip, h_slider_grip, 1);
+
+
+    // PEAK & RMS HOLD FOR TEXT & TOOLTIP .............................................
+
+    // Read the exact true peak from @sample and reset it for the next GUI frame
+    true_peak_db = (in_true_peak > 0.00001) ? 20 * log10(in_true_peak) : -60;
+    in_true_peak = 0; 
+
+    // Feed peak into tooltip
+    window_peak = max(window_peak, true_peak_db);
+    window_rms  = max(window_rms, rms_db);
+
+    frame_counter += 1;
+    (frame_counter > 9) ? (
+        display_peak = window_peak;
+        display_rms  = window_rms;
+        
+        window_peak = -60;
+        window_rms  = -60;
+        frame_counter = 0;
+    );
+
+    // Text under slider - RMS
+    (display_rms <= -59.9) ? strcpy(#gain_txt, "-inf") : sprintf(#gain_txt, "%.1f dB", display_rms);
+
+    gfx_set(1, 1, 1, (is_over || dragging ? 0.9 : 0.4) * g_sec_a);
+    gfx_measurestr(#gain_txt, tw, th);
+
+    gfx_x = xIn + 6 * UI_EFF_SCALE + (wIn/2) - (tw/2); 
+    gfx_y = y_slider + 4 * UI_SCALE;
+
+    gfx_drawstr(#gain_txt);
+
+    // Tooltip RMS & True Peak
+    (dragging || (is_over && was_dragging == 0)) ? (
+        sprintf(#global_tooltip, "Gain: %+.1f dB\nRMS: %.1f dB\nPeak: %.1f dB", slider10, display_rms, display_peak);
+        show_tooltip = 1;
+    );
+);
+
+
+// CIRCULAR GR METER (OVR SECTION)   // ...............................................
+
+function circular_gr_meter(xIn, yIn, meter_type, p_size)
+local(p_base, _base, addr_gr, gr_db, scale_val, frame_idx, img_w, img_h, src_h, num_frames)
+(
+
+    p_base = gmem[100000];
+    _base = p_base + slider2 * 500;
+
+
+    // Read GR from DYN1 or DYN2
+    addr_gr = _base + ((meter_type == 1) ? 320 : 322);
+    gr_db = gmem[addr_gr];
+
+    scale_val = min(1, max(0, abs(gr_db) / max_gr_db));
+    num_frames = 51;
+    frame_idx = floor(scale_val * (num_frames - 1) + 0.5);
+
+    gfx_getimgdim(27, img_w, img_h);
+
+    
+    (img_w > 0 && img_h > 0) ? (
+        src_h = floor(img_h / num_frames);
+
+        gfx_a = 1.0 * g_sec_a;
+        
+
+        // Draw at the knob coordinates
+        gfx_blit(27, 1, 0, 
+                 0, frame_idx * src_h, 
+                 img_w, src_h, 
+                 xIn, 
+                 yIn, 
+                 p_size * UI_EFF_SCALE, 
+                 p_size * UI_EFF_SCALE);
+    );
+);
+
+
+// ..........................................................................
+function ovr_slot(xIn, yIn, slot_id, p_size, t_size)
+local(btn_idx, packed_typ, type, meter_assign, sl_idx, addr_v, addr_lock, addr_n, addr_d, addr_s, is_over, p_base)
+instance(last_btn, init_done, xIn, yIn, widthIn, heightIn)
+(
+    // Direct read from buffer (Imune to GMEM thrash)
+    btn_idx = ovr_btn_buf[slot_id];
+
+    packed_typ = ovr_mtr_buf[slot_id];
+    type = packed_typ % 10;                     // Units digit: Element type (1, 2, 3)
+    meter_assign = floor(packed_typ / 10);      // Tens digit: Meter assignment (0, 1, 2)
+
+    (this.last_btn != btn_idx) ? (
+        this.last_btn = btn_idx;
+        this.init_done = 0;
+    );
+
+    // Right click detection for OVR Menu (CMD 21)
+    this.rectIn(xIn, yIn, t_size*UI_EFF_SCALE, t_size*UI_EFF_SCALE); 
+    is_over = this.collision();
+
+    (is_over && mouse_cap & 2 && !lastRightMouse) ? (
+        p_base = gmem[100000];
+        gmem[p_base + 0] += 1;
+        gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+        gmem[p_base + 5] = slot_id; 
+        gmem[p_base + 7] = 21; // CMD 21
+        g_consumed = 1;
+    );
+
+    // Draw corresponding element or empty slot frame
+    btn_idx > 0 ? (
+        sl_idx = get_sl_idx(btn_idx);
+        addr_v = base + 10 + btn_idx;
+        addr_lock = base + 1;
+        addr_n = base + 219 + btn_idx;
+        addr_d = base + 79 + btn_idx;
+        addr_s = base + 149 + btn_idx;
+
+        g_sec_a = (btn_idx < 20) ? alpha_eq : 
+                  (btn_idx < 31) ? alpha_d1 : 
+                  (btn_idx >= 42 && btn_idx <= 43) ? alpha_s1 : // FX PRE Tube
+                  (btn_idx >= 44 && btn_idx <= 45) ? alpha_s2 : // FX POST Tube
+                  (btn_idx < 50) ? alpha_d2 : 
+                  (btn_idx < 56) ? alpha_s1 : alpha_s2;
+
+        0;
+
+        (meter_assign > 0) ? (
+            circular_gr_meter(xIn, yIn, meter_assign, p_size);
+        );
+
+        g_sec_a = 1.0;
+    ) : (
+        is_over ? (
+            gfx_set(1, 1, 1, 0.1 * g_sec_a);
+            gfx_rect(xIn, yIn, t_size*UI_EFF_SCALE, t_size*UI_EFF_SCALE, 0);
+            draw_text_centered(xIn, yIn + (t_size*0.75)*UI_EFF_SCALE, t_size, "+", 0.5 * g_sec_a);
+        );
+    );
+);
+
+
+// ..........................................................................
+function ovr_tube(xIn, yIn, slot_id, btn_idx)
+local(is_over, p_base)
+(
+    this.rectIn(xIn, yIn, 45*UI_EFF_SCALE, 15*UI_EFF_SCALE);
+    is_over = this.collision();
+
+    // Right click detection for OVR Tube Menu (CMD 21)
+    (is_over && mouse_cap & 2 && !lastRightMouse) ? (
+        p_base = gmem[100000];
+        gmem[p_base + 0] += 1;
+        gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+        gmem[p_base + 5] = slot_id; 
+        gmem[p_base + 7] = 21; // CMD 21
+        g_consumed = 1;
+    );
+
+    0;
+);
+
+
+
+slider_last = 80000;
+i = 1;
+while (i <= 68) ( 
+  slider_last[i] = slider(i);
+  i += 1;
+);
+
+init_sync_done = 0;
+
+// ..........................................................................
+@slider
+(srate != last_srate) ? update_srate();
+
+vu_cal_db = slider69;
+
+tr_idx_sl = get_host_placement(p, f);
+
+(tr_idx_sl >= 0) ? (
+    my_real_slot = tr_idx_sl + 1;
+
+    (my_real_slot != slider2) ? (
+        slider2 = my_real_slot;
+        s_idx = 4; 
+        while (s_idx <= 68) (
+            slider_last[s_idx] = slider(s_idx);
+            s_idx += 1;
+        );
+    );
+    
+    sync_slot();
+
+    s_idx = 11;
+    while (s_idx <= 68) (
+      (abs(slider(s_idx) - slider_last[s_idx]) > 0.0001 && slot_valid == 1) ? (
+        slider_last[s_idx] = slider(s_idx);
+        
+        s_idx >= 13 ? (
+          b_id = s_idx - 12; 
+          addr_v = base + 11 + (b_id - 1);
+          gmem[addr_v] = slider(s_idx);
+          gmem[base + 1] = b_id;
+        ) : (s_idx == 12) ? (
+          gmem[base + 79] = slider(12); 
+        ) : (s_idx == 11) ? (
+          gmem[base + 78] = slider(11); 
+        );
+      );
+      s_idx += 1;
+    );
+
+    new_loc = floor(slider4);
+    (new_loc != slider_last[4]) ? (
+      slider_last[4] = new_loc;
+      slider4 = new_loc;
+      gmem[base + 290] = new_loc;
+    );
+
+    new_glob = floor(slider5);
+    (new_glob != slider_last[5]) ? (
+      slider_last[5] = new_glob;
+      slider5 = new_glob;
+      p_base = gmem[100000];
+      gmem[p_base + 200] = new_glob;
+      gmem[p_base + 201] += 1;
+      gmem[base + 290] = new_glob;
+    );
+);
+
+
+
+// ...............................................................................
+@sample
+
+
+// INPUT GAIN  ......................................
+
+gain_lin = 10 ^ (slider10 / 20);
+spl0 *= gain_lin;
+spl1 *= gain_lin;
+
+
+// METER CALCULATIONS ....................................
+
+meter_active ? (
+
+    // TRUE PEAK FOR TOOLTIP ---
+    in_true_peak = max(in_true_peak, max(abs(spl0), abs(spl1)));
+
+
+    // NEEDLES (VU BALLISTICS): Dynamic floating model -------
+
+    // PRE IN
+    pre_in_raw = max(abs(spl0), abs(spl1));
+
+
+    // Dynamic peak hold
+    (pre_in_raw >= pre_in_held) ? (
+        pre_in_held = pre_in_raw;
+
+    ) : (
+       (pre_in_vu >= pre_in_held * 0.99) ? pre_in_held = pre_in_raw;
+    );
+
+
+    // Smooth movement
+    (pre_in_held >= pre_in_vu) ? (
+        pre_in_vu += (pre_in_held - pre_in_vu) * vu_att_coeff;
+    ) : (
+        pre_in_vu += (pre_in_held - pre_in_vu) * vu_rel_coeff;
+    );
+
+
+    // PRE OUT
+    pre_out_pulse = gmem[base + 324];
+
+    (pre_out_pulse >= pre_out_held) ? (
+        pre_out_held = pre_out_pulse;
+    ) : (
+        (pre_out_vu >= pre_out_held * 0.99) ? pre_out_held = pre_out_pulse;
+    );
+
+
+    (pre_out_held >= pre_out_vu) ? (
+        pre_out_vu += (pre_out_held - pre_out_vu) * vu_att_coeff;
+    ) : (
+        pre_out_vu += (pre_out_held - pre_out_vu) * vu_rel_coeff;
+    );
+
+    // CHAIN OUT
+    chain_out_pulse = gmem[base + 334];
+
+    (chain_out_pulse >= chain_out_held) ? (
+        chain_out_held = chain_out_pulse;
+    ) : (
+        (chain_out_vu >= chain_out_held * 0.99) ? chain_out_held = chain_out_pulse;
+    );
+    
+
+    (chain_out_held >= chain_out_vu) ? (
+        chain_out_vu += (chain_out_held - chain_out_vu) * vu_att_coeff;
+    ) : (
+        chain_out_vu += (chain_out_held - chain_out_vu) * vu_rel_coeff;
+    );
+
+    // CATCH PEAK ........................
+
+    pre_in_catch = max(pre_in_catch, pre_in_raw);
+    in_update_cnt += 1;
+    (in_update_cnt >= in_update_rate) ? (
+        pre_in_peak = pre_in_catch;
+        pre_in_catch = 0;
+        in_update_cnt = 0;
+    );
+
+    pre_out_peak = gmem[base + 324];
+    chain_out_peak = gmem[base + 334];
+
+    // INPUT MODULE PEAK ............
+    in_meter = (pre_in_raw > in_meter) ? pre_in_raw : in_meter * 0.99995;
+
+
+    // RMS SIGNAL ........................
+    cur_sq = (spl0 * spl0 + spl1 * spl1) * 0.5;
+    oldest_sq = rms_buf[rms_idx];
+    rms_sum_sq = rms_sum_sq - oldest_sq + cur_sq;
+    (rms_sum_sq < 0) ? rms_sum_sq = 0;
+    rms_buf[rms_idx] = cur_sq;
+    rms_idx += 1;
+    (rms_idx >= rms_N) ? rms_idx = 0;
+    rms_val = sqrt(rms_sum_sq / rms_N);
+
+) : (
+    pre_in_vu = 0; pre_in_peak = 0;
+    pre_out_vu = 0; pre_out_peak = 0;
+    chain_out_vu = 0; chain_out_peak = 0;
+    rms_val = 0; in_true_peak = 0;
+    in_meter = 0; 
+);
+
+@block
+
+tr_idx = get_host_placement(p, f);
+(tr_idx >= 0) ? (
+  slider2 = tr_idx + 1;
+);
+
+sync_slot();
+
+// AMNESY: clear GMEM afeter moving to new slot
+(slider2 != last_seen_slot_block) ? (
+    gmem[p_base + 200000 + (slider2 * 3000)] = 0; // Layout mailbox
+    gmem[base + 490] = 0; // OVR mailbox
+    gmem[base + 499] = 0; // DNA mailbox
+    last_seen_slot_block = slider2;
+);
+
+// LUA (On-Demand)
+gmem[base + 427] == 1 ? (
+    trigger_gmem_export = 1;
+    gmem[base + 427] = 0;
+);
+
+// export layout once (also when GUI is closed)
+(trigger_gmem_export == 1 && slot_valid == 1) ? (
+    outbox_base = p_base + 500000 + (slider2 * 3000);
+    gmem[outbox_base - 1] = ui_element_count; 
+    gmem[outbox_base - 2] = gmem[base + 290]; // current_page
+    gmem[outbox_base - 3] = inst_panel_h;
+        
+    out_i = 0;
+    while (out_i < ui_element_count) (
+        out_idx = out_i * ui_stride;
+        el_ptr = layout_base + out_idx;
+        
+        gmem[outbox_base + (out_i * 13) + 0] = el_ptr[0];
+        gmem[outbox_base + (out_i * 13) + 1] = el_ptr[1];
+        gmem[outbox_base + (out_i * 13) + 2] = el_ptr[2];
+        gmem[outbox_base + (out_i * 13) + 3] = el_ptr[3];
+        gmem[outbox_base + (out_i * 13) + 4] = el_ptr[4];
+        gmem[outbox_base + (out_i * 13) + 5] = el_ptr[5];
+        gmem[outbox_base + (out_i * 13) + 6] = el_ptr[6];
+        gmem[outbox_base + (out_i * 13) + 7] = el_ptr[7];
+        gmem[outbox_base + (out_i * 13) + 8] = el_ptr[8];
+        gmem[outbox_base + (out_i * 13) + 9] = el_ptr[9];
+        gmem[outbox_base + (out_i * 13) + 10] = el_ptr[18]; // TAB_ID
+        gmem[outbox_base + (out_i * 13) + 11] = el_ptr[15]; // send float directly (or integer,if it was moved)
+        gmem[outbox_base + (out_i * 13) + 12] = el_ptr[16]; // DY
+        
+        out_i += 1;
+    );
+    
+    trigger_gmem_export = 0;
+);
+
+
+
+// METER ACTIVITY CHECK ....................................
+meter_active = (gmem[base + 9] > 0 || gmem[p_base + 202] == 1) && slider2 > 0 && slot_valid == 1;
+
+
+@serialize
+slider2 = max(0, get_host_placement(p, f) + 1);
+
+is_reading = (file_avail(0) >= 0);
+
+
+// SAVE: decompose 64-bit double to 3x32 parts
+
+!is_reading ? (
+    _i = 0;
+    while (_i < ui_element_count) (
+        _el = layout_base + (_i * 20);
+        _el[1] == 4 ? ( // valid only for text
+            // decopmose Part 1 (_el[4]) to 3 parts - divider 10.000.000
+            _v1 = _el[4];
+            _el[11] = _v1 % 10000000;
+            _t1 = floor(_v1 / 10000000);
+            _el[10] = _t1 % 10000000;
+            _el[4]  = floor(_t1 / 10000000); // in _el[4] highes value remains
+
+            // decopmose Part 2 (_el[7]) ... same as 1
+            _v2 = _el[7];
+            _el[13] = _v2 % 10000000;
+            _t2 = floor(_v2 / 10000000);
+            _el[12] = _t2 % 10000000;
+            _el[7]  = floor(_t2 / 10000000);
+            
+            // FLAG: element decomposed(required for old projscts)
+            _el[19] = 999; 
+        );
+        
+        _i += 1;
+    );
+);
+
+// ......................................................................
+// Write/Read (here Reaper writes changed numbers to disk 
+
+file_var(0, dna_len);
+dna_len > 0 ? file_mem(0, dna_local_buf, dna_len);
+
+file_var(0, inst_panel_h);
+
+file_var(0, ui_element_count);
+ui_element_count > 0 ? (
+    file_mem(0, layout_base, ui_element_count * 20);
+    is_reading ? trigger_gmem_export = 1;
+);
+
+// refresh RAM - compose back to 64 bit
+_i = 0;
+while (_i < ui_element_count) (
+    _el = layout_base + (_i * 20);
+    _el[1] == 4 ? (
+        _el[19] == 999 ? ( // only assemeble if flag is true
+            _el[4] = _el[4] * 100000000000000 + _el[10] * 10000000 + _el[11];
+            _el[7] = _el[7] * 100000000000000 + _el[12] * 10000000 + _el[13];
+        );
+    );
+    
+    _i += 1;
+);
+
+file_mem(0, ovr_btn_buf, 32);
+file_mem(0, ovr_mtr_buf, 32);
+file_mem(0, grp_buf, 65);
+
+is_reading ? ovr_loaded_from_disk = 1;
+
+
+
+//....................................................................
+
+
+@gfx 125 635 //635(analog VU)...595(slim VU), defined by lua
+
+
+
+global_split_y = 0;
+current_dragging = 0;
+
+tr_idx = get_host_placement(p, f);
+(tr_idx >= 0) ? (
+  slider2 = tr_idx + 1;
+);
+
+sync_slot();
+
+(slot_valid == 1 && builder_mode_global == 0) ? (
+    _g = 1;
+    while (_g <= 64) (
+        grp_buf[_g] = gmem[base + 359 + _g];
+        _g += 1;
+    );
+);
+
+
+// JSFX CONTINUOUS BROADCAST (JSFX -> LUA)................................................
+(base > 0 && slot_valid == 1) ? (
+
+    ext_ovr_base = p_base + 50000 + (slider2 * 200); 
+    
+    _s = 1;
+    while (_s <= 64) (
+
+        _s <= 17 ? (
+            gmem[base + 300 + _s] = ovr_btn_buf[_s];
+            gmem[base + 342 + _s] = ovr_mtr_buf[_s];
+        );
+        
+        gmem[ext_ovr_base + _s] = ovr_btn_buf[_s];
+        gmem[ext_ovr_base + 64 + _s] = ovr_mtr_buf[_s];
+        
+        _s += 1;
+    );
+    
+    // 2. LUA MAILBOX RECEIVER (LUA -> JSFX)
+    // JSFX never reads OVR settings from GMEM-a, unless msg in addr 49).
+    gmem[base + 490] == 1 ? (
+        _slot_target = gmem[base + 491];
+        ovr_btn_buf[_slot_target] = gmem[base + 492];
+        ovr_mtr_buf[_slot_target] = gmem[base + 493];
+        gmem[base + 490] = 0; // JSFX clears mailbox to not repeat command
+    );
+);
+
+//  SECURITY GUARD ..........................................................
+slot_valid == 0 ? (
+    mouse_cap = 0;      // Disable all mouse clicks - LAYOUT BUILDER OVERRIDE
+    mouse_wheel = 0;    // Disable scrolling
+);
+
+
+// JSFX -> LUA: Restoration from Track Template .............................
+(p_base > 0 && tr_idx >= 0 && struct_pushed == 0 && slot_valid == 1) ? (
+    (dna_len > 0) ? (
+        addr_str_buf = p_base + 150000 + slider2 * 2000;
+        gmem[addr_str_buf] = dna_len;
+
+        i = 0;
+        while(i < dna_len) (
+            gmem[addr_str_buf + 1 + i] = dna_local_buf[i];
+            i += 1;
+        );
+        gmem[base + 498] = 1;
+        ) : (
+            ui_element_count == 0 ? (
+                outbox_base = p_base + 500000 + (slider2 * 3000);
+                gmem[outbox_base - 1] = 0; // force  ui_element_count = 0 into GMEM
+                gmem[base + 498] = 2; // tell Lua to generate default layout
+            ) : (
+                gmem[base + 498] = 1; // Layout exists, keep it!
+            );
+        );
+    struct_pushed = 1;
+);
+
+
+// LUA -> JSFX: Saving raw numbers ......................................
+(gmem[base + 499] == 1 && slot_valid == 1) ? (
+    addr_str_buf = p_base + 150000 + slider2 * 2000;
+    dna_len = gmem[addr_str_buf];
+    
+
+    i = 0;
+
+    while(i < dna_len) (
+        dna_local_buf[i] = gmem[addr_str_buf + 1 + i];
+        i += 1;
+    );
+
+    
+    gmem[base + 499] = 0;
+
+);
+
+
+(gfx_w != last_w) ? (
+  UI_SCALE = min(1.8, gfx_w / 125 * 1.5); 
+  UI_EFF_SCALE = UI_SCALE / 1.5;
+  force_text_recalc = 1;
+  
+  UI_W = 125 * UI_EFF_SCALE;
+  UI_H = 635 * UI_EFF_SCALE; 
+
+  
+  gfx_w < 60 ? (
+      UI_H = 20; 
+  );
+  last_w = gfx_w;
+);
+
+
+gfx_w > 60 ? (
+
+p_base = gmem[100000];
+
+
+// FONT SIZE SYNC ......................................
+
+// font size from Lua (address 205), default if 0.
+
+base_font_sz = gmem[p_base + 205];
+
+(base_font_sz == 0) ? base_font_sz = 14;
+
+// Check if font changed
+(base_font_sz != last_base_font_sz) ? (
+    force_text_recalc = 1;
+    last_base_font_sz = base_font_sz;
+);
+
+font_sz_calc = floor(base_font_sz * (UI_EFF_SCALE * 0.75 + 0.5) + 0.5);
+
+gfx_setfont(1, "Calibri", font_sz_calc);
+
+// MOUSE SENSITIVITY SYNC ........................................
+global_mouse_std = gmem[p_base + 210];
+(global_mouse_std <= 0) ? global_mouse_std = 1.0;
+
+global_mouse_fine = gmem[p_base + 211];
+(global_mouse_fine <= 0) ? global_mouse_fine = 0.1;
+fine_mult = global_mouse_fine * 10; // fine setting acc. to old default (10%)
+
+
+
+// GLOBAL SETTINGS SYNC ............................................
+// 0 = Uninitialized (Default to ON), 1 = ON, 2 = OFF
+user_tooltips = (gmem[p_base + 203] == 2) ? 0 : 1;
+
+// GR METER RANGE SYNC ................................................
+
+// dynamic range from Lua (address 204)
+max_gr_db = gmem[p_base + 204];
+(max_gr_db == 0) ? max_gr_db = 12;
+
+
+// PEAK THRESHOLD SYNC ---
+global_peak_thresh_db = gmem[p_base + 209];
+(global_peak_thresh_db > 0 || global_peak_thresh_db < -48) ? global_peak_thresh_db = 0;
+
+// Convert dB to linear value (0 dBFS = 1.0, -6 dBFS = 0.501, etc.)
+global_peak_thresh_lin = 10 ^ (global_peak_thresh_db / 20);
+
+
+// VU METER STYLE & OFFSET SYNC ---
+// Read style from Lua (0 = Classic, 1 = Slim Horizontal)
+
+global_vu_style = gmem[p_base + 208];
+
+
+// FIXED ASPECT RATIO (height / width)
+// img 125x30 ... 30/125 = 0.24
+
+slim_ratio = 0.24;
+
+
+// height of the new slim meter
+slim_target_h = UI_W * slim_ratio;
+
+
+// static base offset (ignore scrolling)
+vu_y_offset_base = (global_vu_style == 1) ? floor(slim_target_h - (70 * UI_EFF_SCALE)) : 
+                   (global_vu_style == 2) ? floor(-(70 * UI_EFF_SCALE)) : 0;
+
+// Read Panel Size from GMEM
+inst_panel_h = gmem[base + 426];
+(inst_panel_h <= 0) ? inst_panel_h = 635; // Fallback
+
+// use dynamic height
+total_ui_h = inst_panel_h * UI_EFF_SCALE + vu_y_offset_base;
+
+// scroll boundary...
+min_scroll = min(0, gfx_h - total_ui_h);
+(min_scroll > -2) ? min_scroll = 0; // tolerance
+user_scroll_y = max(min_scroll, min(0, user_scroll_y));
+
+// Final offset used by all knobs, tubes, and scrolling background
+vu_y_offset = vu_y_offset_base + user_scroll_y;
+
+
+
+act_slot = gmem[p_base + 8]; 
+is_selected_track = (slider2 == act_slot && slider2 > 0);
+text_brightness_boost = is_selected_track ? 0.3 : 0.0;
+
+
+sync_slot();
+// ....................................................................
+// GLOBAL ALPHA (BYPASS DIMMING)
+
+
+g_sec_a = 1.0;
+
+// DEFAULT ALPHAS
+alpha_eq = 1.0; alpha_d1 = 1.0; alpha_d2 = 1.0; alpha_s1 = 1.0; alpha_s2 = 1.0;
+
+builder_mode_global == 0 ? (
+    _k = 0;
+    while (_k < ui_element_count) (
+        _el = layout_base + (_k * ui_stride);
+        _el_type = _el[1];
+        _el_param = _el[4];
+        _is_dimmer = _el[9];
+
+        (_el_type == 2 && _is_dimmer == 1) ? (
+
+            _b_stat = gmem[base + 149 + _el_param];
+            _b_val  = gmem[base + 10 + _el_param];
+            
+            _is_off = (_b_stat % 1000 >= 100 && _b_val < 0.5);
+            _new_alpha = _is_off ? 0.3 : 1.0;
+
+            _el_param <= 20 ? alpha_eq = _new_alpha : 
+            _el_param <= 29 ? alpha_d1 = _new_alpha : 
+            _el_param <= 38 ? alpha_d2 = _new_alpha : 
+            _el_param <= 44 ? alpha_s1 = _new_alpha : 
+                              alpha_s2 = _new_alpha;
+        );
+        _k += 1;
+    );
+);
+alpha_group = (((gmem[base + 150 + 49] % 1000) >= 100) ? 1.0 : 0.3) * alpha_s1;
+
+// LAYOUT BUILDER OVERRIDE ......................................................
+builder_mode_global = gmem[base + 428];
+builder_mode_global == 1 ? (
+    // alpha to 100% in Builder
+    alpha_eq = 1.0; alpha_d1 = 1.0; alpha_d2 = 1.0; alpha_s1 = 1.0; alpha_s2 = 1.0; alpha_group = 1.0;
+    g_dim_knob = 1.0;
+    g_dim_sw   = 1.0;
+    g_dim_txt  = 1.0;
+    g_dim_txt_link = 1.0;
+) : (
+    // normal val outside Builder
+    g_dim_knob = 0.3;
+    g_dim_sw   = 0.2;
+    g_dim_txt  = 0.15;
+    g_dim_txt_link = 0.5;
+);
+
+
+glob_pg_addr  = p_base + 200;
+glob_seq_addr = p_base + 201;
+
+(this.init_seq_done == 0 && p_base > 0) ? (
+    this.last_glob_seq = gmem[glob_seq_addr];
+    this.init_seq_done = 1;
+
+);
+
+(gmem[glob_seq_addr] < this.last_glob_seq) ? (
+    this.last_glob_seq = -1; 
+);
+
+
+// GLOBAL SYNC & MIDI FEEDBACK .....................................
+(gmem[glob_seq_addr] > this.last_glob_seq) ? (
+  gmem[base + 290] = gmem[glob_pg_addr]; 
+  this.last_glob_seq = gmem[glob_seq_addr];
+
+  
+  // Notify physical MIDI controllers about global tab change
+  slider4 = gmem[glob_pg_addr]; slider_last[4] = slider4; slider_automate(2^3);
+  slider5 = gmem[glob_pg_addr]; slider_last[5] = slider5; slider_automate(2^4);
+);
+
+
+leftMouse = mouse_cap & 1;
+rightMouse = mouse_cap & 2;
+ctrlDown = (mouse_cap & 4) != 0;
+shiftDown = (mouse_cap & 8) != 0;
+altDown = (mouse_cap & 16) != 0;
+
+
+// TAB CLICKS, HOVER & MIDI FEEDBACK ...................................
+tab_y_start = 70 * UI_EFF_SCALE + vu_y_offset_base;
+tab_y_end   = 100 * UI_EFF_SCALE + vu_y_offset_base;
+
+is_hover_tab = (!gmem[p_base + 206] && was_dragging == 0 && mouse_x > 3 * UI_EFF_SCALE && mouse_x < (UI_W - 3 * UI_EFF_SCALE) && mouse_y >= tab_y_start && mouse_y <= tab_y_end);
+
+is_hover_tab ? (
+  tab_hover_sel = (mouse_x <= UI_W / 3) ? 1 : (mouse_x <= UI_W * 2 / 3) ? 2 : 3;
+
+
+  leftMouse && !lastLeftMouse ? (
+    new_sel = (current_page == tab_hover_sel) ? 0 : tab_hover_sel;
+    ctrlDown ? (
+      gmem[base + 290] = new_sel; 
+      slider4 = new_sel; slider_last[4] = new_sel; slider_automate(2^3);
+      
+      p_base = gmem[100000];
+      gmem[p_base + 0] += 1;
+      gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+      gmem[p_base + 7] = 31; // Triggers Lua CMD 31 (Localn)
+
+    ) : (
+
+      gmem[glob_pg_addr] = new_sel;
+      p_base = gmem[100000];
+      gmem[p_base + 0] += 1;
+      gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+      gmem[p_base + 7] = 30; // Triggers Lua CMD 30 (Global)
+
+      gmem[glob_seq_addr] += 1; 
+      gmem[base + 290] = new_sel;
+      this.last_glob_seq = gmem[glob_seq_addr]; 
+      slider4 = new_sel; slider_last[4] = new_sel; slider_automate(2^3);
+      slider5 = new_sel; slider_last[5] = new_sel; slider_automate(2^4);
+    );
+  );
+
+  // Right click on tabs
+  rightMouse && !lastRightMouse ? (
+    p_base = gmem[100000];
+    gmem[p_base + 0] += 1;     
+    gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+    gmem[p_base + 5] = tab_hover_sel; 
+    gmem[p_base + 7] = 20;          
+    g_consumed = 1;                 
+  );
+) : (
+  tab_hover_sel = 0;
+);
+
+
+current_page = gmem[base + 290];
+
+gfx_a = 1.0;
+
+
+// pannel bg ....................................................
+gfx_a = 1.0;
+
+hdr_h = floor(100 * UI_EFF_SCALE); // Standard header height (100px)
+bg_start_y = floor(hdr_h + vu_y_offset_base);
+bg_w = floor(125 * UI_EFF_SCALE);
+bg_h = gfx_h - bg_start_y;
+
+gfx_blit(34, 1.0, 0, 0, 0, 125, 700, 0, bg_start_y, bg_w, bg_h);
+
+// --- SECECTION 1. Bottom part highlight
+is_selected_track ? (
+  gfx_set(1, 1, 1, 0.08); 
+  gfx_rect(0, bg_start_y, bg_w, bg_h, 1);
+);
+
+// --- OVERLAY part 11 
+current_page > 0 ? (
+    tab_col = (current_page == 1) ? slider7 : (current_page == 2) ? slider8 : slider9;
+    (tab_col == 0) ? tab_col = 0x161616;
+    
+    c_r = ((tab_col >> 16) & 0xFF) / 255.0;
+    c_g = ((tab_col >>  8) & 0xFF) / 255.0;
+    c_b = ( tab_col        & 0xFF) / 255.0;
+    
+    gfx_set(c_r, c_g, c_b, 0.35 * g_sec_a);
+    gfx_rect(0, bg_start_y, bg_w, bg_h, 1);
+);
+
+// Tab hover highlight at ficed position
+(tab_hover_sel > 0) ? (
+  tab_hover_x = (tab_hover_sel == 1) ? 0 : (tab_hover_sel == 2) ? (UI_W / 3) : (UI_W * 2 / 3);
+  gfx_set(1, 1, 1, 0.12 * g_sec_a);
+  tab_y_start_fixed = 70 * UI_EFF_SCALE + vu_y_offset_base;
+  tab_y_end_fixed   = 100 * UI_EFF_SCALE + vu_y_offset_base;
+  gfx_rect(tab_hover_x, tab_y_start_fixed, UI_W / 3, tab_y_end_fixed - tab_y_start_fixed-4*UI_EFF_SCALE, 1);
+);
+
+    // READ LAYOUT FROM LUA ..........................................................
+    layout_mailbox = p_base + 200000 + (slider2 * 3000);
+    (gmem[layout_mailbox] == 1 && slot_valid == 1) ? (
+        force_text_recalc = 1;
+        ui_element_count = gmem[layout_mailbox + 1];
+        _i = 0;
+        while (_i < ui_element_count) (
+            _idx_mem = _i * 13;
+            _idx_loc = _i * ui_stride;
+            
+            layout_base[_idx_loc + 0] = gmem[layout_mailbox + 2 + _idx_mem + 0]; // ID
+            layout_base[_idx_loc + 1] = gmem[layout_mailbox + 2 + _idx_mem + 1]; // Type
+            layout_base[_idx_loc + 2] = gmem[layout_mailbox + 2 + _idx_mem + 2]; // X
+            layout_base[_idx_loc + 3] = gmem[layout_mailbox + 2 + _idx_mem + 3]; // Y
+            layout_base[_idx_loc + 4] = gmem[layout_mailbox + 2 + _idx_mem + 4]; // Param ID
+            layout_base[_idx_loc + 5] = gmem[layout_mailbox + 2 + _idx_mem + 5]; // Width
+            layout_base[_idx_loc + 6] = gmem[layout_mailbox + 2 + _idx_mem + 6]; // Height
+            layout_base[_idx_loc + 7] = gmem[layout_mailbox + 2 + _idx_mem + 7]; // TEKXT PART 2
+            layout_base[_idx_loc + 8] = gmem[layout_mailbox + 2 + _idx_mem + 8]; // FONT SIZE
+            layout_base[_idx_loc + 9] = gmem[layout_mailbox + 2 + _idx_mem + 9]; // BOLD (1 or 0)
+            layout_base[_idx_loc + 18] = gmem[layout_mailbox + 2 + _idx_mem + 10]; // TAB_ID
+            layout_base[_idx_loc + 15] = gmem[layout_mailbox + 2 + _idx_mem + 11]; // dx
+            layout_base[_idx_loc + 16] = gmem[layout_mailbox + 2 + _idx_mem + 12]; // dy
+                    
+            // REset interakction
+            layout_base[_idx_loc + 10] = 0; // dragging
+            layout_base[_idx_loc + 11] = 0; // yOld
+            layout_base[_idx_loc + 12] = 0; // valOld
+            layout_base[_idx_loc + 13] = 0; // last_click_time
+            layout_base[_idx_loc + 14] = 0; // l_seq
+            
+            layout_base[_idx_loc + 15] = gmem[layout_mailbox + 2 + _idx_mem + 11]; // dx
+            layout_base[_idx_loc + 16] = gmem[layout_mailbox + 2 + _idx_mem + 12]; // dy
+            
+            _i += 1;
+        );
+        gmem[layout_mailbox] = 0; 
+    );
+
+// ....................................................................
+// PRE PASS: catch 1st elem under mouse
+
+builder_mode_global = gmem[base + 428]; 
+builder_grid = gmem[base + 429];
+builder_grid <= 0 ? builder_grid = 5;
+
+(!leftMouse) ? (
+    builder_drag_target = -1;
+) : (leftMouse && !lastLeftMouse && builder_mode_global == 1 && builder_drag_target < 0) ? (
+    
+    hit_found = 0;
+    
+    // ....................................................................
+    // PASS 1: FOREGROUND (find all interactive elements and  text)
+
+    chk_i = ui_element_count - 1;
+    while (chk_i >= 0 && builder_drag_target < 0) (
+        chk_ptr = layout_base + chk_i * ui_stride;
+        chk_tab = chk_ptr[18]; 
+        chk_type = chk_ptr[1];
+        
+        // Ignore Separator (6) in first iteration!
+        (chk_tab == current_page && chk_type != 6) ? (
+            chk_w = (chk_ptr[5] > 0 ? chk_ptr[5] : (chk_type == 1 ? 54 : (chk_type == 2 ? 32 : (chk_type == 4 ? 40 : 45))));
+            chk_h = (chk_ptr[6] > 0 ? chk_ptr[6] : (chk_type == 1 ? 54 : (chk_type == 2 ? 25 : (chk_type == 4 ? 15 : 15))));
+            
+            chk_x = chk_ptr[2] * UI_EFF_SCALE;
+            chk_y = chk_ptr[3] * UI_EFF_SCALE + vu_y_offset;
+            
+            chk_dx = chk_ptr[15] * UI_EFF_SCALE;
+            chk_dy = chk_ptr[16] * UI_EFF_SCALE;
+            
+            // Check Body collision
+            hit_body = (mouse_x > chk_x && mouse_x < chk_x + chk_w * UI_EFF_SCALE &&
+                        mouse_y > chk_y && mouse_y < chk_y + chk_h * UI_EFF_SCALE);
+                        
+            // Check Label collision w dinamic text width (tw)
+            hit_label = 0;
+            chk_param = chk_ptr[4];
+            chk_param > 0 ? (
+                addr_n = base + 219 + chk_param;
+                cur_name_code = gmem[addr_n];
+                #chk_str = "";
+                cur_name_code > 0 ? decode_to_str(cur_name_code, #chk_str) : 0;
+                strlen(#chk_str) == 0 ? sprintf(#chk_str, "ID:%d", chk_param);
+                
+                // exact (px) text width
+                gfx_measurestr(#chk_str, tw, th);
+                
+
+                (chk_type == 1 || chk_type == 2 || chk_type == 3 || chk_type == 7) ? (
+                    _c_x = static_lbl_x[chk_i];
+                    _c_y = static_lbl_y[chk_i];
+                    _c_a = static_lbl_align[chk_i];
+                    
+                    _c_a == 1 || (_c_a == 0 && chk_type == 2) ? (
+                        lbl_x = _c_x - tw;
+                    ) : _c_a == 2 ? (
+                        lbl_x = _c_x;
+                    ) : (
+                        lbl_x = _c_x - (tw / 2);
+                    );
+                    lbl_y = _c_y;
+                    
+                    // add tolerance (+/- 4px) for easier clicking
+                    hit_label = (mouse_x > lbl_x - 4 && mouse_x < lbl_x + tw + 4 && mouse_y > lbl_y - 4 && mouse_y < lbl_y + th + 4);
+                ) : chk_type == 5 ? ( // METERS (Type 5)
+                    tw = 40 * UI_EFF_SCALE; 
+                    th = 15 * UI_EFF_SCALE;
+                    lbl_x = chk_x + chk_dx;
+                    lbl_y = chk_y + chk_dy + chk_h * UI_EFF_SCALE; 
+                    hit_label = (mouse_x > lbl_x && mouse_x < lbl_x + tw && mouse_y > lbl_y && mouse_y < lbl_y + th);
+                );
+            );
+
+            (mouse_y > (100 * UI_EFF_SCALE + vu_y_offset_base) && !gmem[p_base + 206]) ? (
+                hit_label ? (
+                    builder_drag_target = chk_i;
+                    builder_selection = chk_i; 
+                    builder_drag_mode = 2; // Dragging label
+                    hit_found = 1;
+                ) : hit_body ? (
+                    builder_drag_target = chk_i;
+                    builder_selection = chk_i; 
+                    builder_drag_mode = 1; // Dragging body
+                    hit_found = 1;
+                );
+            );
+        );
+        chk_i -= 1;
+    );
+    
+    //..............................................................................
+    // PASS 2: BACKGROUND (only if nothing found before, find separator)
+
+    (hit_found == 0) ? (
+        chk_i = ui_element_count - 1;
+        while (chk_i >= 0 && builder_drag_target < 0) (
+            chk_ptr = layout_base + chk_i * ui_stride;
+            chk_tab = chk_ptr[18]; 
+            chk_type = chk_ptr[1];
+            
+            // Search only for separators
+            (chk_tab == current_page && chk_type == 6) ? (
+                chk_w = (chk_ptr[5] > 0 ? chk_ptr[5] : 113);
+                chk_h = (chk_ptr[6] > 0 ? chk_ptr[6] : 31);
+                
+                chk_x = chk_ptr[2] * UI_EFF_SCALE;
+                chk_y = chk_ptr[3] * UI_EFF_SCALE + vu_y_offset;
+                
+                hit_body = (mouse_x > chk_x && mouse_x < chk_x + chk_w * UI_EFF_SCALE &&
+                            mouse_y > chk_y && mouse_y < chk_y + chk_h * UI_EFF_SCALE);
+
+                (mouse_y > (100 * UI_EFF_SCALE + vu_y_offset_base) && !gmem[p_base + 206] && hit_body) ? (
+                    builder_drag_target = chk_i;
+                    builder_selection = chk_i; 
+                    builder_drag_mode = 1; // Dragging body
+                    hit_found = 1;
+                );
+            );
+            chk_i -= 1;
+        );
+    );
+
+    (hit_found == 0) ? builder_selection = -1;
+);
+
+// ..............................................................................
+// static coor. for text (DIRTY CHECK)
+
+force_text_recalc == 1 ? (
+    _c = 0;
+    while (_c < ui_element_count) (
+        _ptr = layout_base + (_c * ui_stride);
+        _type = _ptr[1];
+        
+        (_type == 1 || _type == 2 || _type == 3 || _type == 7) ? (
+            _raw_dx = _ptr[15];
+            _abs_dx = abs(_raw_dx);
+            _dx_clean = floor(_abs_dx) * (_raw_dx < 0 ? -1 : 1);
+            
+            _align = 0;
+            _raw_dx != 0 ? (
+                _dec = floor((_abs_dx - floor(_abs_dx)) * 10000 + 0.5);
+                _align = floor(_dec / 1000);
+            );
+            
+            _base_x = _ptr[2] * UI_EFF_SCALE;
+            _base_y = _ptr[3] * UI_EFF_SCALE + vu_y_offset;
+            _param = _ptr[4]; // moved reading of parameter - we need it for steps ...
+            
+            // Dynamic height and width
+            _type == 7 ? (
+                // for Selector check actual steps
+                _custom_steps = _ptr[7];
+                _custom_steps >= 2 && _custom_steps <= 20 ? (
+                    _steps = _custom_steps;
+                ) : (
+                    _ext_steps_base = gmem[100000] + 60000 + (slider2 * 100);
+                    _steps = gmem[_ext_steps_base + (_param - 1)];
+                );
+                _active_btns = (_steps >= 2 && _steps <= 6) ? _steps : 2;
+                
+                _w = _active_btns * 15 * UI_EFF_SCALE;
+                _h = 18 * UI_EFF_SCALE;
+            ) : (
+                // ... forothers use standard logic
+                _w = (_ptr[5] > 0 ? _ptr[5] : (_type == 1 ? 54 : (_type == 2 ? 32 : (_type == 3 ? 45 : 90)))) * UI_EFF_SCALE;
+                _h = (_ptr[6] > 0 ? _ptr[6] : (_type == 1 ? 54 : (_type == 2 ? 25 : (_type == 3 ? 15 : 18)))) * UI_EFF_SCALE;
+            );
+            
+            _dx_px = _dx_clean * UI_EFF_SCALE;
+            _dy_px = _ptr[16] * UI_EFF_SCALE;
+            _name_code = gmem[base + 219 + _param];
+            #_str = "";
+            _name_code > 0 ? decode_to_str(_name_code, #_str);
+            strlen(#_str) == 0 ? sprintf(#_str, "ID:%d", _param);
+            
+            gfx_setfont(1, "Calibri", font_sz_calc);
+            gfx_measurestr(#_str, _tw, _th);
+            
+            // Poroportional offsets acc. to current text height
+            _pad_small = _th * 0.075;
+            _pad_mid   = _th * 0.2;
+            _pad_large = _th * 0.4;
+
+            // anchor_x
+            _align == 1 ? ( // left
+                _anchor_x = _base_x + _dx_px - _pad_mid;
+                _final_y = _base_y + _dy_px + (_h / 2) - (_th / 2) - _pad_small;
+            ) : _align == 2 ? ( // right
+                _anchor_x = _base_x + _w + _dx_px + _pad_mid;
+                _final_y = _base_y + _dy_px + (_h / 2) - (_th / 2) - _pad_small;
+            ) : _align == 3 ? ( // above
+                _anchor_x = _base_x + _dx_px + (_w / 2);
+  
+                _type == 1 ?  _final_y = _base_y + _dy_px - _th + _pad_small - (2 * UI_EFF_SCALE) :
+                              _final_y = _base_y + _dy_px - _th - _pad_small;
+            ) : _align == 4 ? ( // under
+                _anchor_x = _base_x + _dx_px + (_w / 2);
+
+                _type == 1 ? _final_y = _base_y + _dy_px + _h - _pad_large: 
+                             _final_y = _base_y + _dy_px + _h - _pad_small;
+            ) : ( // FREE (Legacy)
+                _type == 2 ? (
+                    _anchor_x = _base_x + _dx_px - _pad_mid;
+                    _final_y = _base_y + _dy_px + (_h / 2) - (_th / 2) - _pad_small;
+                ) : (
+                    _anchor_x = _base_x + _dx_px + (_w / 2);
+                    _type == 1 ? _final_y = _base_y + _dy_px + _h - _pad_mid : 
+                                 _final_y = _base_y + _dy_px + _h - _pad_small;
+                );
+            );
+            
+            static_lbl_x[_c] = floor(_anchor_x + 0.5);
+            static_lbl_y[_c] = floor(_final_y + 0.5);
+            static_lbl_align[_c] = _align;
+        );
+        _c += 1;
+    );
+    force_text_recalc = 0;
+);
+
+
+// DYNAMIC RENDERING LOOP .....................................................
+
+i = 0;
+outbox_base = p_base + 500000 + (slider2 * 3000);
+
+while (i < ui_element_count) (
+    idx = i * ui_stride;
+    el_ptr   = layout_base + idx; 
+    
+    el_id    = el_ptr[0];
+    el_type  = el_ptr[1];
+    el_param = el_ptr[4];
+    el_tab   = el_ptr[18];
+    
+        // OVR TAB (PROXY SYSTEM) ............................................
+        // Proxy only takes functional parameters (Knob=1, Switch=2, Tube=3, Selector=7)
+        is_assignable = (el_type == 1 || el_type == 2 || el_type == 3 || el_type == 7);
+        
+        (current_page == 0 && el_tab == 0 && el_id < 900 && is_assignable) ? (
+ 
+        ovr_btn_idx = ovr_btn_buf[el_param];
+        ovr_packed  = ovr_mtr_buf[el_param];
+        ovr_meter   = floor(ovr_packed / 10);
+        
+        //coordinates for detection
+        ovr_w = (el_ptr[5] > 0 ? el_ptr[5] : 54);
+        ovr_h = (el_ptr[6] > 0 ? el_ptr[6] : 54);
+        ovr_x = el_ptr[2] * UI_EFF_SCALE;
+        ovr_y = el_ptr[3] * UI_EFF_SCALE + vu_y_offset;
+        
+        is_over_ovr = (!gmem[p_base + 206]) && mouse_y > (100 * UI_EFF_SCALE + vu_y_offset_base) &&
+                      mouse_x > ovr_x && mouse_x < ovr_x + ovr_w*UI_EFF_SCALE &&
+                      mouse_y > ovr_y && mouse_y < ovr_y + ovr_h*UI_EFF_SCALE;
+                      
+        // Right click for OVR tab - only outside builder!
+        (is_over_ovr && mouse_cap & 2 && !lastRightMouse && builder_mode_global == 0) ? (
+            p_base = gmem[100000];
+            gmem[p_base + 0] += 1;
+            gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+            gmem[p_base + 5] = el_param; // el_param is on OVR Slot ID
+            gmem[p_base + 7] = 21; // (CMD 21)
+            g_consumed = 1; // Block standard menu
+        );
+        
+        // Redirection of element
+        ovr_btn_idx > 0 ? (
+            // Redirection ONLY target parameter
+            // el_type stays intact, as defined in Builder!
+            el_param = ovr_btn_idx;
+            
+            // auto inherit steps for Selector
+            el_type == 7 ? (
+                _k = 0;
+                while (_k < ui_element_count) (
+                    _src = layout_base + _k * ui_stride;
+                    // Search original Selector (Type 7),linked to the same parameter not on OVR
+                    (_src[1] == 7 && _src[4] == ovr_btn_idx && _src[18] > 0) ? (
+                        el_ptr[7] = _src[7]; // copy manual steps from original
+                    );
+                    _k += 1;
+                );
+            );
+            
+            // Draw ring GR meter
+            (ovr_meter > 0 && el_tab == current_page) ? (
+                circular_gr_meter(ovr_x, ovr_y, ovr_meter, ovr_w);
+            );
+        ) : (
+            // Frame for empty slot
+            (el_tab == current_page) ? (
+                gfx_set(1, 1, 1, 0.2 * g_sec_a);
+                gfx_rect(ovr_x, ovr_y, ovr_w*UI_EFF_SCALE, ovr_h*UI_EFF_SCALE, 0);
+                
+                // Show "+" sign on hover - outside builder
+                (is_over_ovr && builder_mode_global == 0) ? (
+                    draw_text_centered(ovr_x, ovr_y + (ovr_h*0.75)*UI_EFF_SCALE, ovr_w, "+", 0.5 * g_sec_a);
+                );
+            );
+            
+            // Hide knob for empty slot outside builder
+            (builder_mode_global == 0) ? (
+                el_type = 999; 
+            );
+        );
+    );
+    
+    (el_tab == current_page) ? (
+        el_w = (el_ptr[5] > 0 ? el_ptr[5] : (el_type == 1 ? 54 : (el_type == 2 ? 32 : (el_type == 4 ? 40 : 45))));
+        el_h = (el_ptr[6] > 0 ? el_ptr[6] : (el_type == 1 ? 54 : (el_type == 2 ? 25 : (el_type == 4 ? 15 : 15))));
+        
+        e_x = el_ptr[2] * UI_EFF_SCALE;
+        e_y = el_ptr[3] * UI_EFF_SCALE + vu_y_offset;
+
+        is_over_el = (!gmem[p_base + 206]) && mouse_y > (100 * UI_EFF_SCALE + vu_y_offset_base) &&
+                     mouse_x > e_x && mouse_x < e_x + el_w*UI_EFF_SCALE &&
+                     mouse_y > e_y && mouse_y < e_y + el_h*UI_EFF_SCALE;
+
+        state_ptr = el_ptr + 10;
+
+        // moving elements ..............................
+        (builder_mode_global == 1 && el_type != 1 && el_type != 2 && el_type != 3 && el_type != 7) ? (
+            (leftMouse && !lastLeftMouse && builder_drag_target == i) ? (
+                
+                // DBL Cick (or ALT + KLIK) on text -> RESET OFFSET
+                ((time_precise() - state_ptr[3] < 0.25 || altDown) && builder_drag_mode == 2) ? (
+                    el_ptr[15] = 0;
+                    el_ptr[16] = 0;
+                    state_ptr[3] = 0; // Reset click time
+                    state_ptr[0] = 0; // Disallow dragging
+                    force_text_recalc = 1;
+                ) : (
+                    state_ptr[3] = time_precise(); // track dbl clikc time
+                    state_ptr[0] = 1;
+                    
+                    builder_drag_mode == 1 ? ( // Body Drag
+                        state_ptr[1] = (mouse_x / UI_EFF_SCALE) - el_ptr[2];
+                        state_ptr[2] = ((mouse_y - vu_y_offset) / UI_EFF_SCALE) - el_ptr[3];
+                        builder_start_x = el_ptr[2];
+                        builder_start_y = el_ptr[3];
+                    ) : ( // Label Drag
+                        state_ptr[1] = (mouse_x / UI_EFF_SCALE) - el_ptr[15];
+                        state_ptr[2] = ((mouse_y - vu_y_offset) / UI_EFF_SCALE) - el_ptr[16];
+                        builder_start_x = el_ptr[15];
+                        builder_start_y = el_ptr[16];
+                    );
+                );
+            );
+            (!leftMouse) ? state_ptr[0] = 0;
+
+            state_ptr[0] == 1 ? (
+                current_dragging = 1;
+                force_text_recalc = 1;
+                grid = builder_grid;
+                raw_x = (mouse_x / UI_EFF_SCALE) - state_ptr[1];
+                raw_y = ((mouse_y - vu_y_offset) / UI_EFF_SCALE) - state_ptr[2];
+                
+                ctrlDown ? (
+                    abs(raw_x - builder_start_x) > abs(raw_y - builder_start_y) ? (
+                        raw_y = builder_start_y; 
+                    ) : (
+                        raw_x = builder_start_x; 
+                    );
+                );
+                
+                builder_drag_mode == 1 ? (
+                    (el_type != 6 || el_id < 900) ? (
+                        el_ptr[2] = floor(raw_x / grid + 0.5) * grid;
+                    );
+                    el_ptr[3] = floor(raw_y / grid + 0.5) * grid;
+                ) : (
+                    el_ptr[15] = floor(raw_x / grid + 0.5) * grid;
+                    el_ptr[16] = floor(raw_y / grid + 0.5) * grid;
+                    
+                    // Reset alignment on manual text drag
+                    ui_align[i] = 0; 
+                    ui_ref_w[i] = 0;
+                );
+            );
+        );
+        
+        // Draw lements  ....................
+        sl_idx    = get_sl_idx(el_param);
+        addr_v    = base + 10 + el_param; 
+        addr_lock = base + 1;             
+        addr_n    = base + 219 + el_param; 
+        addr_d    = base + 79 + el_param;  
+        addr_s    = base + 149 + el_param;
+        
+        // Dynamic dimming ..................
+        g_sec_a = (el_param <= 20) ? alpha_eq : 
+                  (el_param <= 29) ? alpha_d1 : 
+                  (el_param <= 38) ? alpha_d2 : 
+                  (el_param <= 44) ? alpha_s1 : alpha_s2;
+        
+
+        el_type == 1 ? (
+            knob_dynamic(el_ptr, 54, sl_idx, el_param, addr_v, addr_lock, addr_n, addr_d, addr_s, el_ptr[5] > 0 ? el_ptr[5] : Target_knob_size); 
+        ) : 
+        
+        el_type == 2 ? (
+            switch_dynamic(el_ptr, sl_idx, el_param, addr_v, addr_lock, addr_n, addr_d, addr_s);
+        ) :
+        
+        el_type == 3 ? (
+            tube_dynamic(el_ptr, sl_idx, el_param, addr_v, addr_lock, addr_n, addr_d, addr_s);
+        );
+        
+        el_type == 4 ? (
+            #full_text = "";
+            el_ptr[4] > 0 ? decode_to_str(el_ptr[4], #full_text);
+            el_ptr[7] > 0 ? (
+                #part2 = ""; decode_to_str(el_ptr[7], #part2); strcat(#full_text, #part2); 
+            );
+            custom_sz = el_ptr[8] > 0 ? floor(el_ptr[8] * (UI_EFF_SCALE * 0.75 + 0.5) + 0.5) : font_sz_calc;
+            is_bold = el_ptr[9] == 1 ? 'b' : 0; 
+            gfx_setfont(1, "Calibri", custom_sz, is_bold);
+            gfx_set(1, 1, 1, 0.75 * g_sec_a); 
+            gfx_measurestr(#full_text, tw, th);
+            gfx_x = e_x + (el_w * UI_EFF_SCALE / 2) - (tw / 2); 
+            gfx_y = e_y + (el_h * UI_EFF_SCALE / 2) - (th / 2);
+            gfx_drawstr(#full_text);
+            gfx_setfont(1, "Calibri", font_sz_calc);
+        );
+        
+        el_type == 5 ? (
+            el_param == 0 ? level_meter(e_x, e_y, el_w, el_h) : 
+            el_param == 1 ? gr_meter(el_ptr, e_x, e_y, 1, el_w, el_h) : 
+            el_param == 2 ? gr_meter(el_ptr, e_x, e_y, 2, el_w, el_h) : 
+            el_param == 3 ? vertical_gr_meter(el_ptr, e_x, e_y, 1, el_w, el_h) : 
+            el_param == 4 ? vertical_gr_meter(el_ptr, e_x, e_y, 2, el_w, el_h) : 
+            el_param == 5 ? analog_gr_meter(el_ptr, e_x, e_y, 1, el_w, el_h) : 
+            el_param == 6 ? analog_gr_meter(el_ptr, e_x, e_y, 2, el_w, el_h) : 0;
+        );
+        
+        el_type == 6 ? (
+            separator_dynamic(e_x, e_y, el_param, el_w, el_h);
+            // capture Y of system diveider while drawing!
+            (el_id == 902 || el_id == 903) ? global_split_y = e_y;
+        );
+
+        el_type == 7 ? (
+            selector(el_ptr, e_x, e_y, el_ptr[5] > 0 ? el_ptr[5] : 54, sl_idx, el_param, addr_v, addr_lock, addr_n, addr_d, addr_s);
+        );
+        el_type == 8 ? (
+            // Group Box 
+            g_sec_a = alpha_group;
+
+            mouse_over_group = (mouse_x >= e_x && mouse_x <= e_x + el_w*UI_EFF_SCALE && mouse_y >= e_y && mouse_y <= e_y + el_h*UI_EFF_SCALE) && was_dragging == 0 && (!gmem[p_base + 206]);
+            
+            cur_group_idx = gmem[base + 360 + 49]; 
+
+            // PNG bg
+            gfx_a = alpha_group;
+            gfx_blit(35, 1, 0, 0, 0, 65, 19, e_x, e_y, el_w * UI_EFF_SCALE, el_h * UI_EFF_SCALE);
+
+            // Hover effect
+            mouse_over_group ? (
+                gfx_set(1, 1, 1, 0.15 * alpha_group);
+                gfx_rect(e_x, e_y, el_w * UI_EFF_SCALE, el_h * UI_EFF_SCALE, 1);
+            );
+
+            // Text
+            #group_label = "No Group";
+            cur_group_idx == 1 ? #group_label = "Group A";
+            cur_group_idx == 2 ? #group_label = "Group B";
+            cur_group_idx == 3 ? #group_label = "Group C";
+            cur_group_idx == 4 ? #group_label = "Group D";
+
+            draw_text_colored_centered(e_x, e_y + (el_h * UI_EFF_SCALE / 2) - (font_sz_calc / 2), el_w, #group_label, 1, .5, 0, alpha_group); 
+            
+            (mouse_over_group && rightMouse && !lastRightMouse) ? (
+                p_base = gmem[100000]; 
+                gmem[p_base + 0] += 1; 
+                gmem[p_base + 4] = slider2; 
+                gmem[p_base + 6] = p; 
+                gmem[p_base + 5] = 50;        
+                gmem[p_base + 7] = 5; 
+                g_consumed = 1;      
+            );
+        );
+        
+        el_type == 9 ? (
+            // --- AUTO GAIN POWER (Type 9) ---
+            addr_ag   = base + 78;
+            addr_hold = base + 79;
+            ag_on     = gmem[addr_ag];
+            hold_on   = gmem[addr_hold];
+
+            target_w = el_ptr[5] > 0 ? el_ptr[5] : 40;
+            target_h = el_ptr[6] > 0 ? el_ptr[6] : 35;
+            
+            rectIn_ag.rectIn(e_x, e_y, target_w * UI_EFF_SCALE, target_h * UI_EFF_SCALE);
+            is_over_ag = rectIn_ag.collision();
+
+            builder_mode_global == 0 ? (
+                (is_over_ag && was_dragging == 0) ? (
+                    strcpy(#global_tooltip, ag_on > 0.5 ? (hold_on > 0.5 ? "Auto Gain: Frozen" : "AutoGain: ON/Lrn") : "AutoGain: OFF");
+                    show_tooltip = 1;
+                );
+
+                (is_over_ag && leftMouse && !lastLeftMouse) ? (
+                    p_base = gmem[100000];
+                    gmem[p_base + 0] += 1;
+                    gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+                    gmem[p_base + 5] = 68;
+                    gmem[p_base + 7] = 22; // CMD 22
+                    g_consumed = 1;
+
+                    gmem[base + 1] = 68;
+                    new_val = (ag_on < 0.5) ? 1 : 0;
+                    gmem[addr_ag] = new_val;
+                    slider(11) = new_val;
+                    slider_automate(2^10);
+                );
+            );
+
+            // 3-frame PNG crop: 0 = Freeze (Red), 1 = Learning (Green), 2 = OFF (Black)
+            frame_idx = (ag_on < 0.5) ? 2 : (hold_on > 0.5 ? 0 : 1);
+
+            gfx_getimgdim(36, img_w, img_h);
+            (img_w > 0 && img_h > 0) ? (
+                src_h = floor(img_h / 3);
+                gfx_a = g_sec_a;
+                gfx_blit(36, 1, 0, 
+                         0, frame_idx * src_h, 
+                         img_w, src_h, 
+                         e_x, e_y, 
+                         target_w * UI_EFF_SCALE, target_h * UI_EFF_SCALE);
+            );
+
+            // Additive Blending Hover for Auto Gain
+            (is_over_ag && was_dragging == 0 && builder_mode_global == 0) ? (
+                gfx_mode = 1;
+                gfx_a = 0.25 * g_sec_a;
+                gfx_blit(36, 1, 0, 
+                         0, frame_idx * src_h, 
+                         img_w, src_h, 
+                         e_x, e_y, 
+                         target_w * UI_EFF_SCALE, target_h * UI_EFF_SCALE);
+                gfx_mode = 0;
+            );;
+        );
+
+        el_type == 10 ? (
+            //  AUTO GAIN LOCK ICON (Type 10) ...............
+            addr_ag   = base + 78;
+            addr_hold = base + 79;
+            ag_on     = gmem[addr_ag];
+            hold_on   = gmem[addr_hold];
+
+            target_w = el_ptr[5] > 0 ? el_ptr[5] : 17;
+            target_h = el_ptr[6] > 0 ? el_ptr[6] : 17;
+
+            (ag_on > 0.5 || builder_mode_global == 1) ? (
+                rectIn_lock.rectIn(e_x, e_y, target_w * UI_EFF_SCALE, target_h * UI_EFF_SCALE);
+                is_over_lock = rectIn_lock.collision();
+
+                builder_mode_global == 0 ? (
+                    (is_over_lock && was_dragging == 0) ? (
+                        strcpy(#global_tooltip, hold_on ? "AG Lock: Frozen" : "AG Lock: Freeze?");
+                        show_tooltip = 1;
+                    );
+
+                    (is_over_lock && leftMouse && !lastLeftMouse) ? (
+                        gmem[addr_hold] = (hold_on == 0) ? 1 : 0;
+                        slider(12) = gmem[addr_hold];
+                        slider_automate(2^11);
+                        g_consumed = 1;
+                    );
+                );
+
+                (is_over_lock && was_dragging == 0 && builder_mode_global == 0) ? (
+                    gfx_set(1, 1, 1, 0.15 * g_sec_a);
+                    gfx_rect(e_x, e_y, target_w * UI_EFF_SCALE, target_h * UI_EFF_SCALE, 1);
+                );
+
+                //  icon Lock
+                gfx_a = (hold_on ? 1.0 : 0.3) * g_sec_a;
+                gfx_getimgdim(26, img_w, img_h);
+                (img_w > 0 && img_h > 0) ? (
+                    gfx_blit(26, 1, 0, 0, 0, img_w, img_h, e_x, e_y, target_w * UI_EFF_SCALE, target_h * UI_EFF_SCALE);
+                    
+                    // Additive Blending Hover
+                    (is_over_lock && was_dragging == 0 && builder_mode_global == 0) ? (
+                        gfx_mode = 1;
+                        gfx_a = 0.15 * g_sec_a;
+                        gfx_blit(26, 1, 0, 0, 0, img_w, img_h, e_x, e_y, target_w * UI_EFF_SCALE, target_h * UI_EFF_SCALE);
+                        gfx_mode = 0;
+                    );
+                );
+            );
+        );
+        
+        el_type == 12 ? (
+            // call existing function and apply the position from builder
+            Input_Mod.input_gain_module(e_x, e_y, el_w * UI_EFF_SCALE);
+        );
+        
+        // Selection frame ..................................
+        (builder_mode_global == 1) ? (
+            (is_over_el || state_ptr[0] == 1 || builder_selection == i) ? (
+                gfx_set(1, 0.5, 0, 0.6);
+                gfx_rect(el_ptr[2]*UI_EFF_SCALE, el_ptr[3]*UI_EFF_SCALE + vu_y_offset, el_w*UI_EFF_SCALE, el_h*UI_EFF_SCALE, 0);
+            );
+        );
+
+    );
+
+    // Dyn sel for Lua toolbox ...............................
+    (builder_mode_global == 1 && builder_selection == i) ? (
+        gmem[outbox_base - 4] = builder_selection + 1;
+    );
+    
+    // Write strukture to OUTBOX (for all tabs) ............
+    gmem[outbox_base - 1] = ui_element_count; 
+    gmem[outbox_base - 2] = current_page;
+    
+    gmem[outbox_base + (i * 13) + 0] = el_ptr[0]; // ID
+    gmem[outbox_base + (i * 13) + 1] = el_ptr[1]; // Type
+    gmem[outbox_base + (i * 13) + 2] = el_ptr[2]; // X
+    gmem[outbox_base + (i * 13) + 3] = el_ptr[3]; // Y
+    gmem[outbox_base + (i * 13) + 4] = el_ptr[4]; // Param
+    gmem[outbox_base + (i * 13) + 5] = el_ptr[5]; // W
+    gmem[outbox_base + (i * 13) + 6] = el_ptr[6]; // H
+    gmem[outbox_base + (i * 13) + 7] = el_ptr[7]; // Txt2
+    gmem[outbox_base + (i * 13) + 8] = el_ptr[8]; // Font
+    gmem[outbox_base + (i * 13) + 9] = el_ptr[9]; // Bold
+    gmem[outbox_base + (i * 13) + 10] = el_ptr[18]; // TAB_ID
+    gmem[outbox_base + (i * 13) + 11] = el_ptr[15]; // DX
+    gmem[outbox_base + (i * 13) + 12] = el_ptr[16]; // DY
+    
+    i += 1;
+);
+
+
+
+// HEADER .....................................................
+g_sec_a = 1.0;
+gfx_a = 1.0;
+
+// Fixed header on top ............
+header_idx = max(0, min(3, current_page));
+hdr_start_y = floor(vu_y_offset_base);
+hdr_w = floor(125 * UI_EFF_SCALE);
+hdr_h = floor(100 * UI_EFF_SCALE);
+
+gfx_blit(header_idx, 1.0, 0, 0, 0, 125, 100, 0, hdr_start_y, hdr_w, hdr_h);
+
+// OVERLAY part 2 ..............
+current_page > 0 ? (
+    tab_col = (current_page == 1) ? slider7 : (current_page == 2) ? slider8 : slider9;
+    (tab_col == 0) ? tab_col = 0x222222;
+    
+    // 0xRRGGBB format ...........
+    c_r = ((tab_col >> 16) & 0xFF) / 255.0;
+    c_g = ((tab_col >>  8) & 0xFF) / 255.0;
+    c_b = ( tab_col        & 0xFF) / 255.0;
+    
+    gfx_set(c_r, c_g, c_b, 0.35);
+    gfx_rect(0, hdr_start_y, hdr_w, hdr_h, 1);
+);
+
+// Tab hover highlight ...........
+(tab_hover_sel > 0) ? (
+  tab_hover_x = (tab_hover_sel == 1) ? 0 : (tab_hover_sel == 2) ? (UI_W / 3) : (UI_W * 2 / 3);
+  gfx_set(1, 1, 1, 0.12);
+  tab_y_start_fixed = 70 * UI_EFF_SCALE + vu_y_offset_base;
+  tab_y_end_fixed   = 100 * UI_EFF_SCALE + vu_y_offset_base;
+  gfx_rect(tab_hover_x, tab_y_start_fixed, UI_W / 3, tab_y_end_fixed - tab_y_start_fixed-4*UI_EFF_SCALE, 1);
+);
+
+// Decode and draw custom tab color markers
+tab_colors_val = slider6;
+col_eq  = floor(tab_colors_val / 100);
+col_dyn = floor((tab_colors_val % 100) / 10);
+col_fx = floor(tab_colors_val % 10);
+
+line_w = 30 * UI_EFF_SCALE; 
+line_h = 3 * UI_EFF_SCALE;  
+line_y = 95.5 * UI_EFF_SCALE + vu_y_offset_base;
+shift_x = 0 * UI_EFF_SCALE;
+
+col_eq > 0 ? (
+    col_eq == 1 ? gfx_set(1, 0.2, 0.2, 1) : col_eq == 2 ? gfx_set(0.2, 1, 0.2, 1) : col_eq == 3 ? gfx_set(0.2, 0.6, 1, 1) : gfx_set(1, 0.9, 0.1, 1);
+    gfx_rect((UI_W / 6) - (line_w / 2) - shift_x, line_y, line_w, line_h);
+);
+col_dyn > 0 ? (
+    col_dyn == 1 ? gfx_set(1, 0.2, 0.2, 1) : col_dyn == 2 ? gfx_set(0.2, 1, 0.2, 1) : col_dyn == 3 ? gfx_set(0.2, 0.6, 1, 1) : gfx_set(1, 0.9, 0.1, 1);
+    gfx_rect((UI_W / 2) - (line_w / 2) + (1.5 * UI_EFF_SCALE), line_y, line_w, line_h);
+);
+col_fx > 0 ? (
+    col_fx == 1 ? gfx_set(1, 0.2, 0.2, 1) : col_fx == 2 ? gfx_set(0.2, 1, 0.2, 1) : col_fx == 3 ? gfx_set(0.2, 0.6, 1, 1) : gfx_set(1, 0.9, 0.1, 1);
+    gfx_rect((UI_W * 5 / 6) - (line_w / 2) + shift_x, line_y, line_w, line_h);
+);
+
+// SELECTION 2 top part highlight
+is_selected_track ? (
+  gfx_set(1, 1, 1, 0.04); 
+
+  y_start = floor(70 * UI_EFF_SCALE + vu_y_offset_base);
+  y_end   = floor(100 * UI_EFF_SCALE + vu_y_offset_base);
+
+  gfx_rect(0, y_start, UI_W, (y_end - y_start), 1);
+);
+
+// Always visible VU meter at FIXED position .........................
+g_sec_a = 1.0;
+(global_vu_style == 0) ? VU_meter.analog_vu_meter(0, 0);
+(global_vu_style == 1) ? Slim_meter.slim_horizontal_meter(0, 0);
+
+
+// ............................................................
+// TRACK SELECTION ON CLICK
+
+(leftMouse && !lastLeftMouse && !g_consumed) ?
+(
+  p_base = gmem[100000]; 
+  gmem[p_base + 10] = slider2; 
+  gmem[p_base + 13] = p; 
+  safe_val = (mouse_cap & 4) ? 5 : 1;
+  gmem[p_base + 12] = safe_val; 
+  last_sent_val = safe_val;
+  gmem[p_base + 11] += 1; 
+
+);
+
+// ...........................................................
+// HEADER MENU ICON (SETTINGS)
+
+menu_icon_w = 20 * UI_EFF_SCALE; 
+menu_icon_h = 18 * UI_EFF_SCALE; 
+menu_icon_x = UI_W - menu_icon_w - (6 * UI_EFF_SCALE); 
+
+(global_vu_style == 2) ? (
+    menu_icon_y = (inst_panel_h * UI_EFF_SCALE + vu_y_offset) - menu_icon_h - (6 * UI_EFF_SCALE);
+) : (
+    menu_icon_y = 47 * UI_EFF_SCALE + vu_y_offset_base; 
+);
+
+
+is_over_menu = (!gmem[p_base + 206]) && (mouse_x >= menu_icon_x && mouse_x <= menu_icon_x + menu_icon_w && mouse_y >= menu_icon_y && mouse_y <= menu_icon_y + menu_icon_h);
+
+
+// Bounding box  & tooltip .......
+
+(is_over_menu && was_dragging == 0) ? (
+    gfx_set(1, 1, 1, 0.2 * g_sec_a);
+    gfx_rect(menu_icon_x, menu_icon_y, menu_icon_w, menu_icon_h, 1);
+    strcpy(#global_tooltip, "Settings");
+    show_tooltip = 1;
+);
+
+
+// Menu call ....................
+
+(((leftMouse && !lastLeftMouse) || (rightMouse && !lastRightMouse)) && !g_consumed && is_over_menu) ? (
+
+    p_base = gmem[100000];
+    gmem[p_base + 0] += 1;     
+    gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
+    gmem[p_base + 5] = 99; // Identifier code for global settings menu
+    gmem[p_base + 7] = 3;  // Trigger CMD 3
+    g_consumed = 1;
+
+);
+
+
+
+// MAPPING ................................................................................
+(rightMouse && !lastRightMouse && !g_consumed && current_page != 0 && mouse_y > (100 * UI_EFF_SCALE + vu_y_offset_base)) ? (
+
+  // Vzamemo mejo, ki smo jo ulovili pri izrisu
+  split_y = global_split_y;
+
+  // if no divider in Builder (or for static jsfx) use old hardcoded fallback
+  split_y == 0 ? (
+      current_page == 2 ? split_y = UI_H * 0.5 + 25 * UI_EFF_SCALE + vu_y_offset :
+      current_page == 3 ? split_y = 302.5 * UI_EFF_SCALE + vu_y_offset : 0;
+  );
+
+  is_top = (current_page == 1) || (current_page > 1 && mouse_y < split_y);
+  is_bottom = (current_page > 1 && mouse_y >= split_y);
+
+  (is_top || is_bottom) ? (
+    p_base = gmem[100000];
+    gmem[p_base + 0] += 1;
+    gmem[p_base + 4] = slider2; 
+    gmem[p_base + 6] = p;
+    gmem[p_base + 5] = is_bottom ? 2 : 1; 
+    gmem[p_base + 7] = 3;
+  );
+);
+
+
+
+// DRAG TO SCROLL & MOUSEWHEEL ...........................................
+
+// Mousewheel scrolling on empty space
+(mouse_wheel != 0 && !g_consumed) ? (
+    user_scroll_y += (mouse_wheel > 0) ? 60 : -60;
+    mouse_wheel = 0;
+    force_text_recalc = 1;
+);
+
+
+// Drag-to-scroll on empty space (only BELOW the fixed 100px header area)
+// Checks current_dragging and gmem[base + 1] to ignore drags starting on knobs/switches
+
+(leftMouse && !lastLeftMouse && !g_consumed && current_dragging == 0 && mouse_y > (100 * UI_EFF_SCALE + vu_y_offset_base)) ? (
+    scroll_active = 1;
+    scroll_start_y = mouse_y;
+    scroll_start_offset = user_scroll_y;
+);
+
+
+// Stop scrolling when mouse is released
+(!leftMouse) ? scroll_active = 0;
+
+
+// Calculate offset while dragging
+(scroll_active) ? (
+    user_scroll_y = scroll_start_offset + (mouse_y - scroll_start_y);
+    force_text_recalc = 1;
+);
+
+
+lastRightMouse = rightMouse;
+g_consumed = 0;
+lastLeftMouse = leftMouse;
+
+
+// GLOBAL TOOLTIP ............................................................................
+
+is_menu_open = gmem[p_base + 206];
+(show_tooltip && !is_menu_open) ? (
+    strcpy(#display_tooltip, #global_tooltip);
+    matchi("BYP:*", #display_tooltip) ? (
+       matchi("BYP: ON*", #display_tooltip) ? strcpy(#display_tooltip, "PWR: ON") :
+       matchi("BYP: OFF*", #display_tooltip) ? strcpy(#display_tooltip, "PWR: OFF") :
+       strcpy(#display_tooltip, "PWR");
+    );
+
+
+    gfx_measurestr(#display_tooltip, tw, th);
+    pad = 4; radius = 4;
+    full_w = tw + pad * 2;
+    full_h = th + pad * 2;
+
+    // Default Y position (below the mouse)
+    ty = mouse_y + 21;
+
+
+    // Default X position logic (flip left/right depending on screen half)
+
+    (mouse_x > UI_W / 2) ? (
+      tx = mouse_x - tw + 6;
+    ) : (
+      tx = mouse_x + 12;
+    );
+
+
+    // Keep tooltip within the plugin window
+    tx = max(min(tx, gfx_w - full_w - 5), 5);
+    
+
+    // flip  ABOVE the mouse if Y exceeded
+    (ty + full_h > gfx_h) ? (
+        ty = mouse_y - full_h - 8; 
+    );
+
+    // top edge
+    ty = max(ty, 5);
+
+    
+    // Tooltip Background ...................
+    gfx_set(1, 1, 1, 0.85); 
+    gfx_rect(tx - pad + 2, ty - pad + 1, full_w - 2, full_h - 3, 1);
+    gfx_set(0, 0, 0, 0.7);
+    gfx_roundrect(tx - pad + 1, ty - pad + 1, full_w - 2, full_h - 3, radius / 2, 1);
+    gfx_roundrect(tx - pad, ty - pad, full_w, full_h - 1, radius, 1);
+
+    // Tooltip Text ....................
+    gfx_set(0, 0, 0, 1);
+    gfx_x = tx;
+    gfx_y = ty;
+    gfx_drawstr(#display_tooltip);
+);
+
+
+
+/*    
+// --- DEBUG OVERLAY ---
+gfx_set(1, 1, 1, 1);
+gfx_setfont(1, "Arial", 12, 'b'); // Manjša pisava (velikost 10)
+
+gfx_x = 10; gfx_y = 10;
+sprintf(#dbg_str1, "SLOT: %d", slider2);
+gfx_drawstr(#dbg_str1);
+
+gfx_x = 10; gfx_y = 25; // Premik v novo vrstico
+sprintf(#dbg_str2, "ELEMENTOV: %d", ui_element_count);
+gfx_drawstr(#dbg_str2);
+
+gfx_x = 10; gfx_y = 40; // Premik v novo vrstico
+sprintf(#dbg_str3, "LUA POSLALA: %d", dbg_caught_elems);
+gfx_drawstr(#dbg_str3);
+
+gfx_x = 10; gfx_y = 55; // Premik v novo vrstico
+sprintf(#dbg_str4, "ZASTAVICA: %d", dbg_caught_flag);
+gfx_drawstr(#dbg_str4);
+
+
+// ........................................
+
+// --- MULTILINE RAW DNA DEBUG ---
+
+// ........................................
+
+gfx_setfont(1, "Arial", 14);
+
+gfx_set(0, 1, 0, 1); 
+
+gfx_x = 5;           
+
+gfx_y = 5;           
+
+gfx_printf("DNA LEN: %d", dna_len);
+
+
+gfx_x = 5; 
+
+gfx_y = 20;
+
+dna_len > 0 ? (
+
+    dbg_i = 0;
+
+    while (dbg_i < dna_len) (
+
+        gfx_printf("%d ", dna_local_buf[dbg_i]);
+
+        dbg_i += 1;
+
+        
+
+        (dbg_i % 5 == 0) ? (
+
+            gfx_y += 12;
+
+            gfx_x = 5;
+
+        );
+
+    );
+
+) : (
+
+    gfx_printf("RAW: EMPTY");
+
+);
+
+// ......................................................
+
+*/
+
+
+
+// Shortcut for testing layout builder .............
+// SHIFT in ALT or lefr clikc anywhere on empty bg
+(leftMouse && !lastLeftMouse && shiftDown && altDown && !is_hover_tab && current_dragging == 0) ? (
+    gmem[base + 428] = (gmem[base + 428] == 0) ? 1 : 0; // revert mode!
+    g_consumed = 1;
+);
+
+
+show_tooltip = 0; 
+was_dragging = current_dragging;
+); 
+
