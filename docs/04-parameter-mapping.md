@@ -20,7 +20,7 @@ The "last touched" feature registers *any* parameter  movement in REAPER, includ
 
 Once a parameter is linked, **Right-Click** it to open the editing options. Select **Rename parameter** to give it a custom, easy-to-read name on your layout. You can also select **Invert status**, which reverses the control's behavior—useful for mapping bypass switches or reverse-acting knobs.
 
-<video controls style="width: 500px !important; max-width: 100% !important;">
+<video controls style="width: 700px !important; max-width: 100% !important;">
   <source src="4%20Parameter%20Mapping%20&%20Customization/20261025-1845-21.8932848.mp4" type="video/mp4">
 </video>
 
