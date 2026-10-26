@@ -12,17 +12,13 @@ For dynamics sections (DYN 1 and DYN 2), the Aggregator analyzes the signal to c
 
 StripLink includes a calculation engine for channel-strip plugins that contain both a compressor and a gate. If the plugin reports native compressor gain reduction to the DAW, you can link DYN 1 to the compressor and DYN 2 to the gate. The Aggregator detects that both meters share the same plugin instance and isolates the gate’s gain reduction, providing two distinct GR meters.
 
-<aside>
+<video controls>
+  <source src="6%20StripLink%20Aggregator,%20Metering%20&%20Auto-Gain/20261025-2203-39.5161320.mp4" type="video/mp4">
+</video>
 
-[20261025-2203-39.5161320.mp4](6%20StripLink%20Aggregator,%20Metering%20&%20Auto-Gain/20261025-2203-39.5161320.mp4)
-
-</aside>
-
-<aside>
-
-[20261025-2242-50.9028585.mp4](6%20StripLink%20Aggregator,%20Metering%20&%20Auto-Gain/20261025-2242-50.9028585.mp4)
-
-</aside>
+<video controls>
+  <source src="6%20StripLink%20Aggregator,%20Metering%20&%20Auto-Gain/20261025-2242-50.9028585.mp4" type="video/mp4">
+</video>
 
 ### **Important Note on Containers & Routing:** Gain Reduction (GR) metering and the Aggregator's auto-routing will **only function if your plugins are placed inside a REAPER Container**. Because StripLink uses complex multi-channel routing (up to 14 channels) to pass meter and reference signals, the Container acts as an isolated sandbox—preventing this internal routing from bleeding into or breaking your track's main signal flow. Additionally, StripLink intentionally leaves channels 3/4 completely untouched, ensuring your standard sidechain compression workflows remain perfectly intact. 
 
