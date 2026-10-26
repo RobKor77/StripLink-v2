@@ -7,10 +7,12 @@ StripLink uses four main pages to organize your workflow: **OVR** (Overview), **
 - **Global Switching (Default):** Clicking any tab will instantly switch the view across all StripLink instances in your entire project, keeping your mixer perfectly synced.
 - **Local Switching:** Hold `Ctrl` (or `Cmd` on Mac) and click a tab to change the view for that specific track only, without affecting the rest of your mixer.
 
-<video controls style="width: 50%;">
-  <source src="2%20Basic%20Controls%20&%20Navigation/922226ec-b219-4771-8355-ec080e012fea.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+<div style="max-width: 550px; margin: 20px auto;">
+  <video controls style="width: 100%; display: block;">
+    <source src="2%20Basic%20Controls%20&%20Navigation/922226ec-b219-4771-8355-ec080e012fea.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</div>
 
 ---
 
