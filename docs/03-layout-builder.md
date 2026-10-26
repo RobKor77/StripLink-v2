@@ -98,7 +98,7 @@ The Layout Builder provides complete structural freedom to design your ideal cha
 
 
 
-<table style="width:100% !important; border:0 !important; border-collapse:collapse !important; background:transparent !important;">
+<table style="width: 100% !important; margin: 0 auto !important; border: none !important; border-collapse: collapse !important; background: transparent !important;">
   <tbody style="background:transparent !important;">
     <tr style="background:transparent !important;">
       <td style="width:50%; padding:5px; vertical-align:top; text-align:center; background:transparent !important; border:0 !important;">
@@ -147,31 +147,8 @@ The toolbox offers two independent height settings to fit your layout:
 
 To start completely from scratch, click the **CLEAR LAYOUT** button in the toolbox. A safety prompt will appear to prevent accidental deletion. Confirming will remove all custom elements and tab colors, leaving a completely blank layout across all TABs.
 
-### **Modular Layout Concepts**
+<td style="width: 70%; vertical-align: top; padding: 0; border: none !important; background: transparent !important;">
 
-The Layout Builder provides complete structural freedom to design your ideal channel strip. Rather than just swapping colors, you can construct entirely distinct functional blocks—from dense EQ and Dynamics sections to dedicated Preamp utilities and complex signal routing panels. Below are examples of different layout architectures demonstrating the wide variety of controls, visual grouping, and interface designs you can achieve.
-
-
-
-<table style="width:100% !important; border:0 !important; border-collapse:collapse !important; background:transparent !important;">
-  <tbody style="background:transparent !important;">
-    <tr style="background:transparent !important;">
-      <td style="width:50%; padding:5px; vertical-align:top; text-align:center; background:transparent !important; border:0 !important;">
-        <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/1.png" style="width:320px !important; min-width:320px !important; max-width:320px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important; background:transparent !important;">
-      </td>
-      <td style="width:50%; padding:5px; vertical-align:top; text-align:center; background:transparent !important; border:0 !important;">
-        <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/2.png" style="width:320px !important; min-width:320px !important; max-width:320px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important; background:transparent !important;">
-      </td>
-    </tr>
-    <tr style="background:transparent !important;">
-      <td style="width:50%; padding:5px; vertical-align:top; text-align:center; background:transparent !important; border:0 !important;">
-        <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/3.png" style="width:320px !important; min-width:320px !important; max-width:320px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important; background:transparent !important;">
-      </td>
-      <td style="width:50%; padding:5px; vertical-align:top; text-align:center; background:transparent !important; border:0 !important;">
-        <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/4.png" style="width:320px !important; min-width:320px !important; max-width:320px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important; background:transparent !important;">
-      </td>
-    </tr>
-  </tbody>
-</table>
+- **Knob:** A standard continuous rotary control for parameters like gain, frequency, or threshold.<br><br>
 
 
