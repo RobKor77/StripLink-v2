@@ -16,6 +16,8 @@ Once in Builder mode, a floating toolbox window appears. You can add various con
 
 ### Available Control Types
 
+<img src="3%20Layout%20Builder%20(Module%20Version%20Only)/control-types-composite-120.png" style="float: right; margin: 10px 0 20px 25px; width: 140px; height: auto;">
+
 - **Knob:** A standard continuous rotary control for parameters like gain, frequency, or threshold.
 - **Switch:** A simple two-state toggle (On/Off), ideal for bypasses, phase inversion, or routing options.
 - **Selector (Multi-state):** A stepped rotary switch for parameters with fixed values (e.g., ratios, specific frequencies). It can auto-detect the available steps directly from the linked plugin, or you can manually define the number of steps.
@@ -26,7 +28,7 @@ Once in Builder mode, a floating toolbox window appears. You can add various con
 - **Text Label:** A non-functional text block used for labeling sections, controls, or adding custom notes to your layout.
 - **Separator:** A visual dividing line (multi shape options) to help group controls and keep your interface neatly organized.
 
-![control-types-composite-120.png](3%20Layout%20Builder%20(Module%20Version%20Only)/control-types-composite-120.png)
+<div style="clear: both;"></div>
 
 ---
 
