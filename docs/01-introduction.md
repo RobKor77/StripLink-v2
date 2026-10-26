@@ -8,15 +8,15 @@ StripLink v2 is an advanced workflow utility that transforms REAPER's mixer (MCP
 
   <div style="flex: 1; min-width: 0; text-align: center;">
     <strong>MCP 1</strong>
-    <img src="POT-DO-SLIKE-1.png"
-         alt="StripLink MCP 1"
+    <img src="1%20Introduction%20and%20Concept/MCP%201.png"
+         alt="MCP 1"
          style="display: block; width: 100%; height: auto; margin-top: 10px;">
   </div>
 
   <div style="flex: 1; min-width: 0; text-align: center;">
     <strong>MCP 2</strong>
-    <img src="POT-DO-SLIKE-2.png"
-         alt="StripLink MCP 2"
+    <img src="1%20Introduction%20and%20Concept/MCP%202.png"
+         alt="MCP 2"
          style="display: block; width: 100%; height: auto; margin-top: 10px;">
   </div>
 
