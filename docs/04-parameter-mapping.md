@@ -52,6 +52,6 @@ StripLink features a universal grouping system. **Right-Click** any linked eleme
 
 **It also fully supports inverted group states:** if a grouped element has its "Invert status" enabled, it will move in the exact opposite direction relative to the rest of the group.
 
-<video controls>
+<video controls style="width: 500px !important; max-width: 100% !important;">
   <source src="4%20Parameter%20Mapping%20&%20Customization/20261025-1946-17.5344152.mp4" type="video/mp4">
 </video>
