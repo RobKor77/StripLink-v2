@@ -62,15 +62,15 @@ The Layout Builder provides complete structural freedom to design your ideal cha
         <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/1.png" style="width:150px !important; min-width:150px !important; max-width:150px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important; background:transparent !important;">
       </td>
       <td style="width:50%; padding:5px; vertical-align:top; text-align:center; background:transparent !important; border:0 !important;">
-        <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/2.png" style="width:150px !important; min-width:150px !important; max-width:150px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important; background:transparent !important;">
+        <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/2.png" style="width:320px !important; min-width:320px !important; max-width:320px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important; background:transparent !important;">
       </td>
     </tr>
     <tr style="background:transparent !important;">
       <td style="width:50%; padding:5px; vertical-align:top; text-align:center; background:transparent !important; border:0 !important;">
-        <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/3.png" style="width:150px !important; min-width:150px !important; max-width:150px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important; background:transparent !important;">
+        <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/3.png" style="width:320px !important; min-width:320px !important; max-width:320px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important; background:transparent !important;">
       </td>
       <td style="width:50%; padding:5px; vertical-align:top; text-align:center; background:transparent !important; border:0 !important;">
-        <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/4.png" style="width:150px !important; min-width:150px !important; max-width:150px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important; background:transparent !important;">
+        <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/4.png" style="width:320px !important; min-width:320px !important; max-width:320px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important; background:transparent !important;">
       </td>
     </tr>
   </tbody>
