@@ -15,11 +15,13 @@ Once in Builder mode, a floating toolbox window appears. You can add various con
 </video>
 
 
+
 ### Available Control Types
 
-<table style="width:100%; border:0; border-collapse:collapse;">
-  <tr>
-    <td style="width:70%; vertical-align:top; padding:0 15px 0 0;">
+<table style="width:100% !important; border:0 !important; border-collapse:collapse !important; border-spacing:0 !important; outline:none !important; box-shadow:none !important; background:transparent !important;">
+  <tbody style="border:0 !important; background:transparent !important;">
+    <tr style="border:0 !important; background:transparent !important;">
+      <td style="width:70%; vertical-align:top; padding:0 15px 0 0; border:0 !important; background:transparent !important;">
 
 - **Knob:** A standard continuous rotary control for parameters like gain, frequency, or threshold.
 - **Switch:** A simple two-state toggle (On/Off), ideal for bypasses, phase inversion, or routing options.
@@ -31,12 +33,14 @@ Once in Builder mode, a floating toolbox window appears. You can add various con
 - **Text Label:** A non-functional text block used for labeling sections, controls, or adding custom notes to your layout.
 - **Separator:** A visual dividing line (multi shape options) to help group controls and keep your interface neatly organized.
 
-    </td>
-    <td style="width:30%; vertical-align:top; text-align:center; padding:0;">
-      <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/control-types-composite-120.png" style="width:165px !important; max-width:165px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important;">
-    </td>
-  </tr>
+      </td>
+      <td style="width:30%; vertical-align:top; text-align:center; padding:0; border:0 !important; background:transparent !important;">
+        <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/control-types-composite-120.png" style="width:165px !important; max-width:165px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important; border:0 !important; outline:none !important; box-shadow:none !important;">
+      </td>
+    </tr>
+  </tbody>
 </table>
+
 
 
 ---
