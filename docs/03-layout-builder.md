@@ -16,6 +16,7 @@ Once in Builder mode, a floating toolbox window appears. You can add various con
 
 
 
+
 ### Available Control Types
 
 <table style="width:100% !important; border:0 !important; border-collapse:collapse !important; border-spacing:0 !important; outline:none !important; box-shadow:none !important; background:transparent !important;">
@@ -40,6 +41,7 @@ Once in Builder mode, a floating toolbox window appears. You can add various con
     </tr>
   </tbody>
 </table>
+
 
 
 
