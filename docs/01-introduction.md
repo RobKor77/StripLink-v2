@@ -23,8 +23,8 @@ StripLink v2 is an advanced workflow utility that transforms REAPER's mixer (MCP
 </div>
 <aside>
 
-⚡
 
+⚡
 **Performance & CPU Usage**
 
 StripLink is highly optimized and exceptionally lightweight. A single instance consumes well under **0.1% of CPU resources**. You can confidently place StripLink on every single track in your heaviest projects without worrying about system bloat, lag, or performance degradation.
