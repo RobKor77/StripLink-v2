@@ -7,12 +7,9 @@ StripLink uses four main pages to organize your workflow: **OVR** (Overview), **
 - **Global Switching (Default):** Clicking any tab will instantly switch the view across all StripLink instances in your entire project, keeping your mixer perfectly synced.
 - **Local Switching:** Hold `Ctrl` (or `Cmd` on Mac) and click a tab to change the view for that specific track only, without affecting the rest of your mixer.
 
-<div style="max-width: 550px; margin: 20px auto;">
-  <video controls style="width: 100%; display: block;">
-    <source src="2%20Basic%20Controls%20&%20Navigation/922226ec-b219-4771-8355-ec080e012fea.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-</div>
+<video controls>
+  <source src="2%20Basic%20Controls%20&%20Navigation/922226ec-b219-4771-8355-ec080e012fea.mp4" type="video/mp4">
+</video>
 
 ---
 
@@ -20,9 +17,8 @@ StripLink uses four main pages to organize your workflow: **OVR** (Overview), **
 
 To enhance visual organization, you can assign custom color markers to any tab. This is especially useful for acting as quick workflow reminders, visually grouping specific instruments, or indicating your intended signal chain order (e.g., color-coding to remind yourself whether the EQ is placed before or after the Compressor). Simply **Right-Click** on any tab header (EQ, DYN, or FX) to open the color menu and select a marker (Red, Green, Blue, Yellow, or None). 
 
-<video controls width="50%">
+<video controls>
   <source src="2%20Basic%20Controls%20&%20Navigation/20261025-1410-07.4574374.mp4" type="video/mp4">
-  Your browser does not support the video tag.
 </video>
 
 ---
@@ -37,9 +33,8 @@ All knobs, switches, and selectors in StripLink share a unified control logic, p
 • **Appearance Menu:** Hold `Ctrl` (or `Cmd`) + **Right-Click** to instantly open the Knob Style and Color menu. 
 • **Response Curve Menu:** Hold `Alt` (or `Opt`) + **Right-Click** to instantly open the parameter response curve settings (Linear, Fast, Slow). 
 
-<video controls width="50%">
+<video controls>
   <source src="2%20Basic%20Controls%20&%20Navigation/20261025-1435-43.0342112.mp4" type="video/mp4">
-  Your browser does not support the video tag.
 </video>
 
 ---
@@ -54,9 +49,8 @@ The Main Settings Menu (hamburger icon) provides full control over StripLink's b
 - **Instance Settings:** These apply only to the current plugin. Here you can rename the instance, toggle the *Layout Builder*, choose the VU meter tap point (Pre In, Pre Out, Chain Out), calibrate its reference (e.g., -18 dBFS), and set the Auto Gain speed.
 - **Global Settings:** These apply to the entire project. They include changing the Theme, VU Meter Style (Classic, Slim, Hidden), GR Meter Range, Peak LED Threshold, global Font Size, Tooltip visibility, and Mouse Control sensitivity.
 
-<video controls width="50%">
+<video controls>
   <source src="2%20Basic%20Controls%20&%20Navigation/20261025-1702-06.8030474.mp4" type="video/mp4">
-  Your browser does not support the video tag.
 </video>
 
 ### 2. Main Parameter Menu (Right-Click)
