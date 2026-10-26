@@ -49,13 +49,13 @@ Once in Builder mode, a floating toolbox window appears. You can add various con
 
 - **Knob:** A standard continuous rotary control for parameters like gain, frequency, or threshold.<br><br>
 
-- **Switch:** A simple two-state toggle (On/Off), ideal for bypasses, phase inversion, or routing options.<br><br><br>
+- **Switch:** A simple two-state toggle (On/Off), ideal for bypasses, phase inversion, or routing options.<br><br>
 
 - **Selector (Multi-state):** A stepped rotary switch for parameters with fixed values (e.g., ratios, specific frequencies). It can auto-detect the available steps directly from the linked plugin, or you can manually define the number of steps.<br><br>
 
 - **Tube:** A specialized visual element designed for saturation, drive, or harmonic stages.<br><br>
 
-- **Meters:** Visual feedback units (like VU or Gain Reduction meters) that can be targeted to specific Top or Bottom sections.<br><br><br>
+- **Meters:** Visual feedback units (like VU or Gain Reduction meters) that can be targeted to specific Top or Bottom sections.<br><br>
 
 - **Input Gain:** A dedicated utility module used for initial gain staging at the very start of your FX chain.<br><br>
 
