@@ -26,7 +26,7 @@ Once a parameter is linked, **Right-Click** it to open the editing options. Sele
 
 ---
 
-## Visual Customization (Colors & Types)
+## Visual Customization (Element Colors & Types)
 
 To visually organize your channel strip, hold `Ctrl` (or `Cmd`) and **Right-Click** to open the Appearance menu. Assign colors (Green, Blue, Red, Yellow, White, or Black) to controls. You can also change the physical knob type to match the analog gear you are controlling (e.g., SSL, Neve, or API styles, depending on your active theme).
 
