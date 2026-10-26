@@ -19,12 +19,38 @@
     .sidebar {
       background-color: #141414;
     }
+
+    /* Standardna velikost in postavitev vseh videoposnetkov */
     .markdown-section video {
       display: block !important;
       width: 220px !important;
       max-width: 100% !important;
       height: auto !important;
       margin: 20px auto !important;
+    }
+
+    /* Popolnoma nevidne tabele (brez belih robov in brez belega ozadja celic) */
+    .markdown-section table,
+    .markdown-section table tr,
+    .markdown-section table tr:nth-child(2n),
+    .markdown-section table td,
+    .markdown-section table th {
+      border: none !important;
+      background-color: transparent !important;
+    }
+
+    /* Diskretna, mehka temno siva ločilna črta med razdelki (---) */
+    .markdown-section hr {
+      border: none !important;
+      border-top: 1px solid #282828 !important;
+      margin: 2.5em 0 !important;
+    }
+
+    /* Odstranitev svetlih obrob pod naslovi */
+    .markdown-section h1,
+    .markdown-section h2,
+    .markdown-section h3 {
+      border-bottom: none !important;
     }
   </style>
 </head>
