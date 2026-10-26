@@ -46,6 +46,7 @@ Once in Builder mode, a floating toolbox window appears. You can add various con
 <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/control-types-composite-120.png" style="width: 145px !important; max-width: 145px !important; height: auto !important; display: block !important; float: none !important; margin: 0 auto !important;">
 </td>
 <td style="width: 70%; vertical-align: top; padding: 0; border: none !important; background: transparent !important;">
+
 - **Knob:** A standard continuous rotary control for parameters like gain, frequency, or threshold.<br><br>
 
 - **Switch:** A simple two-state toggle (On/Off), ideal for bypasses, phase inversion, or routing options.<br><br><br>
