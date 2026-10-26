@@ -18,8 +18,8 @@ Once in Builder mode, a floating toolbox window appears. You can add various con
 
 <table style="width: 100% !important; border: none !important; border-collapse: collapse !important; background: transparent !important;">
 <tr style="border: none !important; background: transparent !important;">
-<td style="width: 30%; vertical-align: top; text-align: center; padding: 0 20px 0 0; border: none !important; background: transparent !important;">
-<img src="3%20Layout%20Builder%20(Module%20Version%20Only)/control-types-composite-120.png?v=2" style="width: 130px !important; max-width: 130px !important; height: auto !important; display: block !important; float: none !important; margin: 0 auto !important;">
+<td style="width: 30%; vertical-align: top; text-align: right; padding: 0 20px 0 0; border: none !important; background: transparent !important;">
+<img src="3%20Layout%20Builder%20(Module%20Version%20Only)/control-types-composite-120.png?v=2" style="width: 130px !important; max-width: 130px !important; height: auto !important; display: inline-block !important; float: none !important; margin: 0 !important;">
 </td>
 <td style="width: 70%; vertical-align: top; padding: 0; border: none !important; background: transparent !important;">
 
