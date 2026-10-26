@@ -55,16 +55,9 @@ To start completely from scratch, click the **CLEAR LAYOUT** button in the toolb
 
 The Layout Builder provides complete structural freedom to design your ideal channel strip. Rather than just swapping colors, you can construct entirely distinct functional blocks—from dense EQ and Dynamics sections to dedicated Preamp utilities and complex signal routing panels. Below are examples of different layout architectures demonstrating the wide variety of controls, visual grouping, and interface designs you can achieve.
 
-<div style="width:100%; margin:20px 0; overflow:hidden;">
-  <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/1.png"
-       style="float:left !important; width:40% !important; max-width:40% !important; height:auto !important; margin:0 10% 10px 0 !important;">
-
-  <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/2.png"
-       style="float:left !important; width:40% !important; max-width:40% !important; height:auto !important; margin:0 0 10px 0 !important;">
-
-  <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/3.png"
-       style="float:left !important; clear:left !important; width:40% !important; max-width:40% !important; height:auto !important; margin:0 10% 10px 0 !important;">
-
-  <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/4.png"
-       style="float:left !important; width:40% !important; max-width:40% !important; height:auto !important; margin:0 !important;">
+<div style="display:flex !important; flex-direction:row !important; flex-wrap:wrap !important; gap:10px !important; width:100% !important;">
+  <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/1.png" style="width:150px !important; height:auto !important; flex:0 0 150px !important; margin:0 !important;">
+  <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/2.png" style="width:150px !important; height:auto !important; flex:0 0 150px !important; margin:0 !important;">
+  <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/3.png" style="width:150px !important; height:auto !important; flex:0 0 150px !important; margin:0 !important;">
+  <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/4.png" style="width:150px !important; height:auto !important; flex:0 0 150px !important; margin:0 !important;">
 </div>
