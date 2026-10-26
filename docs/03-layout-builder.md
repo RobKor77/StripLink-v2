@@ -10,11 +10,9 @@ The StripLink Module version features a powerful Layout Builder that lets you de
 
 Once in Builder mode, a floating toolbox window appears. You can add various controls directly to the grid by clicking the respective buttons: **Knobs**, **Switches**, **Tubes**, **Meters**, and an **Input Gain** module. Before adding a Meter, use the radio buttons in the toolbox to select the correct Target Section (Top or Bottom), so it appears in the desired logical area (e.g., DYN 1 vs. DYN 2).
 
-<aside>
-
-[Recording 2026-10-25 183723-compressed.mp4](3%20Layout%20Builder%20(Module%20Version%20Only)/Recording_2026-10-25_183723-compressed.mp4)
-
-</aside>
+<video controls>
+  <source src="3%20Layout%20Builder%20(Module%20Version%20Only)/Recording_2026-10-25_183723-compressed.mp4" type="video/mp4">
+</video>
 
 ### Available Control Types
 
