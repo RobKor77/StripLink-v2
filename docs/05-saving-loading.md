@@ -35,8 +35,6 @@ For rapid duplication across your mix, StripLink lets you instantly copy your en
 
 *Note: For the parameter links to work correctly after pasting, the target track must have the exact same plugins loaded in its FX chain.*
 
-<aside>
-
-[20261025-2107-42.9513797.mp4](5%20Saving%20&%20Loading,%20FX%20Chains%20&%20Track%20Templates/20261025-2107-42.9513797.mp4)
-
-</aside>
+<video controls>
+  <source src="5%20Saving%20&%20Loading,%20FX%20Chains%20&%20Track%20Templates/20261025-2107-42.9513797.mp4" type="video/mp4">
+</video>
