@@ -5,9 +5,9 @@
 Connecting StripLink controls to your plugins is straightforward. **Right-Click** any empty element to open the mapping menu, where you can manually navigate through the menu to select your target plugin and parameter. For a much faster workflow, tweak the desired parameter in the target plugin's GUI first, then right-click the StripLink element and select **“Link to last touched parameter.”** 
 
 <aside>
-
-[20261025-1845-21.8932848.mp4](4%20Parameter%20Mapping%20&%20Customization/20261025-1845-21.8932848.mp4)
-
+  <video controls style="width: 500px !important; max-width: 100% !important;">
+    <source src="4%20Parameter%20Mapping%20&%20Customization/20261025-1845-21.8932848.mp4" type="video/mp4">
+  </video>
 </aside>
 
 ---
