@@ -59,7 +59,8 @@ The Layout Builder provides complete structural freedom to design your ideal cha
 <table style="width:100%; border:0; border-collapse:collapse;">
   <tr>
     <td style="width:50%; padding:5px; vertical-align:top;">
-      <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/1.png" style="width:100px !important; max-width:100px !important; height:auto !important; display:block !important; margin:0 auto !important; border:3px solid red !important;">
+      <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/1.png"
+     style="width:150px !important; min-width:150px !important; max-width:150px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important;">
     </td>
     <td style="width:50%; padding:5px; vertical-align:top;">
       <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/2.png" style="width:65% !important; max-width:65% !important; height:auto !important; display:block; margin:0 auto;">
