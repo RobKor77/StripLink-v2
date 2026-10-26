@@ -55,21 +55,23 @@ To start completely from scratch, click the **CLEAR LAYOUT** button in the toolb
 
 The Layout Builder provides complete structural freedom to design your ideal channel strip. Rather than just swapping colors, you can construct entirely distinct functional blocks—from dense EQ and Dynamics sections to dedicated Preamp utilities and complex signal routing panels. Below are examples of different layout architectures demonstrating the wide variety of controls, visual grouping, and interface designs you can achieve.
 
+
 <table style="width:100%; border:0; border-collapse:collapse;">
   <tr>
     <td style="width:50%; padding:5px; vertical-align:top;">
-      <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/1.png" width="100%">
+      <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/1.png" style="width:65% !important; max-width:65% !important; height:auto !important; display:block; margin:0 auto;">
     </td>
     <td style="width:50%; padding:5px; vertical-align:top;">
-      <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/2.png" width="100%">
+      <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/2.png" style="width:65% !important; max-width:65% !important; height:auto !important; display:block; margin:0 auto;">
     </td>
   </tr>
   <tr>
     <td style="width:50%; padding:5px; vertical-align:top;">
-      <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/3.png" width="100%">
+      <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/3.png" style="width:65% !important; max-width:65% !important; height:auto !important; display:block; margin:0 auto;">
     </td>
     <td style="width:50%; padding:5px; vertical-align:top;">
-      <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/4.png" width="100%">
+      <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/4.png" style="width:65% !important; max-width:65% !important; height:auto !important; display:block; margin:0 auto;">
     </td>
   </tr>
 </table>
+
