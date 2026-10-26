@@ -20,11 +20,9 @@ The "last touched" feature registers *any* parameter  movement in REAPER, includ
 
 Once a parameter is linked, **Right-Click** it to open the editing options. Select **Rename parameter** to give it a custom, easy-to-read name on your layout. You can also select **Invert status**, which reverses the control's behavior—useful for mapping bypass switches or reverse-acting knobs.
 
-<aside>
-
-[20261025-1853-56.2151793.mp4](4%20Parameter%20Mapping%20&%20Customization/20261025-1853-56.2151793.mp4)
-
-</aside>
+<video controls>
+  <source src="4%20Parameter%20Mapping%20&%20Customization/20261025-1845-21.8932848.mp4" type="video/mp4">
+</video>
 
 ---
 
@@ -32,17 +30,13 @@ Once a parameter is linked, **Right-Click** it to open the editing options. Sele
 
 To visually organize your channel strip, hold `Ctrl` (or `Cmd`) and **Right-Click** to open the Appearance menu. Assign colors (Green, Blue, Red, Yellow, White, or Black) to controls. You can also change the physical knob type to match the analog gear you are controlling (e.g., SSL, Neve, or API styles, depending on your active theme).
 
-<aside>
+<video controls>
+  <source src="4%20Parameter%20Mapping%20&%20Customization/visual_customization_aligned_1.mp4" type="video/mp4">
+</video>
 
-[visual_customization_aligned_1.mp4](4%20Parameter%20Mapping%20&%20Customization/visual_customization_aligned_1.mp4)
-
-</aside>
-
-<aside>
-
-[visual_customization_aligned_2.mp4](4%20Parameter%20Mapping%20&%20Customization/visual_customization_aligned_2.mp4)
-
-</aside>
+<video controls>
+  <source src="4%20Parameter%20Mapping%20&%20Customization/visual_customization_aligned_2.mp4" type="video/mp4">
+</video>
 
 ---
 
@@ -58,8 +52,6 @@ StripLink features a universal grouping system. **Right-Click** any linked eleme
 
 **It also fully supports inverted group states:** if a grouped element has its "Invert status" enabled, it will move in the exact opposite direction relative to the rest of the group.
 
-<aside>
-
-[20261025-1946-17.5344152.mp4](4%20Parameter%20Mapping%20&%20Customization/20261025-1946-17.5344152.mp4)
-
-</aside>
+<video controls>
+  <source src="4%20Parameter%20Mapping%20&%20Customization/20261025-1946-17.5344152.mp4" type="video/mp4">
+</video>
