@@ -33,7 +33,7 @@ Once in Builder mode, a floating toolbox window appears. You can add various con
 
     </td>
     <td style="width:30%; vertical-align:top; text-align:center; padding:0;">
-      <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/control-types-composite-120.png" style="width:140px !important; max-width:140px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important;">
+      <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/control-types-composite-120.png" style="width:155px !important; max-width:155px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important;">
     </td>
   </tr>
 </table>
