@@ -4,6 +4,23 @@
 
 StripLink v2 is an advanced workflow utility that transforms REAPER's mixer (MCP) into a dynamic, fully-featured console via the Embedded UI feature. It is powered by a backend Lua script — `StripLink Connector_v2.lua` — and a set of JSFX plugins that work together to enable real-time communication between the mixer strips and the control layer. While it primarily acts as a macro control utility to manage your favorite third-party plugins (EQs, Compressors, Saturators) from a unified interface. StripLink also actively processes your audio to handle **Input Gain** staging at the start of your FX chain and **Auto Gain** compensation at the very end.
 
+<div style="display: flex; gap: 20px; align-items: flex-start;">
+
+  <div style="flex: 1; min-width: 0; text-align: center;">
+    <strong>MCP 1</strong>
+    <img src="POT-DO-SLIKE-1.png"
+         alt="StripLink MCP 1"
+         style="display: block; width: 100%; height: auto; margin-top: 10px;">
+  </div>
+
+  <div style="flex: 1; min-width: 0; text-align: center;">
+    <strong>MCP 2</strong>
+    <img src="POT-DO-SLIKE-2.png"
+         alt="StripLink MCP 2"
+         style="display: block; width: 100%; height: auto; margin-top: 10px;">
+  </div>
+
+</div>
 <aside>
 ⚡
 
