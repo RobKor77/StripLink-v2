@@ -51,6 +51,19 @@ Once in Builder mode, a floating toolbox window appears. You can add various con
 
 On the DYN and FX pages, you will notice a horizontal System Divider line. This divider visually and logically separates the Top processing section (e.g., DYN 1 or FX PRE) from the Bottom section (e.g., DYN 2 or FX POST). You can freely drag this divider up or down to adjust the workspace area dedicated to each half. Functional controls automatically respect this boundary, ensuring your routing logic remains strictly organized.
 
+### Section Limits
+
+To ensure system stability and proper parameter mapping, the StripLink Module has a strict maximum number of elements allowed per section. If you attempt to add more elements than permitted, the system will issue a warning and prevent the addition. Note: Knobs, Selectors, and Tubes share the same quota.
+
+| Section | Knobs / Selectors / Tubes | Switches |
+| :--- | :---: | :---: |
+| **EQ** | 14 | 6 |
+| **DYN 1 (Top)** | 5 | 4 |
+| **DYN 2 (Bottom)** | 5 | 4 |
+| **FX PRE (Top)** | 4 | 2 |
+| **FX POST (Bottom)** | 9 | 3 |
+
+The absolute graphical limit for the entire plugin (including all tabs, text labels, and separators) is 230 elements.
 ---
 
 ## Interface Height Adjustment
