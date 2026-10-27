@@ -31,10 +31,11 @@ The Aggregator houses an advanced LUFS-based Auto-Gain compensator that utilizes
   <source src="6%20StripLink%20Aggregator,%20Metering%20&%20Auto-Gain/AG.mp4" type="video/mp4">
 </video>
 
-• **Adaptation Speed:** You can calibrate the learning speed in the Main Settings menu. Slower speeds are ideal for highly percussive elements (like drums) to prevent erratic gain pumping, while faster speeds work better for sustained, dynamic material.
-• **Locking the Gain:** While the LUFS learning process is smooth, you generally want perfect stability during the final mix phase. Clicking the **Lock** button freezes the Auto-Gain at its current compensation value, ensuring a 100% static, reliable gain stage. 
-
-**Pro Tip for Input Stages:** Because the reference signal is tapped at the *output* of the first linked plugin, any input gain changes made *inside* that first plugin will not be auto-compensated. To compensate for the input stage of your first primary plugin, insert a "dummy" plugin (e.g., a basic volume utility) at the very beginning of your FX chain and link a meter to it. This forces the Aggregator to start its measurement before your primary processing begins.
+> **`Adaptation Speed:`** You can calibrate the learning speed in the Main Settings menu. Slower speeds are ideal for highly percussive elements (like drums) to prevent erratic gain pumping, while faster speeds work better for sustained, dynamic material.
+>
+> **`Locking the Gain:`** While the LUFS learning process is smooth, you generally want perfect stability during the final mix phase. Clicking the Lock button freezes the Auto-Gain at its current compensation value, ensuring a 100% static, reliable gain stage.
+>
+> **`Pro Tip for Input Stages:`** Because the reference signal is tapped at the output of the first linked plugin, any input gain changes made inside that first plugin will not be auto-compensated. To compensate for the input stage of your first primary plugin, insert a "dummy" plugin (e.g., a basic volume utility) at the very beginning of your FX chain and link a meter to it. This forces the Aggregator to start its measurement before your primary processing begins.
 
 ### VU Meter Configuration & Calibration
 
