@@ -5,22 +5,63 @@
   <title>StripLink Manual</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  
-  <!-- Uradna Docsify temna tema -->
+
+  <!-- Docsify dark theme -->
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/dark.css">
-  
+
   <style>
     :root {
       --theme-color: #529cca;
     }
+
     body {
       background-color: #191919;
     }
+
     .sidebar {
       background-color: #141414;
     }
 
-    /* Standardna velikost in postavitev vseh videoposnetkov */
+    /* =========================================
+       GENERAL TEXT SIZE
+       ========================================= */
+
+    .markdown-section {
+      font-size: 14px !important;
+      line-height: 1.6 !important;
+    }
+
+    .markdown-section p,
+    .markdown-section li,
+    .markdown-section td,
+    .markdown-section th {
+      font-size: 14px !important;
+      line-height: 1.6 !important;
+    }
+
+    /* =========================================
+       HEADINGS
+       ========================================= */
+
+    .markdown-section h1 {
+      font-size: 20px !important;
+      line-height: 1.3 !important;
+    }
+
+    .markdown-section h2 {
+      font-size: 20px !important;
+      line-height: 1.35 !important;
+    }
+
+    .markdown-section h3 {
+      font-size: 18px !important;
+      line-height: 1.4 !important;
+    }
+
+    /* =========================================
+       STANDARD VIDEO SIZE
+       ========================================= */
+
     .markdown-section video {
       display: block !important;
       width: 320px !important;
@@ -29,7 +70,10 @@
       margin: 20px auto !important;
     }
 
-    /* Popolnoma nevidne tabele (brez belih robov in brez belega ozadja celic) */
+    /* =========================================
+       INVISIBLE TABLES
+       ========================================= */
+
     .markdown-section table,
     .markdown-section table tr,
     .markdown-section table tr:nth-child(2n),
@@ -39,44 +83,62 @@
       background-color: transparent !important;
     }
 
-    /* Diskretna, mehka temno siva ločilna črta med razdelki (---) */
+    /* =========================================
+       HORIZONTAL RULES
+       ========================================= */
+
     .markdown-section hr {
       border: none !important;
       border-top: 1px solid #282828 !important;
       margin: 2.5em 0 !important;
     }
 
-/* Odstranitev svetlih obrob pod naslovi */
+    /* =========================================
+       REMOVE BORDERS UNDER HEADINGS
+       ========================================= */
+
     .markdown-section h1,
     .markdown-section h2,
     .markdown-section h3 {
       border-bottom: none !important;
     }
 
-    /* Centriranje vseh slik v dokumentaciji */
+    /* =========================================
+       CENTER ALL DOCUMENTATION IMAGES
+       ========================================= */
+
     .markdown-section img {
       display: block !important;
       margin: 20px auto !important;
     }
 
-    /* Povečana pisava (npr. na 16px ali 17px) */
-    body, .markdown-section {
-      font-size: 16px !important; 
+    /* =========================================
+       CODE
+       ========================================= */
+
+    .markdown-section code {
+      font-size: 13px !important;
+    }
+
+    .markdown-section pre code {
+      font-size: 13px !important;
     }
 
   </style>
 </head>
+
 <body>
+
   <div id="app"></div>
+
   <script>
     window.$docsify = {
       name: 'StripLink Manual',
-      repo: '', 
+      repo: '',
       loadSidebar: true,
       subMaxLevel: 2,
       auto2top: true,
-      
-      // Vgrajen iskalnik
+
       search: {
         placeholder: 'Search manual...',
         noData: 'No results found.',
@@ -84,8 +146,10 @@
       }
     }
   </script>
-  <!-- Docsify skripte -->
+
+  <!-- Docsify -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+
 </body>
 </html>
