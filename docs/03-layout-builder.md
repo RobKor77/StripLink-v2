@@ -63,7 +63,8 @@ To ensure system stability and proper parameter mapping, the StripLink Module ha
 | **FX PRE (Top)** | 4 | 2 |
 | **FX POST (Bottom)** | 9 | 3 |
 
-The absolute graphical limit for the entire plugin (including all tabs, text labels, and separators) is 230 elements.
+> **`Important Note:`** The absolute graphical limit for the one plugin instance (including all tabs, text labels, and separators) is 230 elements.
+
 ---
 
 ## Interface Height Adjustment
