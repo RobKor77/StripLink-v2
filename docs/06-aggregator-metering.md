@@ -37,11 +37,24 @@ The Aggregator houses an advanced LUFS-based Auto-Gain compensator that utilizes
 >
 > **`Pro Tip for Input Stages:`** Because the reference signal is tapped at the output of the first linked plugin, any input gain changes made inside that first plugin will not be auto-compensated. To compensate for the input stage of your first primary plugin, insert a "dummy" plugin (e.g., a basic volume utility) at the very beginning of your FX chain and link a meter to it. This forces the Aggregator to start its measurement before your primary processing begins.
 
-### VU Meter Configuration & Calibration
+## VU Metering
 
-StripLink provides extensive global and instance-based options to customize your main VU meters, all accessible via the Main Settings menu:
+StripLink provides extensive global and instance-based options to customize your main VU meters, all accessible via the Main Settings menu.
 
-- **Tap Points:** Choose where the VU meter listens in your signal chain: *PRE In* (raw track input), *PRE Out* (after the PRE section), or *Chain Out* (final output after all processing).
+### Visual Styles
+
+You can adapt the VU meters to suit your preferred aesthetic and available screen space:
+
+- **Classic Analog VU:** The traditional, large analog meter layout.
+- **Slim Horizontal VU:** A compact, space-saving horizontal meter.
+- **Hide Top Meters:** Completely hides the VU section for maximum vertical screen real estate.
+
+![](6%20StripLink%20Aggregator,%20Metering%20&%20Auto-Gain/VU.png)
+
+![](6%20StripLink%20Aggregator,%20Metering%20&%20Auto-Gain/VU%20slim.png)
+
+### Calibration & Routing
+
+- **Tap Points:** Choose where the VU meter listens in your signal chain: PRE In (raw track input), PRE Out (after the PRE section), or Chain Out (final output after all processing).
 - **Calibration (dBFS):** Calibrate the analog 0 VU reference point to match your digital workflow, such as -18 dBFS, -12 dBFS, or a custom value.
 - **Peak LED Threshold:** Set a digital threshold, such as -1 dBFS or -3 dBFS, for the red Peak LED to warn of potential digital clipping.
-- **Visual Styles:** Choose *Classic Analog VU*, the compact *Slim Horizontal VU*, or *Hide Top Meters* to suit your screen space.
