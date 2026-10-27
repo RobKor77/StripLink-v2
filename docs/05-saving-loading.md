@@ -2,7 +2,9 @@
 
 ## Internal Layout Saving
 
-StripLink allows you to save and recall custom layouts and mappings directly within its interface. Right-click an empty background area to open the Section Menu. Use **Save** and **Load** to store and recall mapping configurations for individual plugins, making it easy to reuse your favorite setups on new tracks.
+StripLink allows you to save and recall custom layouts and mappings directly within its interface. Right-click an empty background area to open the Section Menu. Use Save and Load to store and recall mapping configurations for individual plugins, making it easy to reuse your favorite setups on new tracks. 
+
+You can also save multiple different mappings for the exact same plugin. To do this, simply change the **Instance Name**
 
 **Important Note:**
 
