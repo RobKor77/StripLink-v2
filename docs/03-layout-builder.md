@@ -27,7 +27,7 @@ Once in Builder mode, a floating toolbox window appears. You can add various con
 
 - **Switch:** A simple two-state toggle (On/Off), ideal for bypasses, phase inversion, or routing options.<br><br>
 
-- **Selector (Multi-state):** A stepped rotary switch for parameters with fixed values (e.g., ratios, specific frequencies). It can auto-detect the available steps directly from the linked plugin, or you can manually define the number of steps.<br><br>
+- **Selector (Multi-state):** A stepped switch selector for parameters with fixed values (e.g., ratios, harmonic types). It can auto-detect the available steps directly from the linked plugin, or you can manually define the number of steps.<br><br>
 
 - **Tube:** A simple vertical slider styled in the shape of a vacuum tube. It functions exactly like a standard control but takes up less grid space than a regular knob, providing a distinct visual aesthetic for tighter layouts<br><br>
 
