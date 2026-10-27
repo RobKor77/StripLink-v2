@@ -28,7 +28,7 @@ StripLink v2 comes in two distinct flavors:
     - **StripLink UC-1:** tailored for the SSL UC-1 control surface workflow.
 - **Module version** — a new, freely adaptable variant that allows you to generate your own custom layout from scratch. You can build your ideal channel strip by freely positioning defined structural elements (such as knobs, switches, tubes, meters, text, separators, etc…), each featuring their own customizable properties (like size, type, position, attachment options, etc…). This ensures you are never locked into a predefined layout and can perfectly match your exact workflow needs.
 
-![image.png](1%20Introduction%20and%20Concept/image.png)
+![SL versions](1%20Introduction%20and%20Concept/SL%20versions.png ':size=700')
 
 ## System Requirements & Prerequisites
 
