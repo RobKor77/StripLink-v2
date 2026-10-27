@@ -67,6 +67,9 @@ To ensure system stability and proper parameter mapping, the StripLink Module ha
 
 ---
 
+## Tab Background Colors
+
+While in the Layout Builder, you can also customize the background color for each tab (EQ, DYN, FX) individually. Simply navigate to the desired tab and use the color picker in the toolbox to set a specific background color for that section.
 ## Interface Height Adjustment
 
 The toolbox offers two independent height settings to fit your layout:
