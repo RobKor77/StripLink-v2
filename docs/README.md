@@ -9,7 +9,7 @@
 ---
 
 Developed by: Robert Korenjak (Wormhole Labs)  
-**Special thanks to:** John Sawan
+**Special thanks to:** John Sawan for his invaluable ideas, continuous feedback, and creative contributions throughout the development of StripLink.
 
 ### Table of Contents
 
