@@ -8,7 +8,7 @@ All StripLink themes are stored within your REAPER resource directory under the 
 
 Here is how the hierarchy looks on your system:
 
-<img src="./7%20Theming%20&%20Visual%20Customization/Folder%20Structure.png" style="width: 700px !important; max-width: 100% !important; height: auto !important;">
+![Folder Structure](Folder%20Structure.png ':size=700')
 
 **How it works:**
 1. **Plugin Folders:** Inside the main `SL_Themes` directory, there is a dedicated folder for each StripLink plugin variant (e.g., `StripLink Module v2`).
