@@ -3,6 +3,7 @@
 ### The Aggregator Plugin & Meter Routing
 
 To enable visual feedback and level matching, StripLink relies on a dedicated companion plugin called the **StripLink Aggregator**. You do not need to set it up manually. Whenever you link a meter to a plugin on your layout, StripLink automatically inserts the Aggregator at the end of your FX chain and transparently configures the multi-channel routing—for example, routing reference signals to channels 13/14. As mentioned in the Main Settings menu, you can globally set your primary VU Meter tap point to monitor *PRE In*, *PRE Out*, or *Chain Out*.
+Additionally, this same menu allows you to conserve system resources by choosing whether Gain Reduction (GR) meters are displayed across all tracks simultaneously, or restricted to only the currently selected tracks.
 
 ### Gain Reduction (GR) & Detection Modes
 
