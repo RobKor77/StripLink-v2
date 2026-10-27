@@ -27,6 +27,10 @@ Adaptive Auto-Gain System
 
 The Aggregator houses an advanced LUFS-based Auto-Gain compensator that utilizes **Fletcher-Munson (ISO 226) weighting filters** to match perceived human loudness rather than just mathematical peak or RMS values. It continuously compares the reference signal (Ref In) with your final output (Raw Out) and smoothly adjusts the volume to match perfectly. Technically, this compensation measures the difference starting from the *output* of the first linked FX (which StripLink routes to channels 13/14) down to the *end* of the chain (the Aggregator input). The **Auto-Gain toggle** and its companion **Lock button** are permanent system elements located at the bottom of your StripLink interface, so they are always ready to use without needing to be manually added. 
 
+<video controls>
+  <source src="6%20StripLink%20Aggregator,%20Metering%20&%20Auto-Gain/AG.mp4" type="video/mp4">
+</video>
+
 • **Adaptation Speed:** You can calibrate the learning speed in the Main Settings menu. Slower speeds are ideal for highly percussive elements (like drums) to prevent erratic gain pumping, while faster speeds work better for sustained, dynamic material.
 • **Locking the Gain:** While the LUFS learning process is smooth, you generally want perfect stability during the final mix phase. Clicking the **Lock** button freezes the Auto-Gain at its current compensation value, ensuring a 100% static, reliable gain stage. 
 
