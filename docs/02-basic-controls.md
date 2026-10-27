@@ -2,7 +2,7 @@
 
 ## Tab Navigation
 
-StripLink uses four main pages to organize your workflow: **OVR** (Overview), **EQ**, **DYN** (Dynamics), and **FX** (Effects).
+StripLink uses four main pages to organize your workflow: **OVR** (Overview), **EQ** (Equalizer), **DYN** (Dynamics), and **FX** (Effects).
 
 - **Global Switching (Default):** Clicking any tab will instantly switch the view across all StripLink instances in your entire project, keeping your mixer perfectly synced.
 - **Local Switching:** Hold `Ctrl` (or `Cmd` on Mac) and click a tab to change the view for that specific track only, without affecting the rest of your mixer.
