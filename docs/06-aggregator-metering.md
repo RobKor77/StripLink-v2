@@ -9,13 +9,13 @@ Additionally, this same menu allows you to conserve system resources by choosing
 
 For dynamics sections (DYN 1 and DYN 2), the Aggregator analyzes the signal to calculate gain reduction. By default, the system uses a smart *Auto Detect* algorithm. For the best visual accuracy with specialized tools, open the Aggregator plugin window and manually set the *Detection Mode* for Meter 1 or Meter 2. Available modes are *Compressor*, *Gate/Expander*, and *Upward Expander*.
 
+<video controls style="width: 500px !important; max-width: 100% !important;">
+  <source src="6%20StripLink%20Aggregator,%20Metering%20&%20Auto-Gain/20261025-2203-39.5161320.mp4" type="video/mp4">
+</video>
+
 ### Combined Channel Strips (Comp + Gate)
 
 StripLink includes a calculation engine for channel-strip plugins that contain both a compressor and a gate. If the plugin reports native compressor gain reduction to the DAW, you can link DYN 1 to the compressor and DYN 2 to the gate. The Aggregator detects that both meters share the same plugin instance and isolates the gate’s gain reduction, providing two distinct GR meters.
-
-<video controls>
-  <source src="6%20StripLink%20Aggregator,%20Metering%20&%20Auto-Gain/20261025-2203-39.5161320.mp4" type="video/mp4">
-</video>
 
 <video controls>
   <source src="6%20StripLink%20Aggregator,%20Metering%20&%20Auto-Gain/20261025-2242-50.9028585.mp4" type="video/mp4">
