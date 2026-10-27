@@ -29,7 +29,7 @@ Once in Builder mode, a floating toolbox window appears. You can add various con
 
 - **Selector (Multi-state):** A stepped rotary switch for parameters with fixed values (e.g., ratios, specific frequencies). It can auto-detect the available steps directly from the linked plugin, or you can manually define the number of steps.<br><br>
 
-- **Tube:** A specialized visual element designed for saturation, drive, or harmonic stages.<br><br>
+- **Tube:** A simple vertical slider styled in the shape of a vacuum tube. It functions exactly like a standard control but takes up less grid space than a regular knob, providing a distinct visual aesthetic for tighter layouts<br><br>
 
 - **Meters:** Visual feedback units (like VU or Gain Reduction meters) that can be targeted to specific Top or Bottom sections.<br><br>
 
@@ -37,7 +37,7 @@ Once in Builder mode, a floating toolbox window appears. You can add various con
 
 - **Auto-Gain:** A smart compensation toggle that can be placed on your layout to balance input and output levels (detailed fully in Chapter 6).<br><br>
 
-- **Text Label:** A non-functional text block used for labeling sections, controls, or adding custom notes to your layout.<br><br>
+- **Text Label:** A non-functional text block used for labeling sections, controls, or adding custom notes to your layout. All text is automatically converted to UPPERCASE and supports letters, numbers, and basic symbols (space, `+`, `-`, `*`, `/`, `.`). Any unsupported characters are automatically converted to an asterisk (`*`).<br><br>
 
 - **Separator:** A visual dividing line (multi shape options) to help group controls and keep your interface neatly organized.
 
