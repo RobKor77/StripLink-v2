@@ -16,3 +16,9 @@ Here is how the hierarchy looks on your system:
 3. **Asset Folders:** Inside each specific theme folder, the visual elements must be strictly categorized into three exact subfolders: `Backgrounds`, `Knobs`, and `Meters`.
 
 > **`Pro Tip for Creating Themes:`** The easiest way to create a new theme is to duplicate an existing theme folder and simply modify or replace the image files inside. If you want to retain a specific contextual menu structure for the knob graphics, you must keep the original theme's folder name and add a prefix or suffix to it (for example, `Custom_Analog Console`). This ensures StripLink automatically applies the exact same menu structure and logic to your new theme.
+> 
+### Asset Dimensions & Requirements
+
+To ensure all graphical elements are displayed correctly within the plugin, the original aspect ratios of the images must be strictly maintained. 
+
+- **Knobs:** The required resolution is **54x54 pixels** per frame, and the image must be a vertical sprite sheet containing exactly **51 frames**.
