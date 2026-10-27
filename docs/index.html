@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,6 +36,16 @@
     .markdown-section li,
     .markdown-section td,
     .markdown-section th {
+      font-size: 24px !important;
+      line-height: 1.6 !important;
+    }
+
+    /* =========================================
+       BLOCKQUOTES / IMPORTANT NOTES
+       ========================================= */
+
+    .markdown-section blockquote,
+    .markdown-section blockquote p {
       font-size: 24px !important;
       line-height: 1.6 !important;
     }
@@ -113,12 +124,18 @@
     }
 
     /* =========================================
-       CODE
+       INLINE CODE
+       Same size as the main text
        ========================================= */
 
     .markdown-section code {
-      font-size: 13px !important;
+      font-size: 24px !important;
     }
+
+    /* =========================================
+       CODE BLOCKS
+       Keep code blocks smaller
+       ========================================= */
 
     .markdown-section pre code {
       font-size: 13px !important;
@@ -153,3 +170,4 @@
 
 </body>
 </html>
+```
