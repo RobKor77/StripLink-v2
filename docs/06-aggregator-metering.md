@@ -49,9 +49,9 @@ You can adapt the VU meters to suit your preferred aesthetic and available scree
 - **Slim Horizontal VU:** A compact, space-saving horizontal meter.
 - **Hide Top Meters:** Completely hides the VU section for maximum vertical screen real estate.
 
-![](6%20StripLink%20Aggregator,%20Metering%20&%20Auto-Gain/VU.png)
+<img src="6%20StripLink%20Aggregator,%20Metering%20&%20Auto-Gain/VU.png" style="width: 150px !important; max-width: 150px !important; height: auto !important;">
 
-![](6%20StripLink%20Aggregator,%20Metering%20&%20Auto-Gain/VU%20slim.png)
+<img src="6%20StripLink%20Aggregator,%20Metering%20&%20Auto-Gain/VU%20slim.png" style="width: 150px !important; max-width: 150px !important; height: auto !important;">
 
 ### Calibration & Routing
 
