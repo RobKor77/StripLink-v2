@@ -4,7 +4,7 @@
 
 The StripLink Module version features a powerful Layout Builder that lets you design your custom interface. Open the **Main Settings Menu** (hamburger icon) and select **Layout Builder** to activate editing mode. The interface operates on a Grid Snap system, allowing you to freely drag and arrange elements precisely where you want them on the canvas.
 
-![Layout Builder](3%20Layout%20Builder%20(Module%20Version%20Only)/Layout%20Builder.png ':size=700')
+![Layout Builder](3%20Layout%20Builder%20%28Module%20Version%20Only%29/Layout%20Builder.png ':size=700')
 
 ---
 
