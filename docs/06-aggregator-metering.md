@@ -53,6 +53,8 @@ You can adapt the VU meters to suit your preferred aesthetic and available scree
 
 <img src="6%20StripLink%20Aggregator,%20Metering%20&%20Auto-Gain/VU%20slim.png" style="width: 150px !important; max-width: 150px !important; height: auto !important;">
 
+> **`Important Note:`** When "Hide Top Meters" is selected, the Main Settings menu icon is automatically relocated to the bottom right corner of the layout, since the top meter area is no longer available.
+
 ### Calibration & Routing
 
 - **Tap Points:** Choose where the VU meter listens in your signal chain: PRE In (raw track input), PRE Out (after the PRE section), or Chain Out (final output after all processing).
