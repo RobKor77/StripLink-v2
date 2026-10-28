@@ -35,5 +35,6 @@ StripLink v2 comes in two distinct flavors:
 Before using StripLink v2, ensure your setup meets the following requirements:
 
 - **REAPER Version:** v7.0 or newer is strictly required for advanced routing and multi-FX chain saving. However, **v7.83 or newer is highly recommended**, as it supports hiding UI tooltips, and newer versions correctly support the "Chain as default for new tracks" feature with unique FXID assignment.
+- **ReaImGui:** Required for rendering the graphical user interface. Please ensure you have the latest version installed via ReaPack.
 - **SWS/S&M Extension:** Required for background memory management and layout saving/loading.
 - **OS Compatibility:** Fully compatible with Windows. macOS and Linux (Intel and Apple Silicon) are supported but have undergone limited testing. Please ensure your host REAPER installation and SWS extensions match your OS architecture.
