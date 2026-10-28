@@ -12,7 +12,7 @@ Connecting StripLink controls to your plugins is straightforward. **Right-Click*
 
 ---
 
-⚠️>**`Important Note:`**
+>**`⚠️Important Note:`**
 The "last touched" feature registers *any* parameter movement in REAPER, including interacting with StripLink's own tabs or internal knobs. Always link the parameter *immediately* after tweaking the target plugin, without clicking anything else in between.
 
 ## Editing Elements (Rename & Invert)
