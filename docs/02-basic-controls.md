@@ -65,7 +65,7 @@ A standard **Right-Click** on any element opens its core functional menu. From h
 
 ### 3. Appearance Menu (Ctrl/Cmd + Right-Click)
 
-Holding `Ctrl` (or `Cmd`) while right-clicking instantly opens the Appearance menu. Here you can fully customize the look of the element. You can change its LED color (Green, Blue, Red, Yellow, White, Black) and its physical style (Type 1 to Type 4) to match the gear you are controlling (e.g., SSL, API, or Neve style knobs).
+Holding `Ctrl` (or `Cmd`) while right-clicking instantly opens the Appearance menu. Here you can fully customize the look of the element. You can change its color (Green, Blue, Red, Yellow, White, Black) and its physical style (Type 1 to Type 4) to match the gear you are controlling (e.g., SSL, API, or Neve style knobs).
 
 <aside>
 
