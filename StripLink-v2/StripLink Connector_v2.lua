@@ -2,7 +2,7 @@
 -- ================================================================================
 -- StripLink Connector v2
 -- Developer: Wormhole Labs
--- Version: 2.0.0
+-- Version: 2.0.1
 -- License & Copyright Information (Freeware):
 -- StripLink is provided as freeware. You are fully permitted to use and 
 -- modify this software for your personal workflow. However, it is strictly 
@@ -2799,6 +2799,28 @@ local function GetDefaultLayout(panel_h)
     }
 end
 
+local function LayoutMatchesOutbox(slot_idx, layout)
+    if not layout then return false end
+    local outbox = PROJECT_BASE + 500000 + (slot_idx * 3000)
+    local count = math.floor(reaper.gmem_read(outbox - 1) + 0.5)
+    if count ~= #layout then return false end
+    for i = 1, count do
+        local o  = outbox + (i - 1) * 13
+        local el = layout[i]
+        if math.floor(reaper.gmem_read(o + 0)  + 0.5) ~= math.floor((el[1]  or -1) + 0.5)
+        or math.floor(reaper.gmem_read(o + 1)  + 0.5) ~= math.floor((el[2]  or -1) + 0.5)
+        or math.floor(reaper.gmem_read(o + 10) + 0.5) ~= math.floor((el[12] or -1) + 0.5) then
+            return false
+        end
+    end
+    return true
+end
+
+local function InvalidateSlotOutbox(slot)
+    reaper.gmem_write(PROJECT_BASE + 500000 + (slot * 3000) - 1, 0)
+    reaper.gmem_write(PROJECT_BASE + slot * 500 + 427, 1)
+end
+
 function PullUILayout(slot_idx, page)
     if not user_layouts[slot_idx] then return end
     
@@ -2809,6 +2831,7 @@ function PullUILayout(slot_idx, page)
     
     local element_count = math.floor(reaper.gmem_read(outbox - 1))
     if element_count <= 0 then return end 
+    if not LayoutMatchesOutbox(slot_idx, user_layouts[slot_idx]) then return end
     
     local current_layout = user_layouts[slot_idx]
     local limit = math.min(#current_layout, element_count)
@@ -3148,6 +3171,7 @@ function ManageAll()
                                 
                                 reaper.gmem_write(slot_base + 497, -1)
                                 fx_just_moved_flags[guid] = true
+                                InvalidateSlotOutbox(slot)
                             else
                                 if has_sec_slider and current_hash ~= guid_hash then 
                                     reaper.TrackFX_SetParam(track, fx_idx, sec_param_idx, guid_hash) 
@@ -3268,6 +3292,8 @@ function ManageAll()
                         
                         fx.slot = live_slot 
                         just_moved = true
+                        InvalidateSlotOutbox(live_slot)
+                        fx.layout_pushed = false
                     end
 
                     local ext_key_tab = "LOCAL_TAB_" .. fx.guid
@@ -3441,7 +3467,27 @@ function ManageAll()
                                 fx.layout_pushed = true
                             end
                         end
-
+                        if fx.layout_pushed and not just_moved then
+                              local sb      = PROJECT_BASE + fx.slot * 500
+                              local mailbox = PROJECT_BASE + 200000 + (fx.slot * 3000)
+                              local lay     = user_layouts[fx.slot]
+                              local pending = reaper.gmem_read(mailbox) == 1
+                                           or reaper.gmem_read(sb + 496) == 1
+                                           or reaper.gmem_read(sb + 427) == 1
+                              local ob_count = math.floor(reaper.gmem_read(PROJECT_BASE + 500000 + fx.slot * 3000 - 1) + 0.5)
+                              
+                              if lay and not pending and ob_count > 0 and not LayoutMatchesOutbox(fx.slot, lay) then
+                                  fx.desync_n = (fx.desync_n or 0) + 1
+                                  if fx.desync_n == 1 then
+                                      reaper.gmem_write(sb + 427, 1) 
+                                  elseif fx.desync_n >= 3 then
+                                      RebuildLayoutFromJSFX(fx.slot) 
+                                      fx.desync_n = 0
+                                  end
+                              else
+                                  fx.desync_n = 0
+                              end
+                          end
                         if fx.last_page ~= cur_local_page then
                             PullUILayout(fx.slot, fx.last_page)
                             fx.last_page = cur_local_page
@@ -7282,6 +7328,8 @@ local function DrawLayoutBuilderToolbox()
                 if reaper.gmem_read(mailbox) == 1 then return end 
                 local outbox_page = math.floor(reaper.gmem_read(outbox - 2))
                 if outbox_page ~= current_page then return end
+                if not LayoutMatchesOutbox(current_slot, my_elements) then return end
+                
                 local outbox_count = math.floor(reaper.gmem_read(outbox - 1))
                 local limit = math.min(#my_elements, outbox_count)
                 

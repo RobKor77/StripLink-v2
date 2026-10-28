@@ -2,7 +2,7 @@
 // ============================================================================
 // StripLink Module v2
 // Developer: Wormhole Labs
-// Version: 2.0.0
+// Version: 2.0.1
 //
 // License & Copyright Information (Freeware):
 // StripLink is provided as freeware. You are fully permitted to use and 
@@ -1704,7 +1704,7 @@ local(state_ptr, dragging, last_click_time, builder_start_x, builder_start_y, ra
             ) : (rightMouse && !lastRightMouse && !g_consumed && current_page != 0) ? (
                 p_base = gmem[100000]; gmem[p_base + 0] += 1; gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
                 gmem[p_base + 5] = btn_idx; 
-                gmem[p_base + 7] = altDown ? 6 : (shiftDown ? 10 : (ctrlDown ? 2 : 1)); 
+                gmem[p_base + 7] = (altDown || ctrlDown) ? 2 : (shiftDown ? 10 : 1); 
                 g_consumed = 1; 
             );
         );
@@ -3068,6 +3068,10 @@ sync_slot();
     gmem[p_base + 200000 + (slider2 * 3000)] = 0; // Layout mailbox
     gmem[base + 490] = 0; // OVR mailbox
     gmem[base + 499] = 0; // DNA mailbox
+    (p_base > 0 && slider2 > 0) ? (
+        gmem[p_base + 500000 + (slider2 * 3000) - 1] = 0; // Clear outbox from previous data
+        trigger_gmem_export = 1;                          // fresh export
+    );
     last_seen_slot_block = slider2;
 );
 
