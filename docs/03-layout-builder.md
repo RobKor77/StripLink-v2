@@ -25,19 +25,19 @@ Once in Builder mode, a floating toolbox window appears. You can add various con
 </td>
 <td style="width: 70%; vertical-align: top; padding: 0; border: none !important; background: transparent !important;">
 
-- **Knob:** A standard continuous rotary control for parameters like gain, frequency, or threshold.<br><br>
+- **Knob:** A standard continuous rotary control for parameters like gain, frequency, or threshold.<br>
 
-- **Switch:** A simple two-state toggle (On/Off), ideal for bypasses, phase inversion, or routing options.<br><br>
+- **Switch:** A simple two-state toggle (On/Off), ideal for bypasses, phase inversion, or routing options.<br>
 
-- **Selector (Multi-state):** A stepped switch selector for parameters with fixed values (e.g., ratios, harmonic types). It can auto-detect the available steps directly from the linked plugin, or you can manually define the number of steps.<br><br>
+- **Selector (Multi-state):** A stepped switch selector for parameters with fixed values (e.g., ratios, harmonic types). It can auto-detect the available steps directly from the linked plugin, or you can manually define the number of steps.<br>
 
 - **Tube:** A simple vertical slider styled in the shape of a vacuum tube. It functions exactly like a standard control but takes up less grid space than a regular knob, providing a distinct visual aesthetic for tighter layouts<br>
 
-- **Meters:** Visual feedback units (like VU or Gain Reduction meters) that can be targeted to specific Top or Bottom sections.<br><br>
+- **Meters:** Visual feedback units (like VU or Gain Reduction meters) that can be targeted to specific Top or Bottom sections.<br>
 
-- **Input Gain:** A dedicated utility module used for initial gain staging at the very start of your FX chain.<br><br>
+- **Input Gain:** A dedicated utility module used for initial gain staging at the very start of your FX chain.<br>
 
-- **Auto-Gain:** A smart compensation toggle that can be placed on your layout to balance input and output levels (detailed fully in Chapter 6).<br><br>
+- **Auto-Gain:** A smart compensation toggle that can be placed on your layout to balance input and output levels (detailed fully in Chapter 6).<br>
 
 - **Text Label:** A non-functional text block used for labeling sections, controls, or adding custom notes to your layout. All text is automatically converted to UPPERCASE and supports letters, numbers, and basic symbols (space, `+`, `-`, `*`, `/`, `.`). Any unsupported characters are automatically converted to an asterisk (`*`).<br>
 
