@@ -1,0 +1,5 @@
+# Windows system files
+desktop.ini
+**/desktop.ini
+Thumbs.db
+**/Thumbs.db
