@@ -1,15 +1,5 @@
 # 5. Saving & Loading, FX Chains & Track Templates
 
-# 5. Saving & Loading, FX Chains & Track Templates
-
-## Internal Layout Saving
-
-StripLink allows you to save and recall custom layouts and mappings directly within its interface. Right-click an empty background area to open the Section Menu. Use Save and Load to store and recall mapping configurations for individual plugins, making it easy to reuse your favorite setups on new tracks. 
-
-You can also save multiple different mappings for the exact same plugin. To do this, simply change the **Instance Name** in the Main Settings Menu before saving. StripLink will treat this as a completely separate configuration, allowing you to build alternative layouts for the same FX.
-
-> **`Important Note:`** Universal Group assignments (A-F) are not saved within internal mappings. Grouping is strictly project-dependent and must be configured per project to avoid unintended parameter links across different sessions.# 5. Saving & Loading, FX Chains & Track Templates
-
 ## Internal Layout Saving
 
 StripLink allows you to save and recall custom layouts and mappings directly within its interface. Right-click an empty background area to open the Section Menu. Use Save and Load to store and recall mapping configurations for individual plugins, making it easy to reuse your favorite setups on new tracks. 
@@ -43,7 +33,7 @@ To make your workflow truly modular, StripLink features an **Insert Mapped FX** 
 
 For rapid duplication across your mix, StripLink lets you instantly copy your entire layout and mapping configuration from one track to another. **Right-Click** the background to open the Section Menu and select **Copy settings**. Then open another StripLink instance and select **Paste settings**. This instantly duplicates the visual layout and all parameter links.
 
-*Note: For the parameter links to work correctly after pasting, the target track must have the exact same plugins loaded in its FX chain.*
+> **`Important Note on Containers & Routing:`** For the parameter links to work correctly after pasting, the target track must have the exact same plugins loaded in its FX chain.*
 
 <video controls>
   <source src="5%20Saving%20&%20Loading,%20FX%20Chains%20&%20Track%20Templates/20261025-2107-42.9513797.mp4" type="video/mp4">
