@@ -88,25 +88,16 @@ To start completely from scratch, click the **CLEAR LAYOUT** button in the toolb
 
 ### **Modular Layout Concepts**
 
-The Layout Builder provides complete structural freedom to design your ideal channel strip. Rather than just swapping colors, you can construct entirely distinct functional blocks—from dense EQ and Dynamics sections to dedicated Preamp utilities and complex signal routing panels. Below are examples of different layout architectures demonstrating the wide variety of controls, visual grouping, and interface designs you can achieve.
+The Layout Builder provides complete structural freedom to design your ideal channel strip. Rather than just swapping colors, you can construct entirely distinct functional blocks—from dense EQ and Dynamics sections to dedicated Preamp utilities and complex signal routing panels. ```html
+<div class="layout-concepts-grid">
 
-<table style="width: 100% !important; margin: 0 auto !important; border: none !important; border-collapse: collapse !important; background: transparent !important;">
-  <tbody style="background:transparent !important;">
-    <tr style="background:transparent !important;">
-      <td style="width:50%; padding:5px; vertical-align:top; text-align:center; background:transparent !important; border:0 !important;">
-        <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/1.png" style="width:320px !important; min-width:320px !important; max-width:320px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important; background:transparent !important;">
-      </td>
-      <td style="width:50%; padding:5px; vertical-align:top; text-align:center; background:transparent !important; border:0 !important;">
-        <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/2.png" style="width:320px !important; min-width:320px !important; max-width:320px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important; background:transparent !important;">
-      </td>
-    </tr>
-    <tr style="background:transparent !important;">
-      <td style="width:50%; padding:5px; vertical-align:top; text-align:center; background:transparent !important; border:0 !important;">
-        <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/3.png" style="width:320px !important; min-width:320px !important; max-width:320px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important; background:transparent !important;">
-      </td>
-      <td style="width:50%; padding:5px; vertical-align:top; text-align:center; background:transparent !important; border:0 !important;">
-        <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/4.png" style="width:320px !important; min-width:320px !important; max-width:320px !important; height:auto !important; display:block !important; float:none !important; margin:0 auto !important; background:transparent !important;">
-      </td>
-    </tr>
-  </tbody>
-</table>
+  <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/1.png" alt="Layout concept 1">
+
+  <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/2.png" alt="Layout concept 2">
+
+  <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/3.png" alt="Layout concept 3">
+
+  <img src="3%20Layout%20Builder%20(Module%20Version%20Only)/4.png" alt="Layout concept 4">
+
+</div>
+```
