@@ -4,7 +4,7 @@
 
 StripLink uses four main pages to organize your workflow: **OVR** (Overview), **EQ** (Equalizer), **DYN** (Dynamics), and **FX** (Effects).
 
-- **Global Switching (Default):** Clicking any tab will instantly switch the view across all StripLink instances in your entire project, keeping your mixer perfectly synced.
+- **Global Switching (Default):** Clicking any tab will immediately switch the view across all StripLink instances in your entire project, keeping your mixer perfectly synced.
 - **Local Switching:** Hold `Ctrl` (or `Cmd` on Mac) and click a tab to change the view for that specific track only, without affecting the rest of your mixer.
 
 <video controls>
@@ -28,10 +28,10 @@ To enhance visual organization, you can assign custom color markers to any tab. 
 All knobs, switches, and selectors in StripLink share a unified control logic, packed with workflow shortcuts:   
 • **Adjust Values:** Left-Click + Drag up/down (or use the Mouse Wheel) for smooth parameter adjustments.   
 • **Fine Control:** Hold `Ctrl` (or `Cmd` on Mac) while dragging for ultra-precise, surgical tweaks.   
-• **Instant Reset:** **Double-Click** any assigned knob or switch to instantly reset the parameter to its saved default value.   
+• **Instant Reset:** **Double-Click** any assigned knob or switch to reset the parameter to its saved default value.   
 • **Main Menu:** **Right-Click** any element to open the core parameter linking and routing menu.   
-• **Appearance Menu:** Hold `Ctrl` (or `Cmd`) + **Right-Click** to instantly open the Knob Style and Color menu. 
-• **Response Curve Menu:** Hold `Alt` (or `Opt`) + **Right-Click** to instantly open the parameter response curve settings (Linear, Fast, Slow). 
+• **Appearance Menu:** Hold `Ctrl` (or `Cmd`) + **Right-Click** to open the Knob Style and Color menu. 
+• **Response Curve Menu:** Hold `Alt` (or `Opt`) + **Right-Click** to access the parameter response curve settings (Linear, Fast, Slow). 
 
 <video controls>
   <source src="2%20Basic%20Controls%20&%20Navigation/20261025-1435-43.0342112.mp4" type="video/mp4">
