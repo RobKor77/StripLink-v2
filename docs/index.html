@@ -159,20 +159,22 @@
     }
 
     ```css
+
     /* =========================================
        LAYOUT CONCEPTS IMAGE GRID
        ========================================= */
     
     .layout-concepts-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
       gap: 10px;
       width: 100%;
+      max-width: 1400px;
       margin: 20px auto;
       align-items: start;
     }
     
-    .layout-concepts-grid img {
+    .markdown-section .layout-concepts-grid img {
       display: block !important;
       width: 100% !important;
       min-width: 0 !important;
@@ -181,12 +183,18 @@
       margin: 0 auto !important;
     }
     
-    /* Switch to one column at 1200px */
+    /* Four images in one column on narrower screens */
     @media screen and (max-width: 1200px) {
       .layout-concepts-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
+      }
+    
+      .markdown-section .layout-concepts-grid img {
+        width: 100% !important;
+        max-width: 1000px !important;
       }
     }
+
     ```
     
     /* =========================================
