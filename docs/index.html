@@ -157,6 +157,37 @@
       font-size: 20px !important;
       line-height: 1.5 !important;
     }
+
+    ```css
+    /* =========================================
+       LAYOUT CONCEPTS IMAGE GRID
+       ========================================= */
+    
+    .layout-concepts-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      width: 100%;
+      margin: 20px auto;
+      align-items: start;
+    }
+    
+    .layout-concepts-grid img {
+      display: block !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      height: auto !important;
+      margin: 0 auto !important;
+    }
+    
+    /* Switch to one column at 1200px */
+    @media screen and (max-width: 1200px) {
+      .layout-concepts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    ```
     
     /* =========================================
        MOBILE
