@@ -35,7 +35,7 @@ Additionally, you have the ability to overlay a Gain Reduction (GR) ring meter d
 ---
 ## Visual Customization (Element Colors & Types)
 
-To visually organize your channel strip, hold `Ctrl` (or `Cmd`) and **Right-Click** to open the Appearance menu. Assign colors (Green, Blue, Red, Yellow, White, or Black) to controls. You can also change the physical knob type to match the analog gear you are controlling (e.g., SSL, Neve, or API styles, depending on your active theme).
+To visually organize your channel strip, hold `Ctrl` (or `Cmd`) and **Right-Click** to open the Appearance menu. Assign colors (Green, Blue, Red, Yellow, White, or Black) to controls. You can also change the knob style to match the analog gear you are controlling (e.g., SSL, Neve, or API styles, depending on your active theme).
 
 <video controls>
   <source src="4%20Parameter%20Mapping%20&%20Customization/visual_customization_aligned_1.mp4" type="video/mp4">
