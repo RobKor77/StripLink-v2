@@ -8,8 +8,7 @@ StripLink allows you to save and recall custom layouts and mappings directly wit
 When you link a parameter to a StripLink control, the parameter's value at the exact moment of linking is automatically saved as its default value. You can instantly reset the parameter to this stored default at any time by double-clicking the StripLink knob or fader.
 
 **Multiple Mappings per Plugin:**
-You can also save multiple different mappings for the exact same plugin. To do this, simply change the **Instance Name** in the
-
+You can also save multiple different mappings for the exact same plugin. To do this, simply change the **Instance Name** in the Main Settings Menu before saving. StripLink will treat this as a completely separate configuration, allowing you to build alternative layouts for the same FX. 
 > **`⚠️ Important Note:`** Universal Group assignments (A-F) are not saved within internal mappings. Grouping is strictly project-dependent and must be configured per project to avoid unintended parameter links across different sessions.
 
 <aside>
