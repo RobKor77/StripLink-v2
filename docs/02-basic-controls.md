@@ -55,7 +55,7 @@ The Main Settings Menu (hamburger icon) provides full control over StripLink's b
 
 ### 2. Main Parameter Menu (Right-Click)
 
-A standard **Right-Click** on any element opens its core functional menu. From here, you can link the knob to a plugin parameter (or the last touched parameter), manually rename it, invert its behavior (useful for bypass switches or reverse parameters), and assign it to a global Saturation/Control Group (A-F).
+A standard **Right-Click** on any element opens its core functional menu. From here, you can link the knob to a plugin parameter (or the last touched parameter), manually rename it, invert its behavior (useful for bypass switches or reverse parameters), and assign it to a global Control Group (A-F).
 
 <aside>
 
