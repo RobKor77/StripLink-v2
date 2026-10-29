@@ -38,3 +38,9 @@ Before using StripLink v2, ensure your setup meets the following requirements:
 - **ReaImGui:** Required for rendering the graphical user interface. Please ensure you have the latest version installed via ReaPack.
 - **SWS/S&M Extension:** Required for background memory management and layout saving/loading.
 - **OS Compatibility:** Fully compatible with Windows. macOS and Linux (Intel and Apple Silicon) are supported but have undergone limited testing. Please ensure your host REAPER installation and SWS extensions match your OS architecture.
+
+## Installation & Setup
+
+- **Installation (ReaPack):** StripLink v2 is installed and updated via ReaPack. Add the following URL to *Import repositories* in your ReaPack configuration: 
+  `https://raw.githubusercontent.com/RobKor77/StripLink-v2/main/index.xml`
+- **Initialization:** The main **StripLink Connector_v2.lua** script must be running to function. For a seamless workflow, it is highly recommended to add this script to your REAPER **Startup Actions** so it runs automatically in the background every time REAPER starts.
