@@ -1,7 +1,7 @@
 // @noindex
 // ============================================================================
 // StripLink BUS v2
-// Version: 2.0.1
+// Version: 2.0.2
 // Developer: Wormhole Labs
 //
 // License & Copyright Information (Freeware):
@@ -231,6 +231,8 @@ tr_idx_init = get_host_placement(p, f);
     );
 
     sync_slot();
+    
+(base > 0) ? gmem[base + 496] = 1;
 
 function draw_text_centered(x, y, w_area, text, alpha_val) (
   gfx_set(1, 1, 1, alpha_val);
@@ -383,10 +385,12 @@ function collision()
 (
   // Disable hover detection entirely while ImGui menu is open to prevent GUI flickering underneath
   gmem[p_base + 206] ? 0 : (
+    mouse_y > (105 * UI_EFF_SCALE + vu_y_offset_base) &&
     mouse_x > xIn && mouse_x < xIn + widthIn &&
     mouse_y > yIn && mouse_y < yIn + heightIn
   )
 );
+
 
 // --- LEVEL METER PRE AMP -----------------------------------------------
 function level_meter(xIn, yIn) 
@@ -514,8 +518,11 @@ function slim_horizontal_meter(xIn, yIn)
               
               // Define collision area for the tooltip
               this.rectIn(xIn, yIn, wIn, hIn);
-              is_over = this.collision();
-
+              
+              is_over = (!gmem[p_base + 206]) && 
+                        (mouse_x > xIn && mouse_x < xIn + wIn && 
+                         mouse_y > yIn && mouse_y < yIn + hIn);
+                         
              // ALWAYS DRAW SLIM METER BACKGROUND IMAGE ---
           gfx_a = 1.0;
           gfx_blit(29, 1, 0, 0, 0, 170, 30, xIn, yIn, wIn, hIn); 
@@ -662,7 +669,9 @@ function analog_vu_meter(xIn, yIn)
      heightIn = (widthIn / src_frame_w) * src_frame_h;
 
      this.rectIn(xIn, yIn, widthIn, heightIn);
-     is_over = this.collision();
+     is_over = (!gmem[p_base + 206]) && 
+               (mouse_x > xIn && mouse_x < xIn + widthIn && 
+                mouse_y > yIn && mouse_y < yIn + heightIn);
 
     (mouse_cap & 2 && !lastRightMouse && is_over) ? (
         gmem[p_base + 0] += 1;
@@ -1270,6 +1279,11 @@ instance(rectIn_ag, is_over_ag)
             gfx_mode = 0;
         );
     );
+
+    slot_valid == 1 ? (
+        slider(11) = gmem[addr_ag];
+        slider_last[11] = gmem[addr_ag];
+    );
 );
 
 
@@ -1531,7 +1545,7 @@ local(sl_idx, addr_v, addr_l, addr_n, addr_d, addr_s, cur_seq, cur_name_code, ra
         ) : ( slider(sl_idx) = valOld; gmem[addr_v] = valOld; );
       );
     ) : ( dragging = 0; gmem[addr_l] = 0; );
-  ) : slot_valid == 1 ? ( slider(sl_idx) = gmem[addr_v]; slider_last[sl_idx] = gmem[addr_v]; );
+  ) : (sl_idx > 0 && slot_valid == 1) ? ( slider(sl_idx) = gmem[addr_v]; slider_last[sl_idx] = gmem[addr_v]; );
 
   gfx_x = xIn; gfx_y = yIn; gfx_a = this_alpha;
   kframe = floor(slider(sl_idx) * 50);
@@ -1662,7 +1676,7 @@ local(sl_idx, addr_v, addr_l, addr_n, addr_d, addr_s, cur_seq, cur_name_code, ra
         ) : ( slider(sl_idx) = valOld; gmem[addr_v] = valOld; );
       );
     ) : ( dragging = 0; gmem[addr_l] = 0; );
-  ) : slot_valid == 1 ? ( slider(sl_idx) = gmem[addr_v]; slider_last[sl_idx] = gmem[addr_v]; );
+  ) : (sl_idx > 0 && slot_valid == 1) ? ( slider(sl_idx) = gmem[addr_v]; slider_last[sl_idx] = gmem[addr_v]; );
 
   this.display_v = slider(sl_idx);
   kframe = floor(this.display_v * 30 + 0.5);
@@ -1971,6 +1985,8 @@ init_sync_done = 0;
 //---------------------------------------------------------------------
 @slider
 
+(srate != last_srate) ? update_srate();
+
 tr_idx_sl = get_host_placement(p, f);
 
 (tr_idx_sl >= 0) ? (
@@ -2178,18 +2194,20 @@ sync_slot();
 // ==========================================================
 // --- OVR BROADCAST & LUA MAILBOX RECEIVER ---------
 
-_s = 1;
-while (_s <= 17) (
-    gmem[base + 300 + _s] = ovr_btn_buf[_s];
-    gmem[base + 342 + _s] = ovr_mtr_buf[_s];
-    _s += 1;
-);
+(base > 0 && slot_valid == 1) ? (
+    _s = 1;
+    while (_s <= 17) (
+        gmem[base + 300 + _s] = ovr_btn_buf[_s];
+        gmem[base + 342 + _s] = ovr_mtr_buf[_s];
+        _s += 1;
+    );
 
-gmem[base + 490] == 1 ? (
-    _slot_target = gmem[base + 491];
-    ovr_btn_buf[_slot_target] = gmem[base + 492];
-    ovr_mtr_buf[_slot_target] = gmem[base + 493];
-    gmem[base + 490] = 0; // clear mailbox
+    gmem[base + 490] == 1 ? (
+        _slot_target = gmem[base + 491];
+        ovr_btn_buf[_slot_target] = gmem[base + 492];
+        ovr_mtr_buf[_slot_target] = gmem[base + 493];
+        gmem[base + 490] = 0; // clear mailbox
+    );
 );
 
 // SECURITY GUARD
@@ -2285,15 +2303,17 @@ slim_target_h = 30 * UI_EFF_SCALE;
 vu_y_offset_base = (global_vu_style == 1) ? floor(slim_target_h - (74 * UI_EFF_SCALE)) : 
                    (global_vu_style == 2) ? floor(-(74 * UI_EFF_SCALE)) : 0;
 
-// Clamp user scroll to prevent scrolling past the UI bounds
+// Omejitve za drsenje navzdol
 total_ui_h = 689 * UI_EFF_SCALE + vu_y_offset_base;
 min_scroll = min(0, gfx_h - total_ui_h);
 (min_scroll > -2) ? min_scroll = 0;
-user_scroll_y = max(min_scroll, min(0, user_scroll_y));
 
-(min_scroll > -5) ? min_scroll = 0;
+// Če ta vtičnik trenutno ne vleče z miško, prebere skupni zamik
+(!scroll_active) ? (
+    user_scroll_y = max(min_scroll, min(0, gmem[p_base + 212]));
+);
 
-// Final offset
+// Končni zamik za telo vtičnika
 vu_y_offset = vu_y_offset_base + user_scroll_y;
 
 act_slot = gmem[p_base + 8]; 
@@ -2358,30 +2378,30 @@ is_hover_tab = (!gmem[p_base + 206] && was_dragging == 0 && mouse_x > 3 * UI_EFF
 is_hover_tab ? (
   tab_hover_sel = (mouse_x <= UI_W / 3) ? 1 : (mouse_x <= UI_W * 2 / 3) ? 2 : 3;
   
-// Left click on tabs
+  // Left click on tabs
   leftMouse && !lastLeftMouse ? (
     new_sel = (current_page == tab_hover_sel) ? 0 : tab_hover_sel;
     ctrlDown ? (
       gmem[base + 290] = new_sel; 
-      slider39 = new_sel; slider_last[39] = new_sel; slider_automate(2^38);
+      slider4 = new_sel; slider_last[4] = new_sel; slider_automate(2^3);
       
       p_base = gmem[100000];
       gmem[p_base + 0] += 1;
       gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
-      gmem[p_base + 7] = 31; // Trigggers Lua CMD 31 (Local)
+      gmem[p_base + 7] = 31; // Triggers Lua CMD 31 (Local)
     ) : (
       gmem[glob_pg_addr] = new_sel;
       
       p_base = gmem[100000];
       gmem[p_base + 0] += 1;
       gmem[p_base + 4] = slider2; gmem[p_base + 6] = p;
-      gmem[p_base + 7] = 30; // Trigggers Lua CMD 30 (Global)
+      gmem[p_base + 7] = 30; // Triggers Lua CMD 30 (Global)
       
       gmem[glob_seq_addr] += 1; 
       gmem[base + 290] = new_sel;
       this.last_glob_seq = gmem[glob_seq_addr]; 
-      slider39 = new_sel; slider_last[39] = new_sel; slider_automate(2^38);
-      slider40 = new_sel; slider_last[40] = new_sel; slider_automate(2^39);
+      slider4 = new_sel; slider_last[4] = new_sel; slider_automate(2^3);
+      slider5 = new_sel; slider_last[5] = new_sel; slider_automate(2^4);
     );
   );
 
@@ -2412,7 +2432,7 @@ current_page == 0 ? (
   X_R = UI_W - 58 * UI_EFF_SCALE;
   X_C = (X_L + X_R) / 2;
   
-// FX PRE
+  // FX PRE
   g_sec_a = alpha_s1;
   FX_sel1.selector(X_L, 102 * UI_EFF_SCALE + vu_y_offset, 54, 39);
   g_sec_a = 1.0;
@@ -2435,8 +2455,8 @@ current_page == 0 ? (
   cur_group_idx == 2 ? #group_label = "Group B";
   cur_group_idx == 3 ? #group_label = "Group C";
   cur_group_idx == 4 ? #group_label = "Group D";
-  cur_group_idx == 4 ? #group_label = "Group E";
-  cur_group_idx == 4 ? #group_label = "Group F";
+  cur_group_idx == 5 ? #group_label = "Group E";
+  cur_group_idx == 6 ? #group_label = "Group F";
   
   draw_text_colored_centered(group_x+17, group_y, 54, #group_label, 1, .5, 0, alpha_group); 
 
@@ -2592,7 +2612,7 @@ current_page == 3 ? (
   group_h = 20 * UI_EFF_SCALE;
 
   mouse_over_group = (!gmem[p_base + 206]) && (mouse_x >= group_x && mouse_x <= group_x + group_w && mouse_y >= group_y && mouse_y <= group_y + group_h) && was_dragging == 0;
-  cur_group_idx = gmem[base + 360 + 38];
+  cur_group_idx = grp_buf[39];
   
   gfx_set(1, 1, 1, mouse_over_group ? 0.3 : 0.0);
   gfx_rect(group_x, group_y, group_w, group_h, 0);
@@ -2602,6 +2622,8 @@ current_page == 3 ? (
   cur_group_idx == 2 ? #group_label = "Group B";
   cur_group_idx == 3 ? #group_label = "Group C";
   cur_group_idx == 4 ? #group_label = "Group D";
+  cur_group_idx == 5 ? #group_label = "Group E";
+  cur_group_idx == 6 ? #group_label = "Group F";
   
   draw_text_colored_centered(group_x+17, group_y, 54, #group_label, 1, .5, 0, alpha_group);
 
@@ -2752,11 +2774,13 @@ is_over_menu = (!gmem[p_base + 206]) && (mouse_x >= menu_icon_x && mouse_x <= me
 );
 
 // =========================================================
-//------ DRAG TO SCROLL & MOUSEWHEEL -----------------------
+//------ DRAG TO SCROLL & MOUSEWHEEL (GLOBAL SYNC) ---------
 
 (mouse_wheel != 0 && !g_consumed) ? (
-    user_scroll_y += (mouse_wheel > 0) ? 60 : -60;
-    mouse_wheel = 0; 
+    step = (mouse_wheel > 0) ? 60 : -60;
+    user_scroll_y = max(min_scroll, min(0, user_scroll_y + step));
+    gmem[p_base + 212] = user_scroll_y;
+    mouse_wheel = 0;
 );
 
 (leftMouse && !lastLeftMouse && !g_consumed && current_dragging == 0 && mouse_y > (105 * UI_EFF_SCALE + vu_y_offset_base)) ? (
@@ -2768,7 +2792,8 @@ is_over_menu = (!gmem[p_base + 206]) && (mouse_x >= menu_icon_x && mouse_x <= me
 (!leftMouse) ? scroll_active = 0;
 
 (scroll_active) ? (
-    user_scroll_y = scroll_start_offset + (mouse_y - scroll_start_y);
+    user_scroll_y = max(min_scroll, min(0, scroll_start_offset + (mouse_y - scroll_start_y)));
+    gmem[p_base + 212] = user_scroll_y;
 );
 
 lastRightMouse = rightMouse;

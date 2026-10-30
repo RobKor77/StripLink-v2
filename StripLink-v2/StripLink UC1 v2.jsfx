@@ -1,7 +1,7 @@
 // @noindex
 // ============================================================================
 // StripLink UC1 v2
-// Version: 2.0.1
+// Version: 2.0.2
 // Developer: Wormhole Labs
 //
 // License & Copyright Information (Freeware):
@@ -226,6 +226,8 @@ tr_idx_init = get_host_placement(p, f);
     );
 
     sync_slot();
+    
+(base > 0) ? gmem[base + 496] = 1;
 
 function draw_text_centered(x, y, w_area, text, alpha_val) (
   gfx_set(1, 1, 1, alpha_val);
@@ -378,6 +380,7 @@ function collision()
 (
   // Disable hover detection entirely while ImGui menu is open to prevent GUI flickering underneath
   gmem[p_base + 206] ? 0 : (
+    mouse_y > (100 * UI_EFF_SCALE + vu_y_offset_base) &&
     mouse_x > xIn && mouse_x < xIn + widthIn &&
     mouse_y > yIn && mouse_y < yIn + heightIn
   )
@@ -509,7 +512,10 @@ function slim_horizontal_meter(xIn, yIn)
           
           // Define collision area for the tooltip
           this.rectIn(xIn, yIn, wIn, hIn);
-          is_over = this.collision();
+          
+          is_over = (!gmem[p_base + 206]) && 
+                    (mouse_x > xIn && mouse_x < xIn + wIn && 
+                     mouse_y > yIn && mouse_y < yIn + hIn);
 
           // ALWAYS DRAW SLIM METER BACKGROUND IMAGE ---
           gfx_a = 1.0;
@@ -652,7 +658,10 @@ function analog_vu_meter(xIn, yIn)
      heightIn = (widthIn / src_frame_w) * src_frame_h;
 
      this.rectIn(xIn, yIn, widthIn, heightIn);
-     is_over = this.collision();
+     
+     is_over = (!gmem[p_base + 206]) && 
+               (mouse_x > xIn && mouse_x < xIn + widthIn && 
+                mouse_y > yIn && mouse_y < yIn + heightIn);
 
     // LUA TRIGGER (Right click opens Menu 99)
     (mouse_cap & 2 && !lastRightMouse && is_over) ? (
@@ -764,13 +773,13 @@ function analog_vu_meter(xIn, yIn)
 
 // GAIN REDUCTION METER (VERTICAL) ----------------------------------------
 function gr_meter(xIn, yIn, meter_num) 
-  local(p_base, active_slot, local_base, addr_gr, addr_text, engine_mode, gr_db, gr_text, scale_val, fill_h, is_over, tw, th, widthIn, heightIn, img_w, img_h, fixed_y_end, fixed_fill_h, fixed_y_start, fixed_w, src_fill_h, src_y_start, is_gate, is_exp, abs_gr, min_db, draw_ttb)
+  local(p_base, active_slot, local_base, addr_gr, addr_text, engine_mode, gr_db, gr_text, scale_val, fill_h, is_over, tw, th, widthIn, heightIn, img_w, img_h, fixed_fill_h, fixed_y_start, fixed_w, src_fill_h, src_y_start, is_gate, is_exp, abs_gr)
 (
      p_base = gmem[100000];
      local_base = p_base + slider2 * 500; 
      is_track_selected = gmem[local_base + 9];
      
-     // Zamenjane dimenzije: ozko in visoko
+     // Dimenzije merilnika za UC-1
      widthIn = 12 * UI_EFF_SCALE; 
      heightIn = 114 * UI_EFF_SCALE;
 
@@ -791,30 +800,22 @@ function gr_meter(xIn, yIn, meter_num)
           (meter_num == 1) ? (
               addr_gr     = local_base + 320;
               addr_text   = local_base + 321;
-              engine_mode = gmem[local_base + 328]; // Read mode for DYN 1
+              engine_mode = gmem[local_base + 328]; // Preberi način za DYN 1
           ) : (
               addr_gr     = local_base + 322;
               addr_text   = local_base + 323;
-              engine_mode = gmem[local_base + 329]; // Read mode for DYN 2
+              engine_mode = gmem[local_base + 329]; // Preberi način za DYN 2
           );
 
           gr_db = gmem[addr_gr];
           gr_text = gmem[addr_text];
           
-          //  MODE DETECTION --------
           is_gate = (engine_mode == 2);
           is_exp  = (engine_mode == 3); 
           
-          // Height calc (prej Width)
-          is_gate ? (
-              min_db = 24; // Preračun skale za Gate
-              abs_gr = abs(gr_db);
-              scale_val = min(1, max(0, abs_gr / min_db));
-          ) : (
-              // Comp & Exp
-              abs_gr = abs(gr_db);
-              scale_val = min(1, max(0, abs_gr / max_gr_db));
-          );
+          // Fixed scale 0-20 is baked in the background
+          abs_gr = abs(gr_db);
+          scale_val = min(1, max(0, abs_gr / 20));
           
           fill_h = scale_val * heightIn;
           
@@ -826,7 +827,7 @@ function gr_meter(xIn, yIn, meter_num)
               gfx_getimgdim(22, img_w, img_h);
               src_fill_h = scale_val * img_h;
               
-              // TOP-TO-BOTTOM 
+              // Always draw from top as scale is baked in the background
               fixed_y_start = floor(yIn);
               src_y_start   = 0;
 
@@ -837,13 +838,13 @@ function gr_meter(xIn, yIn, meter_num)
                       fixed_w, fixed_fill_h);
           );
 
-          // Text - bottom
+          // Values for Gate
           is_gate ? (
-              (abs(gr_text) > 0.1) ? (
+              (gr_text > -100) ? (
                   gfx_set(1, 1, 1, 0.5 * g_sec_a);
-                  sprintf(#v_txt, "+%.1f", abs(gr_text)); 
+                  sprintf(#v_txt, "%.1f", gr_text); 
                   gfx_measurestr(#v_txt, tw, th);
-                  gfx_x = xIn + (widthIn / 2) - (tw / 2) - 3 * UI_EFF_SCALE; 
+                  gfx_x = xIn + (widthIn / 2) - (tw / 2)- 8 * UI_EFF_SCALE; 
                   gfx_y = yIn + heightIn - 2 * UI_EFF_SCALE;
                   gfx_drawstr(#v_txt);
               );
@@ -856,7 +857,7 @@ function gr_meter(xIn, yIn, meter_num)
                       sprintf(#v_txt, "-%.1f", abs(gr_text)); 
                   );
                   gfx_measurestr(#v_txt, tw, th);
-                  gfx_x = xIn + (widthIn / 2) - (tw / 2) - 3 * UI_EFF_SCALE; 
+                  gfx_x = xIn + (widthIn / 2) - (tw / 2)-4 * UI_EFF_SCALE; 
                   gfx_y = yIn + heightIn - 2 * UI_EFF_SCALE;
                   gfx_drawstr(#v_txt);
               );
@@ -1164,12 +1165,18 @@ instance(rectIn_ag, is_over_ag)
         
         gfx_blit(29, 1, 0, 0, frame_idx * src_h, img_w, src_h, xIn, yIn, target_w * UI_EFF_SCALE, target_h * UI_EFF_SCALE);
 
+        // Additive Blending Hover
         (this.is_over_ag && was_dragging == 0) ? (
             gfx_mode = 1;
             gfx_a = 0.25 * g_sec_a;
             gfx_blit(29, 1, 0, 0, frame_idx * src_h, img_w, src_h, xIn, yIn, target_w * UI_EFF_SCALE, target_h * UI_EFF_SCALE);
             gfx_mode = 0;
         );
+    );
+
+    slot_valid == 1 ? (
+        slider(11) = gmem[addr_ag];
+        slider_last[11] = gmem[addr_ag];
     );
 );
 
@@ -1226,8 +1233,10 @@ instance(widthIn, heightIn)
         gfx_blit(26, 1, 0, 0, 0, img_w, img_h, xIn-UI_EFF_SCALE, yIn, widthIn, heightIn);
     );
 
-    slider(12) = gmem[addr_hold];
-    slider_last[12] = gmem[addr_hold];
+    slot_valid == 1 ? (
+        slider(12) = gmem[addr_hold];
+        slider_last[12] = gmem[addr_hold];
+    );
 );
 
  //---- OVR POWER LED --------------------------------------------------
@@ -1431,7 +1440,7 @@ local(sl_idx, addr_v, addr_l, addr_n, addr_d, addr_s, cur_seq, cur_name_code, ra
         ) : ( slider(sl_idx) = valOld; gmem[addr_v] = valOld; );
       );
     ) : ( dragging = 0; gmem[addr_l] = 0; );
-  ) : slot_valid == 1 ? ( slider(sl_idx) = gmem[addr_v]; slider_last[sl_idx] = gmem[addr_v]; );
+  ) : (sl_idx > 0 && slot_valid == 1) ? ( slider(sl_idx) = gmem[addr_v]; slider_last[sl_idx] = gmem[addr_v]; );
 
   gfx_x = xIn; gfx_y = yIn; gfx_a = this_alpha;
   kframe = floor(slider(sl_idx) * 50);
@@ -1563,7 +1572,7 @@ local(sl_idx, addr_v, addr_l, addr_n, addr_d, addr_s, cur_seq, cur_name_code, ra
         ) : ( slider(sl_idx) = valOld; gmem[addr_v] = valOld; );
       );
     ) : ( dragging = 0; gmem[addr_l] = 0; );
-  ) : slot_valid == 1 ? ( slider(sl_idx) = gmem[addr_v]; slider_last[sl_idx] = gmem[addr_v]; );
+  ) : (sl_idx > 0 && slot_valid == 1) ? ( slider(sl_idx) = gmem[addr_v]; slider_last[sl_idx] = gmem[addr_v]; );
 
   this.display_v = slider(sl_idx);
   kframe = floor(this.display_v * 30 + 0.5);
@@ -1626,6 +1635,14 @@ instance(dragging, xOld, valOld, is_over, tw, th, window_peak, display_peak, fra
                 valOld = slider10;
             );
         );
+    );
+
+    // KODA ZA KOLESCE MIŠKE (NOVO)
+    (is_over && mouse_wheel != 0) ? (
+        step = ctrlDown ? (0.1 * global_mouse_std * fine_mult) : (0.5 * global_mouse_std); 
+        slider10 = max(-12, min(12, slider10 + (mouse_wheel > 0 ? step : -step)));
+        mouse_wheel = 0;
+        g_consumed = 1;
     );
 
     // Right click to enter text-value (CMD 23)
@@ -2086,7 +2103,7 @@ sync_slot();
 // ==========================================================
 // --- OVR BROADCAST & LUA MAILBOX RECEIVER ---------
 
-(slot_valid == 1) ? (
+(base > 0 && slot_valid == 1) ? (
     _s = 1;
     while (_s <= 17) (
         gmem[base + 300 + _s] = ovr_btn_buf[_s];
@@ -2205,8 +2222,22 @@ slim_target_h = UI_W * slim_ratio;
 // We want them to sit exactly below our new meter (Y = slim_target_h).
 // If hidden (style 2), we shift everything up by the full 70 pixels.
 // So the offset is the difference between the target Y and 70!
-vu_y_offset = (global_vu_style == 1) ? floor(slim_target_h - (70 * UI_EFF_SCALE)) : 
-              (global_vu_style == 2) ? floor(-(70 * UI_EFF_SCALE)) : 0;
+// Statik offset for head height (fixed pos)
+vu_y_offset_base = (global_vu_style == 1) ? floor(slim_target_h - (70 * UI_EFF_SCALE)) : 
+                   (global_vu_style == 2) ? floor(-(70 * UI_EFF_SCALE)) : 0;
+
+// lower boundary
+total_ui_h = 635 * UI_EFF_SCALE + vu_y_offset_base;
+min_scroll = min(0, gfx_h - total_ui_h);
+(min_scroll > -2) ? min_scroll = 0;
+
+// if this. not scrolling
+(!scroll_active) ? (
+    user_scroll_y = max(min_scroll, min(0, gmem[p_base + 212]));
+);
+
+// Final offset
+vu_y_offset = vu_y_offset_base + user_scroll_y;
 
 
 
@@ -2264,8 +2295,8 @@ shiftDown = (mouse_cap & 8) != 0;
 altDown = (mouse_cap & 16) != 0;
 
 // --- TAB CLICKS, HOVER & MIDI FEEDBACK ---
-tab_y_start = 70 * UI_EFF_SCALE + vu_y_offset;
-tab_y_end   = 100 * UI_EFF_SCALE + vu_y_offset;
+tab_y_start = 70 * UI_EFF_SCALE + vu_y_offset_base;
+tab_y_end   = 100 * UI_EFF_SCALE + vu_y_offset_base;
 is_hover_tab = (!gmem[p_base + 206] && was_dragging == 0 && mouse_x > 3 * UI_EFF_SCALE && mouse_x < (UI_W - 3 * UI_EFF_SCALE) && mouse_y >= tab_y_start && mouse_y <= tab_y_end);
 
 is_hover_tab ? (
@@ -2320,79 +2351,6 @@ gfx_a = 1.0;
 gfx_blit(current_page, 1.0, 0, 
          0, 0, 125, 635, 
          0, vu_y_offset, 125*UI_EFF_SCALE, 635*UI_EFF_SCALE);
-
-// DRAW TAB HOVER HIGHLIGHT -----
-(tab_hover_sel > 0) ? (
-  tab_hover_x = (tab_hover_sel == 1) ? 0 : (tab_hover_sel == 2) ? (UI_W / 3) : (UI_W * 2 / 3);
-  gfx_set(1, 1, 1, 0.12 * g_sec_a);
-  gfx_rect(tab_hover_x, tab_y_start, UI_W / 3, tab_y_end - tab_y_start-4*UI_EFF_SCALE, 1);
-);
-// DECODE AND DRAW CUSTOM TAB COLOR MARKERS ---
-tab_colors_val = slider6;
-col_eq  = floor(tab_colors_val / 100);
-col_dyn = floor((tab_colors_val % 100) / 10);
-col_fx = floor(tab_colors_val % 10);
-
-line_w = 30 * UI_EFF_SCALE; 
-line_h = 3 * UI_EFF_SCALE;  
-line_y = 95.5 * UI_EFF_SCALE + vu_y_offset; // Apply offset to the color markers
-shift_x = 0 * UI_EFF_SCALE;
-
-// Evaluate active digits: 1 = Red, 2 = Green, 3 = Blue, 4 = Yellow
-col_eq > 0 ? (
-    col_eq == 1 ? gfx_set(1, 0.2, 0.2, 1) : 
-    col_eq == 2 ? gfx_set(0.2, 1, 0.2, 1) : 
-    col_eq == 3 ? gfx_set(0.2, 0.6, 1, 1) : 
-    gfx_set(1, 0.9, 0.1, 1);
-    gfx_rect((UI_W / 6) - (line_w / 2) - shift_x, line_y, line_w, line_h);
-);
-
-col_dyn > 0 ? (
-    col_dyn == 1 ? gfx_set(1, 0.2, 0.2, 1) : 
-    col_dyn == 2 ? gfx_set(0.2, 1, 0.2, 1) : 
-    col_dyn == 3 ? gfx_set(0.2, 0.6, 1, 1) : 
-    gfx_set(1, 0.9, 0.1, 1);
-    gfx_rect((UI_W / 2) - (line_w / 2) + (1.5 * UI_EFF_SCALE), line_y, line_w, line_h);
-);
-
-col_fx > 0 ? (
-    col_fx == 1 ? gfx_set(1, 0.2, 0.2, 1) : 
-    col_fx == 2 ? gfx_set(0.2, 1, 0.2, 1) : 
-    col_fx == 3 ? gfx_set(0.2, 0.6, 1, 1) : 
-    gfx_set(1, 0.9, 0.1, 1);
-    gfx_rect((UI_W * 5 / 6) - (line_w / 2) + shift_x, line_y, line_w, line_h);
-);
-// ------------------------------------------------
-
-p_base = gmem[100000];
-selected_slot = gmem[p_base + 8]; 
-
-p_base = gmem[100000]; 
-local_base = p_base + slider2 * 500;
-is_selected_track = (gmem[local_base + 9] > 0); 
-text_brightness_boost = is_selected_track ? 0.3 : 0.0;
-
-is_selected_track ? (
-  gfx_set(1, 1, 1, 0.08); 
-  // --- ADD OFFSET TO HIGHLIGHT RECTANGLE ---
-  gfx_rect(2*UI_EFF_SCALE, 70*UI_EFF_SCALE + vu_y_offset, UI_W, UI_H - (70*UI_EFF_SCALE) - vu_y_offset, 1);
-);
-
-
-// ==========================================================
-// ALWAYS VISIBLE ANALOG VU METER
-
-g_sec_a = 1.0;
-
-(global_vu_style == 0) ? (
-    // Only draw the classic huge needle if Style 0 is selected
-    VU_meter.analog_vu_meter(0, 0);
-);
-
-(global_vu_style == 1) ? (
-    // Draw the new programmatic slim horizontal meter
-    Slim_meter.slim_horizontal_meter(0, 0);
-);
 
 // OVERVIEW TAB (Page 0) ---------------------------------------------
 current_page == 0 ? (
@@ -2632,6 +2590,61 @@ current_page == 3 ? (
   g_sec_a = 1.0; // Reset
 );
 
+// ==============================================
+// STATIC HEADER (MASKING THE SCROLLED KNOBS)
+
+gfx_a = 1.0;
+
+// Draw only the top 100px of the background at a FIXED position
+gfx_blit(current_page, 1.0, 0, 
+         0, 0, 125, 100, 
+         0, vu_y_offset_base, 125*UI_EFF_SCALE, 100*UI_EFF_SCALE);
+
+// --- DRAW TAB HOVER HIGHLIGHT (FIXED) ---
+(tab_hover_sel > 0) ? (
+  tab_hover_x = (tab_hover_sel == 1) ? 0 : (tab_hover_sel == 2) ? (UI_W / 3) : (UI_W * 2 / 3);
+  gfx_set(1, 1, 1, 0.12 * g_sec_a);
+  tab_y_start_fixed = 70 * UI_EFF_SCALE + vu_y_offset_base;
+  tab_y_end_fixed   = 100 * UI_EFF_SCALE + vu_y_offset_base;
+  gfx_rect(tab_hover_x, tab_y_start_fixed, UI_W / 3, tab_y_end_fixed - tab_y_start_fixed-4*UI_EFF_SCALE, 1);
+);
+
+// --- DECODE AND DRAW CUSTOM TAB COLOR MARKERS (FIXED) ---
+tab_colors_val = slider6;
+col_eq  = floor(tab_colors_val / 100);
+col_dyn = floor((tab_colors_val % 100) / 10);
+col_fx = floor(tab_colors_val % 10);
+
+line_w = 30 * UI_EFF_SCALE; 
+line_h = 3 * UI_EFF_SCALE;  
+line_y = 95.5 * UI_EFF_SCALE + vu_y_offset_base; 
+shift_x = 0 * UI_EFF_SCALE;
+
+col_eq > 0 ? (
+    col_eq == 1 ? gfx_set(1, 0.2, 0.2, 1) : col_eq == 2 ? gfx_set(0.2, 1, 0.2, 1) : col_eq == 3 ? gfx_set(0.2, 0.6, 1, 1) : gfx_set(1, 0.9, 0.1, 1);
+    gfx_rect((UI_W / 6) - (line_w / 2) - shift_x, line_y, line_w, line_h);
+);
+col_dyn > 0 ? (
+    col_dyn == 1 ? gfx_set(1, 0.2, 0.2, 1) : col_dyn == 2 ? gfx_set(0.2, 1, 0.2, 1) : col_dyn == 3 ? gfx_set(0.2, 0.6, 1, 1) : gfx_set(1, 0.9, 0.1, 1);
+    gfx_rect((UI_W / 2) - (line_w / 2) + (1.5 * UI_EFF_SCALE), line_y, line_w, line_h);
+);
+col_fx > 0 ? (
+    col_fx == 1 ? gfx_set(1, 0.2, 0.2, 1) : col_fx == 2 ? gfx_set(0.2, 1, 0.2, 1) : col_fx == 3 ? gfx_set(0.2, 0.6, 1, 1) : gfx_set(1, 0.9, 0.1, 1);
+    gfx_rect((UI_W * 5 / 6) - (line_w / 2) + shift_x, line_y, line_w, line_h);
+);
+
+// ==========================================================
+// ALWAYS VISIBLE ANALOG VU METER (FIXED) -------------------
+g_sec_a = 1.0;
+(global_vu_style == 0) ? ( VU_meter.analog_vu_meter(0, 0); );
+(global_vu_style == 1) ? ( Slim_meter.slim_horizontal_meter(0, 0); );
+
+// TRACK SELECTION HIGHLIGHT (FIXED)
+is_selected_track ? (
+  gfx_set(1, 1, 1, 0.08); 
+  gfx_rect(2*UI_EFF_SCALE, 70*UI_EFF_SCALE + vu_y_offset_base, UI_W, gfx_h, 1);
+);
+
 // ==========================================
 // TRACK SELECTION ON CLICK
 
@@ -2658,7 +2671,7 @@ menu_icon_x = UI_W - menu_icon_w - (6 * UI_EFF_SCALE);
     menu_icon_y = (635 * UI_EFF_SCALE + vu_y_offset) - menu_icon_h - (6 * UI_EFF_SCALE);
 ) : (
     // Default top right position
-    menu_icon_y = 47 * UI_EFF_SCALE + vu_y_offset; 
+    menu_icon_y = 47 * UI_EFF_SCALE + vu_y_offset_base; 
 );
 
 is_over_menu = (!gmem[p_base + 206]) && (mouse_x >= menu_icon_x && mouse_x <= menu_icon_x + menu_icon_w && mouse_y >= menu_icon_y && mouse_y <= menu_icon_y + menu_icon_h);
@@ -2686,7 +2699,7 @@ is_over_menu = (!gmem[p_base + 206]) && (mouse_x >= menu_icon_x && mouse_x <= me
 //------ MAPPING -------------------------------------------
 // Prevent macro mapping intercept within tab header workspace context boundaries
 // ADD OFFSET TO MAPPING BOUNDARIES ---
-(rightMouse && !lastRightMouse && !g_consumed && mouse_y > (100 * UI_EFF_SCALE + vu_y_offset)) ? ( 
+(rightMouse && !lastRightMouse && !g_consumed && mouse_y > (100 * UI_EFF_SCALE + vu_y_offset_base)) ? ( 
   is_top = (current_page == 1) || (current_page == 3 && mouse_y < (302.5 * UI_EFF_SCALE + vu_y_offset)) || (current_page == 2 && mouse_y < (UI_H * 0.5 + 25 * UI_EFF_SCALE + vu_y_offset));
   is_bottom = (current_page == 3 && mouse_y >= (302.5 * UI_EFF_SCALE + vu_y_offset)) || (current_page == 2 && mouse_y >= (UI_H * 0.5 + 25 * UI_EFF_SCALE + vu_y_offset));
   
@@ -2698,6 +2711,29 @@ is_over_menu = (!gmem[p_base + 206]) && (mouse_x >= menu_icon_x && mouse_x <= me
     gmem[p_base + 5] = is_bottom ? 2 : 1; 
     gmem[p_base + 7] = 3;
   );
+);
+
+// =========================================================
+//------ DRAG TO SCROLL & MOUSEWHEEL (GLOBAL SYNC) ---------
+
+(mouse_wheel != 0 && !g_consumed) ? (
+    step = (mouse_wheel > 0) ? 60 : -60;
+    user_scroll_y = max(min_scroll, min(0, user_scroll_y + step));
+    gmem[p_base + 212] = user_scroll_y;
+    mouse_wheel = 0;
+);
+
+(leftMouse && !lastLeftMouse && !g_consumed && current_dragging == 0 && mouse_y > (100 * UI_EFF_SCALE + vu_y_offset_base)) ? (
+    scroll_active = 1;
+    scroll_start_y = mouse_y;
+    scroll_start_offset = user_scroll_y;
+);
+
+(!leftMouse) ? scroll_active = 0;
+
+(scroll_active) ? (
+    user_scroll_y = max(min_scroll, min(0, scroll_start_offset + (mouse_y - scroll_start_y)));
+    gmem[p_base + 212] = user_scroll_y;
 );
 
 lastRightMouse = rightMouse;

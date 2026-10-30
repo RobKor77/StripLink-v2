@@ -2,7 +2,7 @@
 -- ================================================================================
 -- StripLink Connector v2
 -- Developer: Wormhole Labs
--- Version: 2.0.1
+-- Version: 2.0.2
 -- License & Copyright Information (Freeware):
 -- StripLink is provided as freeware. You are fully permitted to use and 
 -- modify this software for your personal workflow. However, it is strictly 
@@ -7395,7 +7395,10 @@ local function DrawLayoutBuilderToolbox()
                         
                         -- Filtramo LE funkcijske kontrole (Knob, Switch, Tube, Meter, Selector, InputGain)
                         -- Teksti (4), dekorativni separatorji (6 z ID < 900), Grupe (8) in AutoGain (9, 10) so IZKLJUČENI!
-                        local is_functional_control = (el_type == 1 or el_type == 2 or el_type == 3 or el_type == 5 or el_type == 7 or el_type == 12)
+                        
+                        --local is_functional_control = (el_type == 1 or el_type == 2 or el_type == 3 or el_type == 5 or el_type == 7 or el_type == 12)
+                        -- Leave meters without constraints, so users can place 2 vertical meters one beside antother
+                        local is_functional_control = (el_type == 1 or el_type == 2 or el_type == 3 or el_type == 7 or el_type == 12)
                         
                         if el[12] == current_page and el[1] < 900 and is_functional_control then
                             local param_id = el[5]
@@ -7475,7 +7478,9 @@ local function DrawLayoutBuilderToolbox()
                                 local el_type = my_elements[i][2]
                                 
                                 -- Tekst (4), dekorativne črte (6), Grupa (8) in AutoGain (9, 10) so povsem prosto premični od 100px do dna:
-                                if el_type == 4 or (el_type == 6 and my_elements[i][1] < 900) or el_type == 8 or el_type == 9 or el_type == 10 then
+                                -- also no constraints for meters!
+                                --if el_type == 4 or (el_type == 6 and my_elements[i][1] < 900) or el_type == 8 or el_type == 9 or el_type == 10 then
+                                if el_type == 4 or el_type == 5 or (el_type == 6 and my_elements[i][1] < 900) or el_type == 8 or el_type == 9 or el_type == 10 then
                                     new_y, push_y = BoundingBoxY(new_y, new_h, 100, instance_panel_h - new_h)
                                 else
                                     -- Samo pravi funkcijski parametri (Gumbi, Stikala, Tube, Metri) ostajajo omejeni z ločilnikom:
@@ -8218,15 +8223,23 @@ local function DrawLayoutBuilderToolbox()
                         local cur_param = current_el[5] or 0
                         
                         local is_top_sec = true
-                        if current_page == 2 or current_page == 3 then
-                            local div_y = 350
-                            for _, e in ipairs(my_elements) do
-                                if e[12] == current_page and e[1] >= 900 and e[2] == 6 then
-                                    div_y = e[4]
-                                    break
+                        -- Preverimo dejansko identiteto metra, ne glede na to, kje na zaslonu se nahaja
+                        if cur_param == 1 or cur_param == 3 or cur_param == 5 then
+                            is_top_sec = true
+                        elseif cur_param == 2 or cur_param == 4 or cur_param == 6 then
+                            is_top_sec = false
+                        else
+                            -- Če gre za osnovni Level Meter (0), uporabimo Y-pozicijo samo za določitev, v kateri GR meter se lahko pretvori
+                            if current_page == 2 or current_page == 3 then
+                                local div_y = 350
+                                for _, e in ipairs(my_elements) do
+                                    if e[12] == current_page and e[1] >= 900 and e[2] == 6 then
+                                        div_y = e[4]
+                                        break
+                                    end
                                 end
+                                if current_el[4] >= div_y then is_top_sec = false end
                             end
-                            if current_el[4] >= div_y then is_top_sec = false end
                         end
                         
                         local cur_opt_idx = 1
@@ -8259,10 +8272,12 @@ local function DrawLayoutBuilderToolbox()
                                 if reaper.ImGui_Selectable(ctx, opt, (cur_opt_idx == i)) then
                                     SyncCurrentPositions()
                                     local new_param = 0
+                                    local is_meter_two = (cur_param == 2 or cur_param == 4 or cur_param == 6)
+                                    
                                     if i == 1 then new_param = 0
-                                    elseif i == 2 then new_param = is_top_sec and 1 or 2
-                                    elseif i == 3 then new_param = is_top_sec and 3 or 4
-                                    elseif i == 4 then new_param = is_top_sec and 5 or 6
+                                    elseif i == 2 then new_param = is_meter_two and 2 or 1
+                                    elseif i == 3 then new_param = is_meter_two and 4 or 3
+                                    elseif i == 4 then new_param = is_meter_two and 6 or 5
                                     end
                                     
                                     current_el[5] = new_param

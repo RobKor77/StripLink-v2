@@ -2,7 +2,7 @@
 // ============================================================================
 // StripLink Module v2
 // Developer: Wormhole Labs
-// Version: 2.0.1
+// Version: 2.0.2
 //
 // License & Copyright Information (Freeware):
 // StripLink is provided as freeware. You are fully permitted to use and 
@@ -210,7 +210,7 @@ filename:62,SL_Themes/StripLink Module v2/Analog Console/Knobs/Switch_6.png
 filename:63,SL_Themes/StripLink Module v2/Analog Console/Knobs/Switch_7.png
 filename:64,SL_Themes/StripLink Module v2/Analog Console/Knobs/Switch_8.png
 filename:65,SL_Themes/StripLink Module v2/Analog Console/Knobs/Switch_9.png
-
+filename:66,SL_Themes/StripLink Module v2/Analog Console/Meters/GRmeter_3.png
 
 @init
 
@@ -1161,10 +1161,11 @@ function vertical_gr_meter(el_ptr, xIn, yIn, meter_num, wIn, hIn)
           is_gate = (engine_mode == 2);
           is_exp  = (engine_mode == 3); 
           
+          // scale for Gate
           is_gate ? (
-              min_db = 48; 
-              scale_val = (gr_db + min_db) / min_db;
-              scale_val = max(0, min(1, scale_val));
+              min_db = 24; 
+              abs_gr = abs(gr_db);
+              scale_val = min(1, max(0, abs_gr / min_db));
           ) : (
               abs_gr = abs(gr_db);
               scale_val = min(1, max(0, abs_gr / max_gr_db));
@@ -1177,20 +1178,21 @@ function vertical_gr_meter(el_ptr, xIn, yIn, meter_num, wIn, hIn)
               fixed_fill_h = floor(fill_h);        
               fixed_w = floor(widthIn);
 
-              gfx_getimgdim(22, img_w, img_h);
+              gfx_getimgdim(66, img_w, img_h);
               src_fill_h = scale_val * img_h;
               
-              fixed_y_start = floor(yIn);
-              src_y_start   = 0;
+              // Risanje vedno od spodaj navzgor
+              fixed_y_start = floor(yIn + heightIn) - fixed_fill_h;
+              src_y_start   = img_h - src_fill_h;
 
-              gfx_blit(22, 1, 0,  
+              gfx_blit(66, 1, 0,  
                       0, src_y_start, 
                       img_w, src_fill_h,
                       xIn, fixed_y_start,
                       fixed_w, fixed_fill_h);
           );
 
-          // TEKST (already corrected for Builder)
+          // TEXT (already corrected for Builder)
           
           builder_mode_global == 1 ? (
               // ... in builder always draw placeholder txt!
@@ -3394,7 +3396,15 @@ total_ui_h = inst_panel_h * UI_EFF_SCALE + vu_y_offset_base;
 // scroll boundary...
 min_scroll = min(0, gfx_h - total_ui_h);
 (min_scroll > -2) ? min_scroll = 0; // tolerance
-user_scroll_y = max(min_scroll, min(0, user_scroll_y));
+
+// Če uporabnik trenutno ne vleče z miško, preberi skupni scroll iz gmem
+(!scroll_active) ? (
+    new_scroll_y = max(min_scroll, min(0, gmem[p_base + 212]));
+    (new_scroll_y != user_scroll_y) ? (
+        user_scroll_y = new_scroll_y;
+        force_text_recalc = 1; // Prisilno preračuna pozicije statičnih oznak ob premiku
+    );
+);
 
 // Final offset used by all knobs, tubes, and scrolling background
 vu_y_offset = vu_y_offset_base + user_scroll_y;
@@ -3529,6 +3539,7 @@ is_hover_tab ? (
       slider4 = new_sel; slider_last[4] = new_sel; slider_automate(2^3);
       slider5 = new_sel; slider_last[5] = new_sel; slider_automate(2^4);
     );
+    g_consumed = 1;
   );
 
   // Right click on tabs
@@ -4427,33 +4438,31 @@ is_over_menu = (!gmem[p_base + 206]) && (mouse_x >= menu_icon_x && mouse_x <= me
 
 
 
-// DRAG TO SCROLL & MOUSEWHEEL ...........................................
+// DRAG TO SCROLL & MOUSEWHEEL (GLOBAL SYNC) ..............................
 
 // Mousewheel scrolling on empty space
 (mouse_wheel != 0 && !g_consumed) ? (
-    user_scroll_y += (mouse_wheel > 0) ? 60 : -60;
+    step = (mouse_wheel > 0) ? 60 : -60;
+    user_scroll_y = max(min_scroll, min(0, user_scroll_y + step));
+    gmem[p_base + 212] = user_scroll_y;
     mouse_wheel = 0;
     force_text_recalc = 1;
 );
 
-
 // Drag-to-scroll on empty space (only BELOW the fixed 100px header area)
-// Checks current_dragging and gmem[base + 1] to ignore drags starting on knobs/switches
-
 (leftMouse && !lastLeftMouse && !g_consumed && current_dragging == 0 && mouse_y > (100 * UI_EFF_SCALE + vu_y_offset_base)) ? (
     scroll_active = 1;
     scroll_start_y = mouse_y;
     scroll_start_offset = user_scroll_y;
 );
 
-
 // Stop scrolling when mouse is released
 (!leftMouse) ? scroll_active = 0;
 
-
 // Calculate offset while dragging
 (scroll_active) ? (
-    user_scroll_y = scroll_start_offset + (mouse_y - scroll_start_y);
+    user_scroll_y = max(min_scroll, min(0, scroll_start_offset + (mouse_y - scroll_start_y)));
+    gmem[p_base + 212] = user_scroll_y;
     force_text_recalc = 1;
 );
 

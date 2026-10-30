@@ -1,7 +1,7 @@
 // @noindex
 // ============================================================================
 // Aggregator for StripLink v2, StripLink BUS v2 & StripLink UC1 & StripLink Module v2
-// Version: 2.0.1
+// Version: 2.0.2
 // Developer: Wormhole Labs
 //
 // License & Copyright Information (Freeware):
@@ -49,7 +49,7 @@ GATE_bucket_size = max(1, floor(100 * (s_rate_dsp / (48000/16))));
 
 // --- METER BALLISTICS & TEXT REFRESH TIMERS (Prilagojeno na fps_ui) ---
 gr_decay = exp(-1.0 / (fps_ui * 0.5));
-gate_fall_time_ms = 20.0; // closing time
+gate_fall_time_ms = 2; // closing time
 gate_fall_coeff = 1 - exp(-1.0 / (fps_ui * (gate_fall_time_ms / 1000.0)));
 
 gate_rise_time_ms = 20.0; // opening time
@@ -1095,6 +1095,7 @@ gfx_r = 0.2; gfx_g = 1.0; gfx_b = 0.2;
 gfx_setfont(1, "Arial", 14, 'b');
 gfx_x = 20; gfx_y = 445;
 gfx_printf("COMPENSATED: %.1f dB", ag_ui_comp_db);
+
 
 
 
