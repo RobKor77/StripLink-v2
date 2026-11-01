@@ -1,10 +1,11 @@
 // @description StripLink Series
 // @author Wormhole Labs
-// @version 2.0.2
+// @version 2.0.3
 // @changelog
-//   - Removed GR meter constraint to section and fixed the vertical meter balistics.
-//   - Added a universal scrolling functionality for layouts.
-//   - Added some missing slot validations in static layouts.
+//   - Removed constraint of elements' Y coordinate to section, because of saving issues with different/conflicting layouts.
+//   - Fixed Hybrid save function.
+//   - Fixed panel height loading upon project open.
+//   - Minor corrections on some UI elements - switches.
 // @provides
 //   [effect nomain] StripLink BUS v2.jsfx
 //   [effect nomain] StripLink Module v2.jsfx

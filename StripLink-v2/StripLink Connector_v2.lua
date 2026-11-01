@@ -16,47 +16,48 @@
 -- 
 --  1. GLOBALS & COMMANDS (Offset from PROJECT_BASE)
 -- --------------------------------------------------------------------------------
---  + 0    : Trigger števec (sproži Lua akcijo)
---  + 4    : Aktivni Slot ID (Kateri vtičnik pošilja ukaz)
---  + 5    : ID gumba, slota ali merilnika za ukaz
---  + 6    : JSFX p (Identifikator instance za placement)
---  + 7    : Command ID (Ukazi od 1 do 31)
---  + 8    : Active Slot (Trenutno izbrana steza in njen StripLink)
---  + 10   : Selected Track Index (Za proženje selekcije z miško)
---  + 11   : Track Selection Trigger števec
---  + 12   : Modifiers pri selekciji (npr. 5 za CTRL)
---  + 200  : Globalni Zavihek / TAB (0=OVR, 1=EQ, 2=DYN, 3=FX)
---  + 201  : Global TAB Trigger števec
---  + 202  : Global Meter Mode (0=Samo izbrani, 1=Vsi)
---  + 203  : Orodna namiga / Tooltips (1=Off, 2=On)
---  + 204  : Max GR dB (Razpon za merilnike)
---  + 205  : Global Font Size (Velikost pisave)
---  + 206  : ReaImGui Menu Status (0=Zaprto, 1=Odprto - ustavi miško v JSFX)
+--  + 0    : Trigger counter (Lua trigger)
+--  + 4    : Activ Slot ID (...which FX is sending the command)
+--  + 5    : ID button, slot, meter
+--  + 6    : JSFX p (placement instane identificator)
+--  + 7    : Command ID (commands 1 to 31)
+--  + 8    : Active Slot (currently selected track)
+--  + 10   : Selected Track Index (for triggering mouse selection)
+--  + 11   : Track Selection Trigger counter
+--  + 12   : Modifiers for selektion (e.g. 5 for CTRL)
+--  + 200  : GlobalTAB (0=OVR, 1=EQ, 2=DYN, 3=FX)
+--  + 201  : Global TAB Trigger šcounter
+--  + 202  : Global Meter Mode (0=just selected tr, 1=all)
+--  + 203  : Tooltips (1=Off, 2=On)
+--  + 204  : Max GR dB (GR range)
+--  + 205  : Global Font Size
+--  + 206  : ReaImGui Menu Status (0=closed, 1=poen - stop mouse in JSFX)
 --  + 207  :*Not in use
---  + 208  : VU Meter Stil (0=Klasika, 1=Slim, 2=Skrito)
---  + 209  : Peak LED Threshold (Opozorilo za clipping)
---  + 210  : Global Mouse Standard Speed (0.5 do 2.0)
---  + 211  : Global Mouse Fine Speed (0.05 do 0.25)
+--  + 208  : VU Meter Stile (0=Clasik, 1=Slim, 2=hiden)
+--  + 209  : Peak LED Threshold
+--  + 210  : Global Mouse Standard Speed
+--  + 211  : Global Mouse Fine Speed
+--  + 212  : Global scroll
 -- 
---  2. LOKALNE SPREMENLJIVKE VTIČNIKA / SLOTA (base = PROJECT_BASE + Slot * 500)
+--  LOCAL VARIABLES FX / SLOT (base = PROJECT_BASE + Slot * 500)
 -- --------------------------------------------------------------------------------
---  base + 1          : Active Lock (ID gumba, ki ga trenutno vlečemo z miško)
---  base + 3          : UI Sequence Counter (Sproži osvežitev JSFX GUI-ja)
---  base + 9          : Track Selection Overlay Flag (1=Izbrano, 0=Ni)
---  base + 11 do 75   : Vrednosti gumbov (Normalized 0.0 - 1.0, za gumb 0-64)
+--  base + 1          : Active Lock (element ID currently dragged)
+--  base + 3          : UI Sequence Counter (trigger jsfx GUI refresh)
+--  base + 9          : Track Selection Overlay Flag (1=selected, 0=not sel.)
+--  base + 11 do 75   : element values (Normalized 0.0 - 1.0, for knob 0-64)
 --  base + 78         : Auto Gain Power (0=Off, 1=On)
 --  base + 79         : Auto Gain Lock/Freeze (0=Learn, 1=Frozen)
---  base + 80 do 144  : Vrednosti za prikaz (Dekodirane Base50 številke)
---  base + 150 do 214 : Statusi gumbov (Enota*1000 + Povezanost*100 + Barva)
---  base + 220 do 284 : Imena gumbov (Zakodiran Base50 Part 1)
---  base + 290        : Local Zavihek / TAB (0=OVR, 1=EQ, 2=DYN, 3=FX)
+--  base + 80 do 144  : Display values (Decoded Base50)
+--  base + 150 do 214 : Knob status (Unit*1000 + linked*100 + color)
+--  base + 220 do 284 : Knob names (Encoded Base50 Part 1)
+--  base + 290        : Local TAB (0=OVR, 1=EQ, 2=DYN, 3=FX)
 -- 
---  [Nazaj združljivost za Statične Vtičnike (UC1) - do 17 elementov]
---  base + 300 do 317 : OVR Button Assign (Kateri gumb je dodeljen na slot 1-17)
+--  [Backward compatibility for static SLs (UC1) - up to 17 elements]
+--  base + 300 do 317 : OVR Button Assign (button assigned to slot 1-17)
 -- 
 --  [Aggregator & Metering]
---  base + 320 / 321  : Meter 1 (DYN 1) Vrednost / Tekst
---  base + 322 / 323  : Meter 2 (DYN 2) Vrednost / Tekst
+--  base + 320 / 321  : Meter 1 (DYN 1) Value / Text
+--  base + 322 / 323  : Meter 2 (DYN 2) Value / Text
 --  base + 324 / 325  : Meter 3 (Pre Out) Peak / RMS
 --  base + 326 / 327  : All-Time Max GR (DYN 1 in DYN 2)
 --  base + 328 / 329  : Engine Mode (1=Comp, 2=Gate, 3=Exp) (DYN 1 / DYN 2)
@@ -65,40 +66,40 @@
 --  base + 334 / 335  : Meter 4 (Chain Out) Peak / RMS
 --  base + 336        : VU Meter Source (0=PreIn, 1=PreOut, 2=ChainOut)
 --  base + 337        : Auto Gain Speed Factor
---  base + 338        : Auto Gain Applied Gain (Aggregator pošilja Lui)
---  base + 339        : Auto Gain Restore Target (Lua piše Aggregatorju)
---  base + 340 / 341  : FX ID vtičnika (Za Gate Linked kompenzacijo, M1 in M2)
+--  base + 338        : Auto Gain Applied Gain (Aggregator -- Lua)
+--  base + 339        : Auto Gain Restore Target (Lua -- Aggregator)
+--  base + 340 / 341  : FX ID (for Gate Linked compensation M1 and M2)
 -- 
---  342 do 359 : OVR Meter Assign (Dodeljen merilnik za slot 1-17)
---  [Grupe in Nastavitve Modula]
---  base + 360 do 424 : Vrednost grupe za posamezen gumb (0=None, 1=A, 2=B...)
+--  342 - 359 : OVR Meter Assign (assigned meter for slots 1-17)
+--  [Grups and Module settings]
+--  base + 360 do 424 : Grupevalue for element (0=None, 1=A, 2=B...)
 --  base + 426        : Instance Panel Height (Višina instance v slikovnih pikah)
---  base + 427        : Zahteva za osvežitev Layout Builderja (Lua proži JSFX)
---  base + 428        : Layout Builder Mode (0=Izklopljeno, 1=Vklopljeno)
---  base + 429        : Layout Builder Grid Snap Size (Velikost mreže)
+--  base + 427        : refresh Layout Builder (Lua truggers JSFX)
+--  base + 428        : Layout Builder Mode (0=off, 1=on)
+--  base + 429        : Layout Builder Grid Snap Size
 -- 
---  [Sistemska stikala]
---  base + 490        : OVR Mailbox Trigger (Lua je posodobil OVR)
+--  [System switches]
+--  base + 490        : OVR Mailbox Trigger (Lua refreshed OVR)
 --  base + 491        : OVR Mailbox Slot ID
 --  base + 492        : OVR Mailbox Button ID
 --  base + 493        : OVR Mailbox Meter/Type Packed
---  base + 496        : Force Layout Push (Pove JSFX-u, da obdela nabiralnik)
---  base + 497        : Instance GUID Hash (Preverjanje, če se je premaknil vtičnik)
---  base + 498        : @serialize Status (1=Naloženo, 2=Prazen)
---  base + 499        : Trigger Save Structure (Zapiši RAM nazaj v Lua ExtState)
+--  base + 496        : Force Layout Push
+--  base + 497        : Instance GUID Hash (to check if FX was moved)
+--  base + 498        : @serialize Status (1=loaded, 2=empty)
+--  base + 499        : Trigger Save Structure (write RAM back to Lua ExtState)
 -- 
---  3. OUT-OF-BAND MEMORY (Ločeno od 500-naslovnega bloka zaradi prostora)
+--  3. OUT-OF-BAND MEMORY
 -- --------------------------------------------------------------------------------
---  p_base + 50000 + (Slot * 200) + i      : OVR Button Assign (Dinamični Moduli)
---  p_base + 50000 + (Slot * 200) + 64 + i : OVR Meter Assign (Dinamični Moduli)
+--  p_base + 50000 + (Slot * 200) + i      : OVR Button Assign (Dynamic Module)
+--  p_base + 50000 + (Slot * 200) + 64 + i : OVR Meter Assign (Dynamic Modul)
 --  
---  p_base + 60000 + (Slot * 100) + i      : STEPS CACHE (Koraki za Selectors/Knobe)
+--  p_base + 60000 + (Slot * 100) + i      : STEPS CACHE (steps for Selectors/knobs)
 -- 
---  4. KOMUNIKACIJA IN LAYOUT BUFFER (Za Layout Builder in shranjevanje)
+--  4. Communication and Layout buffer (for Layout Builder and saving)
 -- --------------------------------------------------------------------------------
---  p_base + 150000 + (Slot * 2000) : DNA String Array (Za shranjevanje v template)
---  p_base + 200000 + (Slot * 3000) : MAILBOX (Smer: Lua -> JSFX Layout posodobitev)
---  p_base + 500000 + (Slot * 3000) : OUTBOX (Smer: JSFX -> Lua Layout izvoz)
+--  p_base + 150000 + (Slot * 2000) : DNA String Array (save template)
+--  p_base + 200000 + (Slot * 3000) : MAILBOX (Smer: Lua -> JSFX Layout refresh)
+--  p_base + 500000 + (Slot * 3000) : OUTBOX (Smer: JSFX -> Lua Layout export)
 -- ================================================================================
 
 
@@ -166,29 +167,29 @@ local function GetSectionByParamID(btn_idx)
 end
 
 local function GetElementType(btn_idx, jsfx_name, slot)
-    -- 1. Za dinamične Module vedno verjamemo postaviti v RAM-u (user_layouts)
+    -- for dyn. module we always take from RAM (user_layouts)
     local is_module = jsfx_name:lower():find("module") ~= nil
     if is_module and user_layouts[slot] then
         for _, el in ipairs(user_layouts[slot]) do
             if el[5] == btn_idx and el[12] ~= 0 then 
-                return el[2] -- Vrne natančen tip (1, 2, 3, 7...)
+                return el[2] -- returns exact type (1, 2, 3, 7...)
             end
         end
-        return 1 -- Fallback na Knob
+        return 1 -- Fallback for knob
     end
     
-    -- 2. Logika za statične vtičnike
+    -- ...for static SLs
     local is_uc1 = jsfx_name:lower():find("uc1") ~= nil
     
     if is_uc1 then
-        -- Pravila za UC1
+        -- UC1
         if (btn_idx >= 13 and btn_idx <= 20) or (btn_idx >= 26 and btn_idx <= 29) or (btn_idx >= 35 and btn_idx <= 38) or (btn_idx >= 43 and btn_idx <= 44) or (btn_idx >= 54 and btn_idx <= 56) then
             return 2 -- Switch
         elseif btn_idx == 39 then
             return 7 -- Selector
         end
     else
-        -- Pravila za Standardni StripLink (vključuje najine nove tube!)
+        -- Standard StripLink
         if (btn_idx >= 13 and btn_idx <= 16) or (btn_idx >= 25 and btn_idx <= 27) or (btn_idx >= 34 and btn_idx <= 36) then
             return 3 -- Tube
         elseif btn_idx == 17 or btn_idx == 18 or btn_idx == 28 or btn_idx == 29 or btn_idx == 37 or btn_idx == 38 or btn_idx == 43 or btn_idx == 44 or btn_idx == 54 or btn_idx == 55 then
@@ -198,7 +199,7 @@ local function GetElementType(btn_idx, jsfx_name, slot)
         end
     end
     
-    return 1 -- Vse ostalo je Knob
+    return 1 -- anything other is knob
 end
 
 
@@ -209,7 +210,7 @@ local warned_clones = {}
 
 if not manual_selection_list then manual_selection_list = {} end
 
--- Global clipboard buffer for section Copy/Paste
+-- Global clipboard buffer for section copy/paste
 local clipboard_buffer = {
     hash = nil,
     alias = nil,
@@ -251,7 +252,7 @@ local global_last_touch_p    = -1
 -- IDENTIFICATION AND HASHING (NATIVE LUA)
 -- ============================================================================
 
--- Fast CRC32 implementation for Lua 5.3+ (Reaper 6+)
+-- Fast CRC32 implementation for Lua
 local function CRC32(str)
     local crc = 0xFFFFFFFF
     for i = 1, #str do
@@ -265,7 +266,7 @@ local function CRC32(str)
     return ~crc & 0xFFFFFFFF
 end
 
--- Generate Hash and Alias (with Fallback Hash for legacy compatibility)
+-- Generate Hash and Alias (Fallback Hash for compatibility)
 local function GenerateHashAndAlias(raw_original_name)
     if not raw_original_name or raw_original_name == "" then return "", "", "", "", "" end
     
@@ -276,11 +277,11 @@ local function GenerateHashAndAlias(raw_original_name)
     -- Strip prefix from raw name
     local raw_without_prefix = raw_original_name:gsub("^%s*%u+%d*:%s*", "")
     
-    -- PRIMARY HASH GENERATOR (Raw Without Prefix + Type Tag)
+    -- PRIMARY HASH GENERATOR (Raw w/o prefix + type tag)
     local string_for_hash = raw_without_prefix .. type_tag
     local hash_hex = string.format("%08X", CRC32(string_for_hash))
     
-    -- FALLBACK HASH (Raw Without Parentheses + Type Tag) for migrated legacy mappings
+    -- FALLBACK HASH (Raw w/o Parentheses + type Tag) for migrated legacy mappings
     local clean_without_parens = raw_without_prefix:gsub("%b()", ""):gsub("%s+", " "):match("^%s*(.-)%s*$") or ""
     local fallback_string_for_hash = clean_without_parens .. type_tag
     local fallback_hash_hex = string.format("%08X", CRC32(fallback_string_for_hash))
@@ -292,7 +293,7 @@ local function GenerateHashAndAlias(raw_original_name)
 end
 
 
--- Clean FX name for context menus (uses the new Alias generator)
+-- Clean FX name for context menus (uses Alias generator)
 local function CleanFXName(name)
     if not name or name == "" then return "" end
     local _, alias = GenerateHashAndAlias(name)
@@ -301,7 +302,7 @@ end
 
 
 
--- Safely get the ORIGINAL FX name (ignores user renames in Reaper 7.44+)
+-- Safely get the ORIGINAL FX name (ignores user renames)
 local function GetOriginalFXName(track, fx_idx)
     -- First try the new Reaper API (original_name)
     local ok, orig_name = reaper.TrackFX_GetNamedConfigParm(track, fx_idx, "original_name")
@@ -320,7 +321,7 @@ end
 -- NATIVE INI I/O OPERATIONS (RAM-BASED)
 -- ============================================================================
 
--- Read INI file into a multi-dimensional Lua table
+-- Read INI file into a multi dimensional Lua table
 local function ReadINI_ToRAM(filepath)
     local ini = { _order = {}, _comments = {}, _global_comments = {} }
     local f = io.open(filepath, "r")
@@ -336,14 +337,14 @@ local function ReadINI_ToRAM(filepath)
             -- Save comments to a queue
             table.insert(pending_comments, trim_line)
         elseif trim_line:match("^%[.-%]$") then
-            -- New section
+            -- new section
             current_section = trim_line:match("^%[(.-)%]$")
             if not ini[current_section] then
                 ini[current_section] = {}
                 table.insert(ini._order, current_section)
             end
             
-            -- Assign pending comments to this section
+            -- assign pending comments to this section
             if #pending_comments > 0 then
                 if not ini._comments[current_section] then ini._comments[current_section] = {} end
                 for _, c in ipairs(pending_comments) do table.insert(ini._comments[current_section], c) end
@@ -355,7 +356,7 @@ local function ReadINI_ToRAM(filepath)
             ini[current_section][k] = v
             pending_comments = {} -- Discard comments inside sections (unless they precede the section)
         else
-            -- Global comments at the top of the file, before the first section
+            -- global comments at the top of the file, before the first section
             if not current_section and #pending_comments > 0 then
                 for _, c in ipairs(pending_comments) do table.insert(ini._global_comments, c) end
                 pending_comments = {}
@@ -415,7 +416,7 @@ local function WriteINI_FromRAM(filepath, ini)
     
     -- Atomic File Swap
     if package.config:sub(1,1) == "\\" then
-        -- Windows zahteva predhodni remove
+        -- Windows requires to remove first
         os.remove(filepath)
     end
     os.rename(tmp_path, filepath)
@@ -423,11 +424,11 @@ local function WriteINI_FromRAM(filepath, ini)
 end
 
 
--- ============================================================================
+-- ==============================================
 -- MIGRATION LOGIC (BACKWARD COMPATIBILITY)
--- ============================================================================
+-- ==============================================
 
--- Safely migrate old INI mappings to the new Hash-based relational system
+-- Safely migrate old INI mappings to the new HASH - based relational system
 local function MigrateOldMappings(ini)
     local has_changes = false
     if type(ini) ~= "table" then return false end
@@ -529,26 +530,26 @@ local function HasAnyLinks(guid)
     return false
 end
 
--- Funkcija preveri razpoložljivost metrov glede na zavihek
+-- Check meter availability per section
 local function CheckMeterAvailability(tab_id, elements, ignore_el_id)
     local avail = { 
-        level = (tab_id ~= 2),  -- Level meter je dovoljen povsod, RAZEN na DYN (2)
-        gr_top = (tab_id == 2), -- GR Top je dovoljen SAMO na DYN (2)
-        gr_bot = (tab_id == 2)  -- GR Bot je dovoljen SAMO na DYN (2)
+        level = (tab_id ~= 2),  -- Level meter allowed everywhere, except DYN (2)
+        gr_top = (tab_id == 2), -- GR Top only on DYN (2)
+        gr_bot = (tab_id == 2)  -- GR Bot only on DYN (2)
     }
 
     if elements then
         for _, el in ipairs(elements) do
-            -- Preverimo samo tipe 5 (Metri), ki niso trenutno urejani element
+            -- just chack meters (type 5), that are currently not being modified
             if el[12] == tab_id and el[2] == 5 and el[1] ~= ignore_el_id then
                 local p_id = el[5]
                 
                 if p_id == 0 then 
-                    avail.level = false -- Level meter na tem zavihku že obstaja
+                    avail.level = false -- Level meter already exists on this TAB
                 elseif p_id == 1 or p_id == 3 or p_id == 5 then 
-                    avail.gr_top = false -- GR Top na DYN že obstaja
+                    avail.gr_top = false -- GR Top on DYN already exists
                 elseif p_id == 2 or p_id == 4 or p_id == 6 then 
-                    avail.gr_bot = false -- GR Bot na DYN že obstaja
+                    avail.gr_bot = false -- GR Bot on DYN already exists
                 end
             end
         end
@@ -557,9 +558,9 @@ local function CheckMeterAvailability(tab_id, elements, ignore_el_id)
     return avail
 end
 
--- ============================================================================
+-- =============================================
 -- DYNAMIC INI DATABASE & SMART FALLBACK LOGIC
--- ============================================================================
+-- ==============================================
 
 -- Cache for loaded INI databases
 local INI_DBs = {}
@@ -571,16 +572,13 @@ local function GetBaseJSFXName(track, fx_idx)
         _, orig_name = reaper.TrackFX_GetFXName(track, fx_idx, "")
     end
     
-    -- 1. Odstrani "JS: " predpono
+    -- Clean names prefixes, parenthesis,..., type
     local clean_name = orig_name:gsub("^JS:%s*", "")
-    
-    -- 2. Odstrani kvadratne oklepaje na koncu [StripLink Module v2.jsfx]
+
     clean_name = clean_name:gsub("%s+%[.-%]$", "")
     
-    -- 3. Odstrani končnico .jsfx ali .JSFX
     clean_name = clean_name:gsub("%.jsfx$", ""):gsub("%.JSFX$", "")
     
-    -- 4. Odstrani vse mape pred imenom (tako / kot \)
     clean_name = clean_name:match("([^\\/]+)$") or clean_name
     
     return clean_name
@@ -601,7 +599,7 @@ local function GetJSFXHeightFromFile(jsfx_name)
         local h = content:match("@gfx%s+%d+%s+(%d+)")
         if h then
             local raw_h = tonumber(h) or 635
-            -- Kompenzacija za stil VU metra, da dobimo osnovno višino platna
+            -- Compensation for style to get original pannel height
             local ext_style = tonumber(reaper.GetExtState(NS, "GLOBAL_VU_STYLE")) or 0
             if ext_style == 1 then raw_h = raw_h + 40
             elseif ext_style == 2 then raw_h = raw_h + 70 end
@@ -612,9 +610,9 @@ local function GetJSFXHeightFromFile(jsfx_name)
 end
 
 
--- ============================================================================
+-- ============================================
 -- THEME SYSTEM: SCANNER & PATH PATCHER
--- ============================================================================
+-- ===========================================
 
 -- Scans available themes for the selected plugin type
 local function GetAvailableThemes(jsfx_name)
@@ -785,7 +783,7 @@ local function is_page_match(sec_page, act_page)
 end
 
 -- HELPER FUNC for NAME (For JSFX)
--- 1. GLAVNI SLOVAR (Edino mesto, kjer definiraš znake)
+-- MAIN DICTIONARY
 local function char_to_code(c)
     local byte = string.byte(c)
     if not byte then return 0 end
@@ -801,7 +799,7 @@ local function char_to_code(c)
     else return 0 end
 end
 
--- 2. FUNKCIJA ZA KODIRANJE BESEDIL V BUILDERJU (Base50 - 9 ZNAKOV)
+-- ENCODE TEXT IN BUILDER (Base50 - 9 elements)
 local function char_to_base50(c)
     if not c or c == "" then return 1 end
     if c == " " then return 1 end
@@ -815,7 +813,7 @@ local function char_to_base50(c)
     if c == "*" then return 41 end
     if c == "." then return 42 end
     
-    -- Vsi nepodprti znaki (šumniki, !, @, #, %, ...) se avtomatsko pretvorijo v '*'
+    -- all unnsoported chars (š, č, !, @, #, %, ...) auromatically convert to '*'
     return 41
 end
 
@@ -870,14 +868,14 @@ end
 local function encode_param_name_to_number(name)
     if not name or name == "" then return 0 end
     
-    -- Preveri, ali gre za "CUSTOM" ime (začne se s tildo ~)
+    -- Check if custom name - signed with ~
     local is_custom = false
     if name:sub(1,1) == "~" then
         is_custom = true
         name = name:sub(2) 
     end
 
-    -- Loči osnovno ime in večmestno številko na koncu (npr. "Frequency 3")
+    -- separate orig. name and number at the end (e.g. "Frequency 3")
     local base_name, num_str = name:match("^(.-)%s*(%d+)$")
     if not base_name then
         base_name = name
@@ -887,7 +885,7 @@ local function encode_param_name_to_number(name)
     local final_str = ""
     
     if is_custom then
-        -- ROČNO PREIMENOVANI: Ohranimo celotno besedilo (do 9 znakov)
+        -- MANUAL RENAMING: preserve orig. text (up to 9 el.)
         if num_str ~= "" then
             local suffix = " " .. num_str
             local allowed_len = 9 - #suffix
@@ -896,7 +894,7 @@ local function encode_param_name_to_number(name)
             final_str = base_name:sub(1, 9)
         end
     else
-        -- AVTOMATSKI: Prvo besedo striktno omejimo na NAJVEČ 6 črk
+        -- AUTO: first word 6 letters (maybe correct later...)
         local first_word = base_name:match("^%s*(%S+)") or base_name
         first_word = first_word:sub(1, 6)
         
@@ -907,7 +905,6 @@ local function encode_param_name_to_number(name)
         end
     end
 
-    -- Zakodiramo končni niz v Base 50
     return EncodeStringToBase50(final_str)
 end
 
@@ -937,8 +934,8 @@ end
 local function PackDX(dx, align, ref_w)
     if align == 0 then return math.floor(dx) end -- Legacy / Free mode
     local sign = (dx < 0) and -1 or 1
-    -- Format: Celi del (DX) + Tisočine (Align) + Desettisočine (Ref_W)
-    -- Primer: DX 10, Align 2, RefW 42 -> 10.2042
+    -- Format: Whole part (DX) + thousands (Align) + ten-thousantds (Ref_W)
+    -- Example: DX 10, Align 2, RefW 42 -> 10.2042
     local dec = (align * 0.1) + ((ref_w or 0) * 0.0001)
     return (math.abs(dx) + dec) * sign
 end
@@ -949,7 +946,7 @@ local function UnpackDX(packed_dx)
     local abs_val = math.abs(packed_dx)
     local dx = math.floor(abs_val)
     
-    -- Izvlečemo decimalni del in preprečimo float napake z zaokroževanjem
+    -- ger decimapl part and avoid float rounding err
     local dec = math.floor((abs_val - dx) * 10000 + 0.5)
     
     local align = math.floor(dec / 1000)
@@ -960,9 +957,9 @@ end
 
 local UpdatePluginStructure
 
--- ============================================================================
+-- ===================================================
 -- SAVE MAPPING (RAM-BASED & CHAIN READY)
--- ============================================================================
+-- ===================================================
 
 function SaveMapping(track, fx_idx, page_name, section_hash_chain, sub_slot)
 
@@ -1139,15 +1136,20 @@ function SaveMapping(track, fx_idx, page_name, section_hash_chain, sub_slot)
                  if not inserted then table.insert(INI_DB._order, layout_sec) end
              end
              
-             INI_DB[layout_sec] = {} -- Očistimo stare elemente pred novim zapisom
-             
+             INI_DB[layout_sec] = {} -- clean old elements befor new val
+             -- Save current pannel height
+             local inst_h = math.floor(reaper.gmem_read(PROJECT_BASE + slot * 500 + 426))
+             INI_DB[layout_sec]["PanelHeight"] = tostring(inst_h)
+            
+             local target_tab = 1
+                          
              local target_tab = 1
              if page_name == "EQ" then target_tab = 1
              elseif page_name == "DYN" then target_tab = 2
              elseif page_name == "FX" then target_tab = 3
              end
              
-             -- Poiščemo Y pozicijo dividerja (za ločevanje Top/Bottom elementov)
+             -- get divider's Y pos first (for Top/Bottom)
              local divider_y = 350
              for _, el in ipairs(user_layouts[slot]) do
                  if el[12] == target_tab and el[1] >= 900 and el[2] == 6 then
@@ -1158,12 +1160,12 @@ function SaveMapping(track, fx_idx, page_name, section_hash_chain, sub_slot)
              
              local el_counter = 1
              for _, el in ipairs(user_layouts[slot]) do
-                 -- Shranimo samo elemente na trenutnem zavihku in preskočimo sistemske (>= 900)
+                 -- just save elements aand skip system ones (>= 900)
                  if el[12] == target_tab and el[1] < 900 then
                      local is_bottom = false
                      local param_id = math.floor(el[5] or 0)
                      
-                     -- Določitev ali element pripada Top ali Bottom sekciji
+                     -- Assign if element is Top/Bottom
                      if target_tab == 2 then
                          if (param_id >= 30 and param_id <= 38) or param_id == 2 or param_id == 4 or param_id == 6 then is_bottom = true
                          elseif (param_id >= 21 and param_id <= 29) or param_id == 1 or param_id == 3 or param_id == 5 then is_bottom = false
@@ -1174,7 +1176,6 @@ function SaveMapping(track, fx_idx, page_name, section_hash_chain, sub_slot)
                          else is_bottom = ((el[4] or 0) >= divider_y) end
                      end
                      
-                     -- Ali element pripada tisti sekciji, ki jo trenutno shranjujemo?
                      local belongs_to_this_save = (page_name == "EQ") or 
                                                   (sub_slot == 1 and not is_bottom) or 
                                                   (sub_slot == 2 and is_bottom)
@@ -1182,7 +1183,6 @@ function SaveMapping(track, fx_idx, page_name, section_hash_chain, sub_slot)
                      if belongs_to_this_save then
                          local text_str = (el[9] and el[9] ~= "") and el[9] or " "
                          
-                         --Uporabimo math.floor za VSE številke, da preprečimo Lua Float Crash
                          local line = string.format("%d,%d,%d,%d,%d,%d,%d,%d,%s,%d,%d,%d,%g,%d",
                              math.floor((el[1] or 0) + 0.5), 
                              math.floor((el[2] or 0) + 0.5), 
@@ -1196,7 +1196,7 @@ function SaveMapping(track, fx_idx, page_name, section_hash_chain, sub_slot)
                              math.floor((el[10] or 14) + 0.5), 
                              math.floor((el[11] or 0) + 0.5), 
                              math.floor((el[12] or 0) + 0.5), 
-                             (el[13] or 0), -- %g ohrani decimalke za poravnavo
+                             (el[13] or 0), -- %g preserve decimal places for alignment
                              math.floor((el[14] or 0) + 0.5))
                          
                          INI_DB[layout_sec]["El_" .. el_counter] = line
@@ -1385,7 +1385,7 @@ function LoadMapping(track, fx_idx, page_name, section_hash_chain, silent, sub_s
                 rel_hash_idx = 0 -- Default to 0 for single legacy plugins
             end
 
-            -- Legacy parsing safeguards
+            -- parsing safeguards
             if c_def and c_def ~= "" and not tonumber(c_def) then
                 c_name = c_def
                 c_def = ""
@@ -1401,7 +1401,6 @@ function LoadMapping(track, fx_idx, page_name, section_hash_chain, silent, sub_s
                 local color_num = tonumber(c_style) or 13
                 local curve_val = tonumber((c_p and tostring(c_p):gsub(",", ".") or "1.0")) or 1.0
                 
-                -- Resolve to actual plugin index
                 local final_fx_idx = rel_to_fx_idx[rel_hash_idx]
                 
                 if final_fx_idx then
@@ -1470,19 +1469,30 @@ function LoadMapping(track, fx_idx, page_name, section_hash_chain, silent, sub_s
         end
     end
     
-        -- ==========================================================
+        -- =================================
         -- NEW: LAYOUT LOADING FOR MODULE
-        -- ==========================================================
+        -- =================================
         if jsfx_name:lower():find("module") ~= nil then
             local layout_sec = section .. "_LAYOUT"
             if INI_DB[layout_sec] then
+                -- Load pannel height (if exists)
+                if INI_DB[layout_sec]["PanelHeight"] then
+                    local loaded_h = tonumber(INI_DB[layout_sec]["PanelHeight"])
+                    if loaded_h and loaded_h >= 635 then
+                        local current_h = math.floor(reaper.gmem_read(base + 426))
+                        -- just increase height to avoid cropping of already loaded sections
+                        if loaded_h > current_h then
+                            reaper.gmem_write(base + 426, loaded_h)
+                        end
+                    end
+                end
                 local target_tab = 1
                 if page_name == "EQ" then target_tab = 1
                 elseif page_name == "DYN" then target_tab = 2
                 elseif page_name == "FX" then target_tab = 3
                 end
                 
-                -- Očistimo stare elemente s tega zavihka (in te sekcije, če gre za split)
+                -- clear old elements from tab/section
                 if user_layouts[slot] then
                     local divider_y = 350
                     for _, el in ipairs(user_layouts[slot]) do
@@ -1524,7 +1534,7 @@ function LoadMapping(track, fx_idx, page_name, section_hash_chain, silent, sub_s
                     user_layouts[slot] = GetDefaultLayout(inst_h)
                 end
                 
-                -- Naložimo nove elemente iz INI
+                -- Load new elements from INI
                 for k, v in pairs(INI_DB[layout_sec]) do
                     if k:match("^El_%d+$") and v ~= "" then
                         local id_s, type_s, x_s, y_s, param_s, w_s, h_s, txt2_s, text_s, sz_s, bold_s, tab_s, dx_s, dy_s = v:match("^(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),([^,]*),(%-?%d+),(%-?%d+),(%-?%d+),(%-?[%d%.]+),(%-?%d+)$")
@@ -1540,7 +1550,7 @@ function LoadMapping(track, fx_idx, page_name, section_hash_chain, silent, sub_s
                     end
                 end
                 
-                -- Pošljemo nov layout v JSFX UI
+                -- send new layout to JSFX UI
                 reaper.gmem_write(base + 496, 1)
             end
         end
@@ -1718,7 +1728,7 @@ local function BuildMenu(track, caller_guid, btn_idx)
                         local _, pname = reaper.TrackFX_GetParamName(tr, current_fx_idx, p, "")
                         pname = (pname == "") and ("Param " .. p) or pname
                         
-                        -- CRITICAL: Skip dummy parameters (saves UAD problem with 8000 parameters)
+                        -- Skip dummy parameters (saves UAD problem with 8000 parameters)
                         if pname ~= "" and not pname:lower():find("dummy") and not pname:lower():find("reserved") then
                             
                             -- clean names
@@ -1927,19 +1937,17 @@ local function UpdateLink(slot, caller_guid, should_poll, track, fx_idx, just_mo
                         local raw_v = reaper.TrackFX_GetParam(target_track, actual_fx_idx, p_idx)
                         reaper.TrackFX_SetParam(target_track, actual_fx_idx, p_idx, raw_v)
                         
-                        -- DODANO 1: Zapišemo pričakovano vrednost Masterja
                         expected_vst_values[mem_key] = reaper.TrackFX_GetParamNormalized(target_track, actual_fx_idx, p_idx)
                         
                         local cur_group = group_cache[slot] and group_cache[slot][i] or 0
                         if active_lock == btn_num and cur_group > 0 and active_plugins then
-                            -- 1. Preverimo Invert status trenutnega (Master) gumba
+                            -- check current master button
                             local master_is_rev = false
                             if mapping_cache[slot] and mapping_cache[slot].parts and mapping_cache[slot].parts[i] then
                                 local m_curve = tonumber(mapping_cache[slot].parts[i][6]) or 1.0
                                 master_is_rev = (m_curve < 0)
                             end
 
-                            -- 2. Zanka gre čez VSE vtičnike in VSE možne indekse (0 - 64)
                             for _, other_fx in ipairs(active_plugins) do
                                 local other_base = PROJECT_BASE + other_fx.slot * 500
                                 for j = 0, 64 do
@@ -2023,13 +2031,13 @@ local function UpdateLink(slot, caller_guid, should_poll, track, fx_idx, just_mo
                          local cur_v = reaper.TrackFX_GetParamNormalized(target_track, actual_fx_idx, p_idx)
                          
                          -- ==========================================================
-                         -- 1. DETEKCIJA AVTOMATIZACIJE / MIDI
+                         -- DETECTION OF MIDI AUTOMATIZATION
                          -- ==========================================================
                          if just_moved or expected_vst_values[mem_key] == nil then
                              expected_vst_values[mem_key] = cur_v
                          end
  
-                         -- ČE SE VREDNOST RAZLIKUJE, SMO ZAZNALI AVTOMATIZACIJO!
+                         -- if value differes then autmoatisation is taking place
                          if math.abs(cur_v - expected_vst_values[mem_key]) > 0.0001 then
                              expected_vst_values[mem_key] = cur_v
                              
@@ -2089,7 +2097,7 @@ local function UpdateLink(slot, caller_guid, should_poll, track, fx_idx, just_mo
                                                              
                                                              reaper.TrackFX_SetParamNormalized(o_tr, o_idx, o_p, final_vst_v)
                                                              
-                                                             -- PREPREČITEV ZANKE: Zapišemo pričakovano vrednost avtomatiziranega Slave-a
+                                                             -- AVOID LOOP: write expected automatized slave value
                                                              expected_vst_values[other_fx.guid .. ":" .. j] = reaper.TrackFX_GetParamNormalized(o_tr, o_idx, o_p)
                                                              
                                                              local _, o_buf = reaper.TrackFX_GetFormattedParamValue(o_tr, o_idx, o_p, "")
@@ -2110,9 +2118,8 @@ local function UpdateLink(slot, caller_guid, should_poll, track, fx_idx, just_mo
                                  end
                              end
                          end
-                         -- ==========================================================
+
  
-                         -- 2. Standardno osveževanje UI-ja (tvoj prejšnji del)
                          local p_abs = math.abs(p)
                          local is_rev = (p < 0)
                          local base_v = is_bypass and (cur_v > 0.5 and 0 or 1) or cur_v
@@ -2174,9 +2181,9 @@ local function UpdateLink(slot, caller_guid, should_poll, track, fx_idx, just_mo
      end
  end
  
- -- ============================================================================
+ -- ===================================================
  -- HELPER: LOAD HYBRID MAPPING DIRECTLY (RAM & GMEM)
--- ============================================================================
+-- =====================================================
 local function LoadHybridMapping(tr, f_idx, section_name, target_fx_idx, target_slider)
     local c_guid = reaper.TrackFX_GetFXGUID(tr, f_idx)
     local jsfx_name = GetBaseJSFXName(tr, f_idx)
@@ -2226,10 +2233,21 @@ local function LoadHybridMapping(tr, f_idx, section_name, target_fx_idx, target_
                 end
             end
         end
-        -- NALAGANJE LAYOUTA ZA HYBRID
+        -- HYBRID LAYOUT LOADING
         if jsfx_name:lower():find("module") ~= nil then
             local layout_sec = section_name .. "_LAYOUT"
             if INI_DB[layout_sec] then
+                -- load pannel height (if it exists)
+                if INI_DB[layout_sec]["PanelHeight"] then
+                    local loaded_h = tonumber(INI_DB[layout_sec]["PanelHeight"])
+                    if loaded_h and loaded_h >= 635 then
+                        local current_h = math.floor(reaper.gmem_read(sl_base + 426))
+                        -- only ever increase height
+                        if loaded_h > current_h then
+                            reaper.gmem_write(sl_base + 426, loaded_h)
+                        end
+                    end
+                end
                 if not user_layouts[sl] then
                     local inst_h = math.floor(reaper.gmem_read(sl_base + 426))
                     if inst_h <= 0 then inst_h = 635 end
@@ -2240,7 +2258,7 @@ local function LoadHybridMapping(tr, f_idx, section_name, target_fx_idx, target_
                 local is_dyn = section_name:find("_DYN")
                 local is_fx = section_name:find("_PRE") or section_name:find("_POST")
                 
-                -- Najprej počistimo obstoječe elemente samo na zavihkih, ki jih ta Hybrid pokriva
+                -- first clean existing elements on tabs, that correspond to hybrid elements
                 for j = #user_layouts[sl], 1, -1 do
                     local el = user_layouts[sl][j]
                     local t_tab = el[12]
@@ -2252,7 +2270,7 @@ local function LoadHybridMapping(tr, f_idx, section_name, target_fx_idx, target_
                     end
                 end
                 
-                -- Nato naložimo nove elemente iz INI datoteke
+                -- Load new elements form INI
                 for k, v in pairs(INI_DB[layout_sec]) do
                     if k:match("^El_%d+$") and v ~= "" then
                         local id_s, type_s, x_s, y_s, param_s, w_s, h_s, txt2_s, text_s, sz_s, bold_s, tab_s, dx_s, dy_s = v:match("^(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),(%-?%d+),([^,]*),(%-?%d+),(%-?%d+),(%-?%d+),(%-?[%d%.]+),(%-?%d+)$")
@@ -2271,7 +2289,7 @@ local function LoadHybridMapping(tr, f_idx, section_name, target_fx_idx, target_
         end
         -- Trigger JSFX UI refresh
         reaper.gmem_write(sl_base + 3, (reaper.gmem_read(sl_base + 3) + 1) % 1000)
-        -- refresh DNA!
+        -- refresh DNA
         UpdatePluginStructure(tr, f_idx, c_guid)
         return true
     end
@@ -2279,7 +2297,7 @@ local function LoadHybridMapping(tr, f_idx, section_name, target_fx_idx, target_
 end
 
 -- ============================================================================
--- AUTO LOAD NEW PLUGIN (SCANNER WITH HYBRID & SLIDER 1 SUPPORT)
+-- AUTO LOAD NEW PLUGIN
 -- ============================================================================
 local function AutoLoadNewPlugin(tr, f_idx)
     local fx_count = reaper.TrackFX_GetCount(tr)
@@ -2582,11 +2600,11 @@ local function ReadStructureFromJSFX(slot)
     return table.concat(chars)
 end
 
--- ============================================================================
+-- ================================================
 -- UPDATE PLUGIN STRUCTURE (FOR JSFX @SERIALIZE)
--- ============================================================================
+-- =================================================
 UpdatePluginStructure = function(track, slot, c_guid)
-    -- 1. Build a flat list of all FX (including Containers in Depth-First order)
+    -- Build a flat list of all FX (including Containers in Depth-First order)
     local flat_list = {}
     local function scan_fx_flat(parent_idx)
         local count = parent_idx and tonumber(({reaper.TrackFX_GetNamedConfigParm(track, parent_idx, "container_count")})[2]) or reaper.TrackFX_GetCount(track)
@@ -2609,7 +2627,7 @@ UpdatePluginStructure = function(track, slot, c_guid)
         if fx.guid == c_guid then striplink_flat_pos = pos end
     end
     
-    -- 2. Build the new serialized DNA string
+    -- Build the new serialized DNA string
     local struct_parts = {}
     local current_track_guid = reaper.GetTrackGUID(track)
     
@@ -2618,7 +2636,6 @@ UpdatePluginStructure = function(track, slot, c_guid)
         if val and val ~= "" then
             local parts = safe_split(val)
             
-            -- STRIKTNE VAROVALKE (Preprečijo sesutje string.format funkcije)
             local t_guid = parts[1]
             local p_idx = parts[4] or "0"
             local p_name = parts[5] or ""
@@ -2630,7 +2647,7 @@ UpdatePluginStructure = function(track, slot, c_guid)
             if (not t_track_guid or t_track_guid == "" or t_track_guid == current_track_guid) and t_guid then
                 local target_flat_pos = flat_guid_to_pos[t_guid]
                 if target_flat_pos and striplink_flat_pos ~= -1 then
-                    -- Calculate Relative Index
+                    -- Calculate relative index
                     local rel_fx_id = target_flat_pos - striplink_flat_pos
                     
                     local _, col_val = reaper.GetProjExtState(0, NS, "COLOR:" .. c_guid .. ":" .. b)
@@ -2651,9 +2668,9 @@ UpdatePluginStructure = function(track, slot, c_guid)
     WriteStructureToJSFX(slot, final_struct)
 end
 
--- ============================================================================
+-- =================================================
 -- RESTORE PLUGIN STRUCTURE (FROM JSFX @SERIALIZE)
--- ============================================================================
+-- ================================================
 local function RestorePluginStructure(track, fx_idx, slot)
     local struct_str = ReadStructureFromJSFX(slot)
     
@@ -2661,7 +2678,7 @@ local function RestorePluginStructure(track, fx_idx, slot)
     
     local striplink_guid = reaper.TrackFX_GetFXGUID(track, fx_idx)
     
-    -- 1. Build a flat list of all FX to resolve the Relative ID
+    -- Build a flat list of all FX to resolve the Relative ID
     local flat_list = {}
     local function scan_fx_flat(parent_idx)
         local count = parent_idx and tonumber(({reaper.TrackFX_GetNamedConfigParm(track, parent_idx, "container_count")})[2]) or reaper.TrackFX_GetCount(track)
@@ -2690,7 +2707,7 @@ local function RestorePluginStructure(track, fx_idx, slot)
     local tr_guid = reaper.GetTrackGUID(track)
     local base = PROJECT_BASE + slot * 500
     
-    -- 2. Parse string and restore mappings safely (Dvojni Regex!)
+    -- Parse string and restore mappings safely (Dvojni Regex!)
     for block in struct_str:gmatch("([^|]+)") do
         
         -- read new format (8 partsincl. default)
@@ -2767,14 +2784,13 @@ end
 user_layouts = {} -- Inicialno prazna, polni se dinamično
 
 local function GetDefaultLayout(panel_h)
-    -- Varovalka, če višina še ni nastavljena
+
     if not panel_h or panel_h < 400 then panel_h = 635 end
     
-    -- Natančna matematika za dno vtičnika (3 px paddinga spodaj)
     local ag_pwr_y = panel_h - 35
     local ag_lck_y = ag_pwr_y - 18
     
-    -- Format v ploskem seznamu: {id, type, x, y, param, w, h, txt2, text, sz, bold, TAB_ID}
+
     return {
         -- Format: {id, type, x, y, param, w, h, txt2, text, sz, bold, TAB_ID, dx, dy}
         -- Page 0 (OVR)
@@ -2845,8 +2861,8 @@ function PullUILayout(slot_idx, page)
             current_layout[lua_idx][4]  = reaper.gmem_read(outbox + offset + 3) 
             current_layout[lua_idx][6]  = reaper.gmem_read(outbox + offset + 5) 
             current_layout[lua_idx][7]  = reaper.gmem_read(outbox + offset + 6)
-            current_layout[lua_idx][13] = reaper.gmem_read(outbox + offset + 11) -- Očita DX
-            current_layout[lua_idx][14] = reaper.gmem_read(outbox + offset + 12) -- Očita DY
+            current_layout[lua_idx][13] = reaper.gmem_read(outbox + offset + 11) -- DX
+            current_layout[lua_idx][14] = reaper.gmem_read(outbox + offset + 12) -- DY
         end
     end
 end
@@ -2878,7 +2894,7 @@ function PushUILayout(slot_idx)
     reaper.gmem_write(mailbox + 1, #elements)
     
     for i, el in ipairs(elements) do
-        local offset = (i - 1) * 13 -- NOVI STRIDE (13)
+        local offset = (i - 1) * 13
         reaper.gmem_write(mailbox + 2 + offset + 0, el[1] or 0)
         reaper.gmem_write(mailbox + 2 + offset + 1, el[2] or 1)
         reaper.gmem_write(mailbox + 2 + offset + 2, el[3] or 0)
@@ -2890,8 +2906,8 @@ function PushUILayout(slot_idx)
         reaper.gmem_write(mailbox + 2 + offset + 8, el[10] or 0)
         reaper.gmem_write(mailbox + 2 + offset + 9, el[11] or 0)
         reaper.gmem_write(mailbox + 2 + offset + 10, el[12] or 1)
-        reaper.gmem_write(mailbox + 2 + offset + 11, el[13] or 0) -- Pošlje DX
-        reaper.gmem_write(mailbox + 2 + offset + 12, el[14] or 0) -- Pošlje DY
+        reaper.gmem_write(mailbox + 2 + offset + 11, el[13] or 0) -- send DX
+        reaper.gmem_write(mailbox + 2 + offset + 12, el[14] or 0) -- DY
     end
     
     reaper.gmem_write(mailbox, 1) 
@@ -2909,7 +2925,7 @@ local function RebuildLayoutFromJSFX(slot_idx)
     
     local new_layout = {}
     for i = 0, element_count - 1 do
-        local offset = i * 13 -- NOVI STRIDE (13)
+        local offset = i * 13
         local el_type = reaper.gmem_read(outbox + offset + 1)
         local part1   = reaper.gmem_read(outbox + offset + 4)
         local part2   = reaper.gmem_read(outbox + offset + 7)
@@ -2926,7 +2942,7 @@ local function RebuildLayoutFromJSFX(slot_idx)
             reaper.gmem_read(outbox + offset + 5),  -- 6: W
             reaper.gmem_read(outbox + offset + 6),  -- 7: H
             part2,                                  -- 8: Txt2 / Part2
-            text_str,                               -- 9: Text string (dešifrirano!)
+            text_str,                               -- 9: Text string (decoded!)
             reaper.gmem_read(outbox + offset + 8),  -- 10: Font sz
             reaper.gmem_read(outbox + offset + 9),  -- 11: Bold
             reaper.gmem_read(outbox + offset + 10), -- 12: TAB_ID
@@ -2956,7 +2972,7 @@ function ManageAll()
 
     local structure_changed = false
 
-    -- === 1. LED SINHRONIZATION FOR SELECTION (Reaper -> JSFX) ===
+    -- LED SINHRONIZATION FOR SELECTION (Reaper -> JSFX)
     local sel_track_count = reaper.CountSelectedTracks(0)
     local current_reaper_selection = {}
     for i = 0, sel_track_count - 1 do
@@ -2988,7 +3004,7 @@ function ManageAll()
         end
     end
 
-    -- === CHECK FOR CHANGES & POLLING ===
+    -- CHECK FOR CHANGES & POLLING
     local current_change_count = reaper.GetProjectStateChangeCount(0)
 
     if current_change_count ~= last_change_count then
@@ -3074,7 +3090,7 @@ function ManageAll()
         local found_plugins = {}
         
         -- =======================================================
-        -- DETEKCIJA PODVOJENIH GUID-OV (Vedno aktivna)
+        -- DETECT DOUBLE GUIDs(always active)
         -- =======================================================
         local seen_guids = {}
         local trigger_clone_warning = false
@@ -3096,7 +3112,7 @@ function ManageAll()
                     local guid = reaper.TrackFX_GetFXGUID(track, fx_idx)
                     
                     -- =======================================================
-                    -- DETEKCIJA KLONOV
+                    -- CLENE DETECTION
                     -- =======================================================
                     if seen_guids[guid] then
                         if not warned_clones[guid] then
@@ -3130,7 +3146,7 @@ function ManageAll()
                             local prev_hash = reaper.gmem_read(slot_base + 497)
                             
                             local _, fx_name_str = reaper.TrackFX_GetFXName(track, fx_idx, "")
-                            local sec_param_idx = 2 -- Vsi vtičniki imajo sedaj Hash na slider3 (indeks 2)
+                            local sec_param_idx = 2
                             
                             local current_hash = 0
                             local has_sec_slider = reaper.TrackFX_GetNumParams(track, fx_idx) > sec_param_idx
@@ -3143,7 +3159,7 @@ function ManageAll()
                                     reaper.TrackFX_SetParam(track, fx_idx, sec_param_idx, guid_hash) 
                                 end
                                 
-                                -- SAFE GMEM DELETION (Z IZOLACIJO ZA MODULE)
+                                -- SAFE GMEM DELETION isolatin for MODULE)
                                 local is_module_plugin = fx_name_str:lower():find("module") ~= nil
                                 local sync_state = reaper.gmem_read(slot_base + 498)
                                 
@@ -3200,7 +3216,7 @@ function ManageAll()
                                 local _, saved_local_page = reaper.GetProjExtState(0, NS, "LOCAL_TAB_" .. guid)
                                 if saved_local_page ~= "" then reaper.gmem_write(PROJECT_BASE + slot * 500 + 290, tonumber(saved_local_page) or 0) end
                                 
-                                -- NEW: AGGRESSIVE ORPHAN CLEANUP
+                                -- AGGRESSIVE ORPHAN CLEANUP
                                 if not HasAnyLinks(guid) then
                                     local sb = PROJECT_BASE + slot * 500
                                     for b = 0, 64 do
@@ -3220,7 +3236,7 @@ function ManageAll()
                                     end
                                 end
                                 
-                                -- POPOLN RESET STAREGA LAYOUTA ZA NOV VTIČNIK
+                                -- FULL reset of old layout for new FX
                                 user_layouts[slot] = nil 
                                 reaper.gmem_write(PROJECT_BASE + 500000 + (slot * 3000) - 1, 0)
                             end
@@ -3243,7 +3259,7 @@ function ManageAll()
         active_plugins = found_plugins
 
         -- =======================================================
-        -- OPOZORILO UPORABNIKU
+        -- USER WARNING
         -- =======================================================
         if trigger_clone_warning then
             table.insert(pending_os_tasks, function()
@@ -3253,7 +3269,6 @@ function ManageAll()
                 reaper.MB(msg, "StripLink: Database Safety Protection", 0)
             end)
         end
-        -- =======================================================
     end
     
     local selected_track = reaper.GetSelectedTrack(0, 0)
@@ -3304,11 +3319,11 @@ function ManageAll()
                         end
                     end
                     
-                    --Vzpostavitev grup in stepsov ob premiku tracka (Reordering)
+                    -- for Reordering
                     if just_moved then
                         local new_base = PROJECT_BASE + fx.slot * 500
                         for i = 0, 64 do
-                            -- 1. Obnova grup
+                            -- restore groups
                             local g_key = "GROUP:" .. fx.guid .. ":" .. i
                             local _, g_val = reaper.GetProjExtState(0, NS, g_key)
                             local final_grp = tonumber(g_val) or 0
@@ -3317,7 +3332,7 @@ function ManageAll()
                             if not group_cache[fx.slot] then group_cache[fx.slot] = {} end
                             group_cache[fx.slot][i] = final_grp
 
-                            -- 2. Obnova stepsov (za Selectorje)
+                            --restore stepsov (Selectors)
                             local s_key = "STEPS:" .. fx.guid .. ":" .. i
                             local _, s_val = reaper.GetProjExtState(0, NS, s_key)
                             local final_steps = tonumber(s_val) or 0
@@ -3349,7 +3364,7 @@ function ManageAll()
                             AutoLoadNewPlugin(fx.tr, fx.idx)
                         end
                         
-                        -- LUA SE VMEŠA IZKLJUČNO TAKRAT, KO JE SERIALIZE PRAZEN!
+                        -- LUA only gets involved when serialize is empty!
                         PushUILayout(fx.slot)
                         fx.layout_pushed = true
                         
@@ -3420,7 +3435,6 @@ function ManageAll()
                             end
                         end
                         
-                        -- CISTKA OVR ZANKE V LUI - OVR PODATKI SE NE BEREJO IZ EXTSTATE-A
                         local _, vu_mode_str = reaper.GetProjExtState(0, NS, "VU_MODE_" .. fx.guid)
                         local vu_mode = tonumber(vu_mode_str) or 0
                         reaper.gmem_write(PROJECT_BASE + fx.slot * 500 + 336, vu_mode)
@@ -3524,7 +3538,7 @@ function ManageAll()
                                 local target_fx_idx = FindFXByGUID(fx.tr, src_guid, nil)
                                 
                                 if target_fx_idx then
-                                    -- Zapiši indeks FX vtičnika (premik za 1, da 0 pomeni prazno)
+                                    -- write fx index (move 1, empty 0)
                                     reaper.gmem_write(id_addr, target_fx_idx + 1)
 
                                     local ok_pdc, pdc_str = reaper.TrackFX_GetNamedConfigParm(fx.tr, target_fx_idx, "pdc")
@@ -3553,7 +3567,6 @@ function ManageAll()
                         end
                                                                         
                         local base_addr = PROJECT_BASE + fx.slot * 500
-                        -- Pošljemo še dodatna naslova za identifikacijo (340 za M1, 341 za M2)
                         ReadGRFromTarget(1, base_addr + 330, base_addr + 332, base_addr + 340)
                         ReadGRFromTarget(2, base_addr + 331, base_addr + 333, base_addr + 341)
                     end
@@ -3585,7 +3598,6 @@ local last_sel_trig = -1
 -- =========================================================================
 local ctx = reaper.ImGui_CreateContext('StripLink')
 
--- Pomožna funkcija za varno nalaganje ikon iz mape Icons (Cross-platform)
 local sep = package.config:sub(1, 1)
 local function LoadSafeIcon(filename)
     local path = (script_path .. "Icons" .. sep .. filename):gsub("[\\/]+", sep)
@@ -3599,7 +3611,7 @@ local function LoadSafeIcon(filename)
     return nil
 end
 
--- Naložimo vse 4 ikone
+-- Icons
 local icon_remove = LoadSafeIcon("Remove_1.png")
 local icon_knob = LoadSafeIcon("Knob_1.png")
 local icon_switch = LoadSafeIcon("Switch_1.png")
@@ -3806,12 +3818,12 @@ function Main()
                             color_map[map_idx] = i; map_idx = map_idx + 1
                         end
                     else
-                        -- 1. Preberi trenutno naloženo temo
+                        -- curr. loaded theme
                         local safe_theme_name = jsfx_name:gsub("%s+", "_")
                         local current_theme = reaper.GetExtState(NS, "THEME_" .. safe_theme_name)
                         if current_theme == "" then current_theme = "Default" end
                         
-                        -- 2. Privzeta imena (standard)
+                        -- default names (standard)
                         local default_opts = {
                             "Green-Positive","Green-Neutral","Green-Negative",
                             "Blue-Positive","Blue-Neutral","Blue-Negative",
@@ -3821,11 +3833,11 @@ function Main()
                             "Black-Positive","Black-Neutral","Black-Negative"
                         }
                         
-                        -- 3. Ustvari ločena seznama za Type 1 in Type 2
+                        -- menu for Type 1 and Type 2
                         local opts_type1 = default_opts
-                        local opts_type2 = default_opts -- Type 2 je privzeto standarden
+                        local opts_type2 = default_opts -- Type 2 is standard in default
                         
-                        -- 4. Če je tema Analog Console, prepiši vsebino za Type 1 in Type 2
+                        -- Analog Console, rename knobs Type 1 & Type 2
                         if current_theme:find("Analog Console", 1, true) ~= nil then
                             opts_type1 = {
                                 "Green SSL", "Green API", "Green Neve",
@@ -3846,7 +3858,7 @@ function Main()
                         end
                         
                         if is_module then
-                            -- Knob Type 1 (Uporabi opts_type1)
+                            -- Knob Type 1
                             table.insert(menu_table, ">Knob Type 1")
                             for i, opt in ipairs(opts_type1) do 
                                 table.insert(menu_table, (cur_type == i and "✓ " or "") .. opt) 
@@ -3854,7 +3866,7 @@ function Main()
                             end
                             table.insert(menu_table, "<")
                             
-                            -- Knob Type 2 (Uporabi opts_type2)
+                            -- Knob Type 2
                             table.insert(menu_table, ">Knob Type 2")
                             for i, opt in ipairs(opts_type2) do 
                                 local val = i + 18
@@ -3863,7 +3875,7 @@ function Main()
                             end
                             table.insert(menu_table, "<")
                             
-                            -- Knob Type 3 in 4 (Ostanejo enaki)
+                            -- Knob Type 3 in 4
                             table.insert(menu_table, (cur_type == 37 and "✓ " or "") .. "Knob Type 3")
                             color_map[map_idx] = 37; map_idx = map_idx + 1
                             
@@ -3901,7 +3913,7 @@ function Main()
                     if btn_idx == 99 then
                         -- ==========================================
                         -- LOCAL & GLOBAL SETTINGS (Button 99)
-                        -- ==========================================
+                        -- =========================================
                         
                         -- LOCAL SETTINGS
                         local cur_hash = reaper.TrackFX_GetParam(tr, f_idx, 0)
@@ -3911,7 +3923,6 @@ function Main()
                             if saved_name and saved_name ~= "" then instance_name = saved_name end
                         end
                         
-                        -- Preberemo, ali je Layout Builder vklopljen za ta vtičnik (naslov 428)
                         local cur_builder_mode = reaper.gmem_read(PROJECT_BASE + sl * 500 + 428)
                         local is_builder_active = (cur_builder_mode == 1)
 
@@ -3966,7 +3977,7 @@ function Main()
                         local ext_theme = reaper.GetExtState(NS, "THEME_" .. safe_theme_name)
                         local current_theme = (ext_theme ~= "") and ext_theme or "Default"
                         
-                        -- Dinamično oblikovanje gumba za Builder
+
                         local builder_label = ""
                         if is_module then
                             builder_label = (is_builder_active and "✓ " or "") .. "Layout Builder"
@@ -4198,9 +4209,9 @@ function Main()
                         
                         local chain_mapping_found = is_chain and (get_valid_mapping_section(full_chain_hash, actual_page, nil, INI_DB) ~= nil)
                         
-                        -- ==========================================================
+                        -- =======================================
                         -- BUILD THE MENU STRUCTURE
-                        -- ==========================================================
+                        -- ============================================
                         local items, map, idx = {}, {}, 1
                         
                         local section_tag = page_name .. (context_label ~= "" and (" " .. context_label) or "")
@@ -4232,7 +4243,7 @@ function Main()
                         end
                         
                         -- ==========================================================
-                        -- PREVERI, ALI SO VTIČNIKI IZ ODLOŽIŠČA NA VOLJO NA STEZI
+                        -- CHECK IF FXs are present on track 
                         -- ==========================================================
                         local can_paste = false
                         if clipboard_buffer.hash then
@@ -4267,7 +4278,7 @@ function Main()
                             table.insert(items, "Paste " .. section_tag .. " settings (" .. clipboard_buffer.alias .. ")")
                             map[idx] = { 
                                 type = "paste", 
-                                hash = clipboard_buffer.hash, -- <== Nujno uporabiti hash iz odložišča!
+                                hash = clipboard_buffer.hash,
                                 btn_list = current_btn_list,
                                 context_fx_list = context_fx_list,
                                 jsfx_name = jsfx_name,
@@ -4367,7 +4378,7 @@ function Main()
                                 -- Replace standalone save with HYBRID save (including instance suffix)
                                 local hybrid_str = table.concat(active_secs, " + ")
                                 table.insert(items, "Save HYBRID mapping: " .. single_alias .. instance_suffix .. " (" .. hybrid_str .. ")")
-                                map[idx] = { type = "save_hybrid", hash = single_hash, sections = active_secs }
+                                map[idx] = { type = "save_hybrid", hash = single_hash, sections = active_secs, target_guid = single_guid }
                                 idx = idx + 1
                             else
                                 -- Normal Standalone Save (including instance suffix)
@@ -4382,9 +4393,9 @@ function Main()
                                                     
                         table.insert(items, "") -- SEPARATOR
                         
-                        -- ==========================================================
+                        -- ==============================================================
                         -- LOAD EXISTING FX (Already on track / In-order Chain Subsequences)
-                        -- ==========================================================
+                        -- =================================================================
                         local added_any_load = false
                         
                         local hash_counts = {}
@@ -4393,7 +4404,7 @@ function Main()
                         end
                         local hash_seen = {}
                         
-                        -- 1. Search INI for ALL valid CHAIN mappings for the plugins currently on track
+                        -- Search INI for ALL valid CHAIN mappings for the plugins currently on track
                         local found_chains = {}
                         for sec_name, _ in pairs(INI_DB) do
                             if sec_name ~= "DICTIONARY" and not sec_name:match("^UNMAPPED_") then
@@ -4443,7 +4454,7 @@ function Main()
                             added_any_load = true
                         end
                         
-                        -- 2. Check for individual FX mappings or Hybrids
+                        -- Check for individual FX mappings or Hybrids
                         for _, fx in ipairs(context_fx_list) do
                             local found_hybrids = {}
                             local found_variants = {}
@@ -4548,15 +4559,15 @@ function Main()
                          end
 
                          -- Remove duplicates and sort
-                         local unique_inserts = {}
-                         local sorted_inserts = {}
-                         for _, data in ipairs(all_inserts) do
-                             local key = data.hash .. "_" .. data.type
-                             if not unique_inserts[key] then
-                                 unique_inserts[key] = true
-                                 table.insert(sorted_inserts, data)
-                             end
-                         end
+                          local unique_inserts = {}
+                          local sorted_inserts = {}
+                          for _, data in ipairs(all_inserts) do
+                              local key = data.hash .. "_" .. data.type .. "_" .. (data.label or "")
+                              if not unique_inserts[key] then
+                                  unique_inserts[key] = true
+                                  table.insert(sorted_inserts, data)
+                              end
+                          end
                          table.sort(sorted_inserts, function(a, b) return a.display_name < b.display_name end)
 
                          if #sorted_inserts > 0 then
@@ -4803,7 +4814,6 @@ function Main()
                 elseif cmd == 20 then
                     local clicked_tab = reaper.gmem_read(PROJECT_BASE + 5)
                     
-                    -- Vsi vtičniki imajo sedaj TAB Colors poenotene na slider6 (indeks 5)
                     local target_param_idx = 5 
                     
                     local current_val = reaper.TrackFX_GetParam(tr, f_idx, target_param_idx)
@@ -4858,7 +4868,6 @@ function Main()
                         local cur_btn = 0
                         local cur_mtr_packed = 0
                         
-                        -- PAMETNO BRANJE GLEDE NA TIP VTIČNIKA
                         if is_module then
                             local ext_ovr_base = PROJECT_BASE + 50000 + (sl * 200)
                             cur_btn = reaper.gmem_read(ext_ovr_base + slot_id)
@@ -4895,7 +4904,7 @@ function Main()
                         end
 
                         if is_module and user_layouts[sl] then
-                            -- ZA MODULE: Dinamičen izpis samo elementov, ki fizično obstajajo!
+                            -- MODULE: dynamicaly write only elemnets that exist!
                             local layout_elements = { EQ = {}, DYN = {}, FX = {} }
                             for _, el in ipairs(user_layouts[sl]) do
                                 local t = el[2]
@@ -4917,7 +4926,7 @@ function Main()
                                 end
                             end
                             
-                            -- Pomožna funkcija za sortiranje
+                            -- sorting helper func
                             local function sort_by_id(a, b) return a.id < b.id end
                             table.sort(layout_elements.EQ, sort_by_id)
                             table.sort(layout_elements.DYN, sort_by_id)
@@ -4947,7 +4956,7 @@ function Main()
                                 menu_str = menu_str .. "<|"
                             end
                         else
-                            -- ZA STATIČNI UC-1: Trdo kodiran izpis po tvojih merah
+                            -- UC-1
                             menu_str = menu_str .. ">EQ Parameters|"
                             for b = 1, 12 do add_item("Knob " .. b, b) end
                             for b = 13, 20 do add_item("Switch " .. (b-12), b) end
@@ -4968,7 +4977,7 @@ function Main()
                             menu_str = menu_str .. "<|"
                         end
 
-                        -- METER SUBMENU (Dovoli prekrivanje samo na gumbih)
+                        -- METER SUBMENU
                         local assigned_is_knob = false
                         if cur_btn > 0 then
                             if (cur_btn >= 1 and cur_btn <= 12) or 
@@ -4993,7 +5002,7 @@ function Main()
                             end
                             menu_str = menu_str .. "<|"
                         else
-                            -- Onemogočen prikaz za stikala in tube
+                            -- diable for switches and tubes
                             menu_str = menu_str .. "||#Overlay GR Meter (Knobs only)"
                         end
                         
@@ -5027,11 +5036,11 @@ function Main()
                         local ag_lock_addr = PROJECT_BASE + sl * 500 + 79
                         local cur_ag = reaper.gmem_read(ag_addr)
                         
-                        -- Ker JSFX takoj preklopi vrednost zaradi MIDI Learn-a,
-                        -- 'cur_ag' zdaj predstavlja NOVO (želeno) stanje!
+                        -- Because Jsfx immediately switches value bcs of midi learn,
+                        -- 'cur_ag' now prepresents NEW status!
                         if cur_ag < 0.5 then
-                            -- Uporabnik je izklopil Auto Gain (JSFX ga je nastavil na 0).
-                            -- To je vedno dovoljeno, samo ponastavimo statuse.
+                            -- User disabled AG (JSFX set it to 0).
+                            -- This is always allowed, just update statuses
                             reaper.gmem_write(ag_addr, 0)
                             reaper.gmem_write(ag_lock_addr, 0) -- Reset freeze state
                             reaper.SetProjExtState(0, NS, "AG_PWR_" .. c_guid, "0")
@@ -5090,17 +5099,14 @@ function Main()
                         -- ===========================================
                         -- INPUT GAIN TEXT INPUT (CMD 23)
                         -- ===========================================
-                        -- Input Gain je na Sliderju 10, kar pomeni parameter indeks 9
                         local current_gain = reaper.TrackFX_GetParam(tr, f_idx, 9)
                         
                         table.insert(pending_os_tasks, function()
                             local retval, user_input = reaper.GetUserInputs("Input Gain", 1, "Enter Gain (dB) [-12 to 12]:,extrawidth=20", string.format("%.1f", current_gain))
                             
                             if retval then
-                                -- Zamenjamo morebitne vejice v pike za pravilen float parse
                                 local num = tonumber((user_input:gsub(",", ".")))
                                 if num then
-                                    -- Omejimo vnos med -12 in 12, kot to zahteva JSFX slider
                                     local final_gain = math.max(-12, math.min(12, num))
                                     reaper.TrackFX_SetParam(tr, f_idx, 9, final_gain)
                                 end
@@ -5109,7 +5115,7 @@ function Main()
                         reaper.gmem_write(PROJECT_BASE + 7, 0)
                             
                     elseif cmd == 30 then
-                            -- ===========================================
+                            -- ==========================================
                             -- GLOBAL TAB SYNC (triggered from JSFX-a)
                             -- ===========================================
                             local target_page = reaper.gmem_read(PROJECT_BASE + 200)
@@ -5305,7 +5311,6 @@ local function ExecuteCmd1(choice, data)
             reaper.gmem_write(base_addr + 3, (reaper.gmem_read(base_addr + 3) + 1) % 1000)
         end
 
-      -- IZVEDBA GRUPIRANJA PREKO DESNEGA KLIKA
       elseif sel and sel.group_assign then
          local new_group_idx = sel.val
          local group_key = "GROUP:" .. c_guid .. ":" .. (btn_idx - 1)
@@ -5320,7 +5325,7 @@ local function ExecuteCmd1(choice, data)
              local master_val = nil
              local master_is_rev = false
              
-             -- Poiščemo KATERIKOLI drug element v projektu, ki je v tej grupi
+             -- find ANY element in project that belongs to this group
              for _, other_fx in ipairs(active_plugins) do
                  for j = 0, 64 do
                      if not (other_fx.guid == c_guid and j == (btn_idx - 1)) then
@@ -5354,7 +5359,7 @@ local function ExecuteCmd1(choice, data)
                       target_is_rev = (t_curve < 0)
                  end
                  
-                 -- Izračun vizualne (obratne) vrednosti
+                 -- Calc inverted value
                  local target_visual_val = master_val
                  if master_is_rev ~= target_is_rev then
                      target_visual_val = 1.0 - master_val
@@ -5423,12 +5428,11 @@ end
 local function ExecuteCmd2(choice, data)
     local actual_choice = choice
     
-    -- Samo Module uporablja preslikavo barv in tipov gumbov (color_map)
+    -- Only Module uses color map
     if data.is_module and data.color_map then
         actual_choice = data.color_map[choice] or choice
     end
 
-    -- ČE JE TUBE (na katerem koli vtičniku)
     if data.is_tube then
         actual_choice = (actual_choice - 1) * 3 + 1
     end
@@ -5450,24 +5454,21 @@ local function ExecuteCmd2(choice, data)
     
     reaper.gmem_write(PROJECT_BASE + sl * 500 + 150 + (btn_idx - 1), (unit_id * 1000) + is_active_status + actual_choice)
    
-    -- === DINAMIČNA SPREMEMBA DIMENZIJ V LAYOUTU ZA STIKALA ===
+    -- === dynamic change of size for SWITCHES  ===
         if data.is_switch and data.is_module and user_layouts[sl] then
             for _, el in ipairs(user_layouts[sl]) do
                 if el[5] == btn_idx and el[2] == 2 then
                     if actual_choice == 5 then
-                        -- Ožja širina za stikalo 5
                         el[6] = 32
                         el[7] = 50
                     elseif actual_choice == 6 then
-                        -- Dimenzije za stikalo 6
                         el[6] = 50
                         el[7] = 50
                     elseif actual_choice == 7 or actual_choice == 8 then
-                        -- Dimenzije za stikalo 7+8
                         el[6] = 51
                         el[7] = 40
                     else
-                        -- Standardna širina za vsa ostala stikala
+                        -- other switches...
                         el[6] = 32 
                         el[7] = 25
                     end
@@ -5504,7 +5505,6 @@ local function UpdateAllJSFXWindowSizes(style_val)
            and not lower_name:match("%.lua$") and not lower_name:match("%.ini$") 
            and not lower_name:match("%.png$") then
             
-            -- Preverimo točen tip vtičnika!
             local is_bus = lower_name:find("bus") ~= nil
             local is_module = lower_name:find("module") ~= nil
             
@@ -5513,7 +5513,6 @@ local function UpdateAllJSFXWindowSizes(style_val)
             local target_h = 0
             
             if is_module then
-                -- Preberemo dinamično višino iz Builderja (fallback = 635) in odštejemo višino metra
                 local base_name = filename:gsub("%.[jJ][sS][fF][xX]$", ""):gsub("%s+", "_")
                 local base_h = tonumber(reaper.GetExtState(NS, "PANNEL_HEIGHT_" .. base_name)) or 635
                 
@@ -5592,7 +5591,7 @@ local function ApplyPANNELHeightToJSFX(jsfx_name, target_h)
     local content = f:read("*all")
     f:close()
     
-    -- Vzorec, ki prepozna npr: "@gfx 125 635" in zamenja le zadnjo številko
+    -- recognize pattern e.g."@gfx 125 635" and change just the value
     local search_pattern = "(@gfx%s+%d+%s+)%d+"
     local replacement = "%1" .. tostring(target_h)
     
@@ -5604,7 +5603,7 @@ local function ApplyPANNELHeightToJSFX(jsfx_name, target_h)
         if fw then
             fw:write(new_content)
             fw:close()
-            -- Atomski prepis datoteke
+            -- automatic file overwrite
             os.remove(filepath)
             os.rename(tmp_path, filepath)
             return true
@@ -5615,7 +5614,7 @@ end
 
 local function ExecuteCmd3_Settings(choice, data)
     if choice == 1 then
-        -- 1. LOCAL: Rename instance
+        -- LOCAL: Rename instance
         local current_name = (data.instance_name == "default") and "" or data.instance_name
         table.insert(pending_os_tasks, function()
             local retval, new_name = reaper.GetUserInputs("Rename Instance", 1, "Name (Empty = default):,extrawidth=20", current_name)
@@ -5632,7 +5631,7 @@ local function ExecuteCmd3_Settings(choice, data)
         end)
         
     elseif choice == 2 then
-        -- 2. LOCAL: Layout Builder Mode
+        -- LOCAL: Layout Builder Mode
         local sl_base = PROJECT_BASE + data.sl * 500
         local cur_mode = reaper.gmem_read(sl_base + 428)
         local new_mode = (cur_mode == 1) and 0 or 1
@@ -5640,7 +5639,7 @@ local function ExecuteCmd3_Settings(choice, data)
         builder_state.open = (new_mode == 1)
 
     elseif choice >= 3 and choice <= 5 then
-        -- 3. LOCAL: VU Meter Mode
+        -- LOCAL: VU Meter Mode
         local mode = choice - 3
         reaper.SetProjExtState(0, NS, "VU_MODE_" .. data.c_guid, tostring(mode))
         
@@ -5652,7 +5651,7 @@ local function ExecuteCmd3_Settings(choice, data)
         end
 
         elseif choice >= 6 and choice <= 10 then
-        -- 4. LOCAL: VU Meter Calibration
+        -- LOCAL: VU Meter Calibration
         if choice == 10 then
             local cur_val = reaper.TrackFX_GetParam(data.tr, data.f_idx, 68)
             table.insert(pending_os_tasks, function()
@@ -5674,7 +5673,7 @@ local function ExecuteCmd3_Settings(choice, data)
         end
 
     elseif choice >= 11 and choice <= 15 then
-        -- 5. LOCAL: Auto Gain Speed
+        -- LOCAL: Auto Gain Speed
         local speed_factors = { [11] = 0.25, [12] = 0.50, [13] = 1.00, [14] = 2.00, [15] = 4.00 }
         local spd_factor = speed_factors[choice] or 1.00
         
@@ -5727,7 +5726,7 @@ local function ExecuteCmd3_Settings(choice, data)
 local T = num_themes
   
   if choice >= 16 + T and choice <= 18 + T then
-      -- 5. GLOBAL: VU Meter Style
+      --  GLOBAL: VU Meter Style
       local style_options = { [16 + T] = 0, [17 + T] = 1, [18 + T] = 2 }
       local selected_style = style_options[choice]
       
@@ -5757,7 +5756,7 @@ local T = num_themes
       end
 
   elseif choice >= 19 + T and choice <= 23 + T then
-      -- 6. GLOBAL: VU Peak LED Threshold (Prej 24+T do 28+T)
+      -- GLOBAL: VU Peak LED Threshold
       local selected_peak = 0
       if choice == 19 + T then selected_peak = 0
       elseif choice == 20 + T then selected_peak = -1
@@ -5786,7 +5785,7 @@ local T = num_themes
       reaper.gmem_write(PROJECT_BASE + 209, selected_peak)
       
   elseif choice >= 24 + T and choice <= 28 + T then
-      -- 7. GLOBAL: GR Meter Range (Prej 29+T do 33+T)
+      -- GLOBAL: GR Meter Range
       if choice == 28 + T then
           local ext_cur = reaper.GetExtState(NS, "GLOBAL_MAX_GR_DB")
           local cur_val = tonumber(ext_cur) or 12
@@ -5811,13 +5810,13 @@ local T = num_themes
       end
       
   elseif choice >= 29 + T and choice <= 30 + T then
-      -- 8. GLOBAL: Metering Display Mode (Prej 34+T do 35+T)
+      -- GLOBAL: Metering Display Mode
       local mode = (choice == 29 + T) and "0" or "1"
       reaper.SetProjExtState(0, NS, "GLOBAL_METER_MODE", mode)
       reaper.gmem_write(PROJECT_BASE + 202, tonumber(mode))
 
   elseif choice >= 31 + T and choice <= 37 + T then
-      -- 9. GLOBAL: Font Size (Prej 36+T do 42+T)
+      -- GLOBAL: Font Size
       local font_options = { 
           [31 + T] = 8, 
           [32 + T] = 9, 
@@ -5832,21 +5831,21 @@ local T = num_themes
       reaper.gmem_write(PROJECT_BASE + 205, selected_font)
       
   elseif choice == 38 + T then
-      -- 10. GLOBAL: Tooltips (Prej 43+T)
+      -- GLOBAL: Tooltips
       local new_val = data.tooltips_on and "0" or "1"
       reaper.SetExtState(NS, "USER_KNOB_TOOLTIPS", new_val, true)
       reaper.gmem_write(PROJECT_BASE + 203, data.tooltips_on and 2 or 1)
       
   -- Mouse control settings
   elseif choice >= 39 + T and choice <= 43 + T then
-      -- Standard Speed (Prej 44+T do 48+T)
+      -- Standard Speed
       local std_opts = { [39 + T] = 0.5, [40 + T] = 0.75, [41 + T] = 1.0, [42 + T] = 1.5, [43 + T] = 2.0 }
       local selected_std = std_opts[choice]
       reaper.SetExtState(NS, "GLOBAL_MOUSE_STD", tostring(selected_std), true)
       reaper.gmem_write(PROJECT_BASE + 210, selected_std)
       
   elseif choice >= 44 + T and choice <= 46 + T then
-      -- Fine Speed (Prej 49+T do 51+T)
+      -- Fine Speed
       local fine_opts = { [44 + T] = 0.05, [45 + T] = 0.1, [46 + T] = 0.25 }
       local selected_fine = fine_opts[choice]
       reaper.SetExtState(NS, "GLOBAL_MOUSE_FINE", tostring(selected_fine), true)
@@ -5875,7 +5874,7 @@ local function ExecuteCmd4(choice, data)
         local m_type = (meter_id == 99) and 1 or (meter_id == 100 and 2 or 3)
         reaper.SetProjExtState(0, NS, "METER_SRC_" .. c_guid .. "_" .. m_type, "")
 
-        -- Eksaktne maske
+        -- Exact masks
         local mask_to_clear = (m_type == 1) and 240 or ((m_type == 2) and 3840 or 12288)
 
         for j = 0, c_count - 1 do
@@ -6082,11 +6081,10 @@ local function ExecuteCmd21(choice, data)
         local cur_mtr = math.floor(cur_packed / 10)
         local base_addr = PROJECT_BASE + data.sl * 500
 
-        -- Priprava podatkov za nabiralnik
         reaper.gmem_write(base_addr + 491, sel.slot_id)
 
         if sel.action == "assign" then
-            -- Klic GetElementType premaknjen sem, kjer je sel.btn_idx zagotovo številka
+
             local el_typ = GetElementType(sel.btn_idx, jsfx_name, data.sl)
             
             reaper.gmem_write(base_addr + 492, sel.btn_idx)
@@ -6097,7 +6095,7 @@ local function ExecuteCmd21(choice, data)
             reaper.gmem_write(base_addr + 493, cur_typ + (sel.val * 10))
         end
         
-        -- POŠLJI V NABIRALNIK IN SPROŽI JSFX
+        -- send to inbox in trigger JSFX
         reaper.gmem_write(base_addr + 490, 1)
         reaper.gmem_write(base_addr + 3, (reaper.gmem_read(base_addr + 3) + 1) % 1000)
     end
@@ -6147,7 +6145,7 @@ local function DrawImGuiSwellMenu(ctx, menu_str)
             elseif part:sub(1,1) == "#" then
                 reaper.ImGui_TextDisabled(ctx, part:sub(2))
             elseif part:sub(1,1) == "!" then
-                -- ONEMOGOČEN MENI ITEM (Ohrani indeks, a se ga ne da klikniti!)
+                -- diabled MENU ITEM (preserve index, but disable click opt)
                 reaper.ImGui_MenuItem(ctx, part:sub(2) .. unique_id_suffix, nil, false, false)
                 map_idx = map_idx + 1
             else
@@ -6192,7 +6190,7 @@ local function ClearSectionMapping(c_guid, sl, btn_list)
     reaper.gmem_write(base_addr + 3, (reaper.gmem_read(base_addr + 3) + 1) % 1000)
 end
 
-local function SaveHybridMapping(track, fx_idx, fx_hash, sections_list)
+local function SaveHybridMapping(track, fx_idx, fx_hash, sections_list, target_guid)
     local guid = reaper.TrackFX_GetFXGUID(track, fx_idx)
     local jsfx_name = GetBaseJSFXName(track, fx_idx)
     local INI_DB = GetINIDB(jsfx_name)
@@ -6233,48 +6231,76 @@ local function SaveHybridMapping(track, fx_idx, fx_hash, sections_list)
             local _, param_val = reaper.GetProjExtState(0, NS, guid .. ":" .. b)
             if param_val ~= "" then
                 local parts = safe_split(param_val)
-                local p_num = tonumber(parts[4])
-                local curve_p = tonumber((tostring(parts[6]):gsub(",", "."))) or 1.0
-                local default_v = tonumber((tostring(parts[8]):gsub(",", "."))) or 0.5
-                local current_p_name = parts[5] and parts[5]:gsub(",", "") or ""
-                
-                local _, color_val = reaper.GetProjExtState(0, NS, "COLOR:" .. guid .. ":" .. b)
-                local style_num = tonumber(color_val) or 13
-                
-                if p_num then
-                    -- For HYBRIDS, we use the ABSOLUTE button index (BtnX) so it loads back exactly where it was
-                    local line = string.format("0,%d,%d,%s,%s,%s", p_num, math.floor(style_num), format_float(curve_p, 2), format_float(default_v, 4), current_p_name)
-                    INI_DB[section]["Btn" .. b] = line
+
+                if parts[1] == target_guid then
+                    local p_num = tonumber(parts[4])
+                    local curve_p = tonumber((tostring(parts[6]):gsub(",", "."))) or 1.0
+                    local default_v = tonumber((tostring(parts[8]):gsub(",", "."))) or 0.5
+                    local current_p_name = parts[5] and parts[5]:gsub(",", "") or ""
+                    
+                    local _, color_val = reaper.GetProjExtState(0, NS, "COLOR:" .. guid .. ":" .. b)
+                    local style_num = tonumber(color_val) or 13
+                    
+                    if p_num then
+                        -- For HYBRIDS, we use the ABSOLUTE button index (BtnX) so it loads back exactly where it was
+                        local line = string.format("0,%d,%d,%s,%s,%s", p_num, math.floor(style_num), format_float(curve_p, 2), format_float(default_v, 4), current_p_name)
+                        INI_DB[section]["Btn" .. b] = line
+                    end
                 end
             end
         end
-        -- SHRANJEVANJE LAYOUTA ZA HYBRID
+        -- SAVE LAYOUT FOR HYBRID
         local slot = GetFXSlot(track)
         if jsfx_name:lower():find("module") ~= nil and user_layouts[slot] then
              local layout_sec = section .. "_LAYOUT"
              if not INI_DB[layout_sec] then
                  table.insert(INI_DB._order, layout_sec)
              end
-             INI_DB[layout_sec] = {} 
+             INI_DB[layout_sec] = {}
+             
+             -- Save current pannel height
+             local inst_h = math.floor(reaper.gmem_read(PROJECT_BASE + slot * 500 + 426))
+             INI_DB[layout_sec]["PanelHeight"] = tostring(inst_h)
+            
+             -- clear dividers for all tabs
+             local dividers = { [1] = 350, [2] = 350, [3] = 350 }
+             for _, el in ipairs(user_layouts[slot]) do
+                 if el[1] >= 900 and el[2] == 6 and dividers[el[12]] then
+                     dividers[el[12]] = el[4]
+                 end
+             end
              
              local el_counter = 1
              for _, el in ipairs(user_layouts[slot]) do
                  local t_tab = el[12]
                  local is_sys = (el[1] >= 900)
+                 local belongs_to_hybrid = false
                  
-                 -- Preverimo, ali element pripada kateremu izmed aktivnih Hybrid zavihkov
-                 local tab_valid = false
-                 for _, sec in ipairs(sections_list) do
-                     if (sec == "EQ" and t_tab == 1) or 
-                        (sec:find("DYN") and t_tab == 2) or 
-                        (sec == "PRE" and t_tab == 3) or 
-                        (sec == "POST" and t_tab == 3) then
-                         tab_valid = true
-                         break
+                 if not is_sys then
+                     local param_id = math.floor(el[5] or 0)
+                     local is_bottom = false
+                     
+                     if t_tab == 2 then
+                         if (param_id >= 30 and param_id <= 38) or param_id == 2 or param_id == 4 or param_id == 6 then is_bottom = true
+                         elseif (param_id >= 21 and param_id <= 29) or param_id == 1 or param_id == 3 or param_id == 5 then is_bottom = false
+                         else is_bottom = ((el[4] or 0) >= dividers[2]) end
+                     elseif t_tab == 3 then
+                         if param_id >= 45 and param_id <= 56 then is_bottom = true
+                         elseif param_id >= 39 and param_id <= 44 then is_bottom = false
+                         else is_bottom = ((el[4] or 0) >= dividers[3]) end
+                     end
+                     
+                     for _, sec in ipairs(sections_list) do
+                         if sec == "EQ" and t_tab == 1 then belongs_to_hybrid = true; break
+                         elseif sec == "DYN1" and t_tab == 2 and not is_bottom then belongs_to_hybrid = true; break
+                         elseif sec == "DYN2" and t_tab == 2 and is_bottom then belongs_to_hybrid = true; break
+                         elseif sec == "PRE" and t_tab == 3 and not is_bottom then belongs_to_hybrid = true; break
+                         elseif sec == "POST" and t_tab == 3 and is_bottom then belongs_to_hybrid = true; break
+                         end
                      end
                  end
                  
-                 if tab_valid and not is_sys then
+                 if belongs_to_hybrid then
                      local text_str = (el[9] and el[9] ~= "") and el[9] or " "
                      local line = string.format("%d,%d,%d,%d,%d,%d,%d,%d,%s,%d,%d,%d,%g,%d",
                          math.floor((el[1] or 0) + 0.5), math.floor((el[2] or 0) + 0.5), math.floor((el[3] or 0) + 0.5), 
@@ -6315,7 +6341,6 @@ local function ExecuteCmd3_Mapping(choice, data)
     local f_idx = data.f_idx
     local sl = data.sl
     
-    -- 1. Definiramo akcijo ZUNAJ pogojev, da bo na voljo za vse ukaze (Save, Copy, Paste, Load...)
     local function execute_action()
         if entry.type == "copy" then
             -- Full Section Clone: Copy Mappings, Values, Names, Colors, Units & Curves
@@ -6495,7 +6520,7 @@ local function ExecuteCmd3_Mapping(choice, data)
                              end
                          end
                          
-                         -- FAILSAFE: Če ga nismo našli zaradi 'consumed_fx' (npr. zaradi starih izbrisanih povezav), prisilno vzamemo prvega ujemajočega!
+                         -- FAILSAFE: if not found because of 'consumed_fx' (old deleted links), force 1st match!
                          if not rel_to_target_fx[rel_i - 1] then
                              for _, ctx_fx in ipairs(entry.context_fx_list) do
                                  if (ctx_fx.hash == target_hash or ctx_fx.fallback_hash == target_hash) then
@@ -6579,7 +6604,7 @@ local function ExecuteCmd3_Mapping(choice, data)
                 
                 
                 
-                -- PRILEPLJENJE LAYOUT ELEMENTOV
+                -- PASTE LAYOUT ELEMENTS
                 if user_layouts[sl] and clipboard_buffer.layout then
                     local target_tab = 1
                     if entry.page_name == "EQ" then target_tab = 1
@@ -6595,7 +6620,7 @@ local function ExecuteCmd3_Mapping(choice, data)
                         end
                     end
                     
-                    -- Brisanje starih grafičnih elementov ciljne sekcije
+                    -- Clear old graphic elements from target section
                     for j = #user_layouts[sl], 1, -1 do
                         local el = user_layouts[sl][j]
                         if el[12] == target_tab and el[1] < 900 then
@@ -6622,14 +6647,14 @@ local function ExecuteCmd3_Mapping(choice, data)
                         end
                     end
                     
-                    -- Vstavljanje prekopiranih elementov
+                    -- Paste copied elem.
                     for _, clip_el in ipairs(clipboard_buffer.layout) do
                         local new_el = {}
                         for i_el, v_el in ipairs(clip_el) do new_el[i_el] = v_el end
                         table.insert(user_layouts[sl], new_el)
                     end
                     
-                    reaper.gmem_write(base_addr + 496, 1) -- Potisk layouta v vtičnik (UI refresh)
+                    reaper.gmem_write(base_addr + 496, 1) -- Push layout (UI refresh)
                 end
                 
                 -- Force cache flush & refresh JSFX UI
@@ -6641,7 +6666,7 @@ local function ExecuteCmd3_Mapping(choice, data)
             SaveMapping(tr, f_idx, page_name, entry.hash, sub_slot)
             
         elseif entry.type == "save_hybrid" then
-            SaveHybridMapping(tr, f_idx, entry.hash, entry.sections)
+            SaveHybridMapping(tr, f_idx, entry.hash, entry.sections, entry.target_guid)
             
         elseif entry.type == "clear_section" then
             ClearSectionMapping(c_guid, sl, entry.btn_list)
@@ -6653,85 +6678,74 @@ local function ExecuteCmd3_Mapping(choice, data)
             local section_to_load = entry.full_section_name or entry.full_section
             LoadHybridMapping(tr, f_idx, section_to_load, entry.target_fx_idx, entry.target_slider)
 
-        elseif entry.type == "insert_hybrid" then
-            local actual_plugin_name = entry.raw:gsub("%{.-%}$", "")
-            reaper.PreventUIRefresh(1)
-            local final_insert_idx = reaper.TrackFX_AddByName(tr, actual_plugin_name, false, -1)
-            if final_insert_idx and final_insert_idx >= 0 then
-                entry.target_fx_idx = final_insert_idx
-                entry.type = "load_hybrid"
-                execute_action() -- Ponovno pokličemo samo sebe za naložitev
-                reaper.TrackFX_Show(tr, final_insert_idx, 3)
-            end
-            reaper.PreventUIRefresh(-1)
-        elseif entry.type == "insert" then
+        elseif entry.type == "insert_hybrid" or entry.type == "insert" or entry.type == "insert_chain" then
             local fx_count = reaper.TrackFX_GetCount(tr)
             local target_container_idx = -1
             
-            for i = f_idx + 1, fx_count - 1 do
-                local _, is_c = reaper.TrackFX_GetNamedConfigParm(tr, i, "container_count")
-                if is_c ~= "" then
-                    target_container_idx = i
-                    break
+            -- Scan track after 1st container
+            for i = 0, fx_count - 1 do
+                if i ~= f_idx then
+                    local _, is_c = reaper.TrackFX_GetNamedConfigParm(tr, i, "container_count")
+                    if is_c ~= "" then
+                        target_container_idx = i
+                        break
+                    end
                 end
             end
             
             reaper.PreventUIRefresh(1)
-            local final_insert_idx = -1
-            local actual_plugin_name = entry.raw:gsub("%{.-%}$", "")
             
-            if target_container_idx ~= -1 then
-                local ok_c, c_count_str = reaper.TrackFX_GetNamedConfigParm(tr, target_container_idx, "container_count")
-                local c_count = ok_c and tonumber(c_count_str) or 0
-                local dest_magic = 0x2000000 + (c_count + 1) * (fx_count + 1) + (target_container_idx + 1)
-                local insert_pos = -1000 - dest_magic
+            -- INSERT: Hibrid or single FX
+            if entry.type == "insert_hybrid" or entry.type == "insert" then
+                local actual_plugin_name = entry.raw:gsub("%{.-%}$", "")
+                local final_insert_idx = -1
                 
-                reaper.TrackFX_AddByName(tr, actual_plugin_name, false, insert_pos)
-                local _, real_magic_str = reaper.TrackFX_GetNamedConfigParm(tr, target_container_idx, "container_item." .. c_count)
-                if real_magic_str then final_insert_idx = tonumber(real_magic_str) end
-            else
-                final_insert_idx = reaper.TrackFX_AddByName(tr, actual_plugin_name, false, -1)
-            end
-            
-            if final_insert_idx and final_insert_idx >= 0 then
-                LoadMapping(tr, f_idx, page_name, entry.hash, false, sub_slot)
-                reaper.TrackFX_Show(tr, final_insert_idx, 3)
-            end
-            
-            reaper.PreventUIRefresh(-1)
-        elseif entry.type == "insert_chain" then
-            local fx_count = reaper.TrackFX_GetCount(tr)
-            local target_container_idx = -1
-            
-            for i = f_idx + 1, fx_count - 1 do
-                local _, is_c = reaper.TrackFX_GetNamedConfigParm(tr, i, "container_count")
-                if is_c ~= "" then
-                    target_container_idx = i
-                    break
-                end
-            end
-            
-            reaper.PreventUIRefresh(1)
-            
-            for _, raw_item in ipairs(entry.raws) do
-                local actual_plugin_name = raw_item:gsub("%{.-%}$", "")
                 if target_container_idx ~= -1 then
                     local ok_c, c_count_str = reaper.TrackFX_GetNamedConfigParm(tr, target_container_idx, "container_count")
                     local c_count = ok_c and tonumber(c_count_str) or 0
                     local dest_magic = 0x2000000 + (c_count + 1) * (fx_count + 1) + (target_container_idx + 1)
                     local insert_pos = -1000 - dest_magic
+                    
                     reaper.TrackFX_AddByName(tr, actual_plugin_name, false, insert_pos)
+                    local _, real_magic_str = reaper.TrackFX_GetNamedConfigParm(tr, target_container_idx, "container_item." .. c_count)
+                    if real_magic_str then final_insert_idx = tonumber(real_magic_str) end
                 else
-                    reaper.TrackFX_AddByName(tr, actual_plugin_name, false, -1)
+                    -- No container--insert on track
+                    final_insert_idx = reaper.TrackFX_AddByName(tr, actual_plugin_name, false, -1)
                 end
+                
+                if final_insert_idx and final_insert_idx >= 0 then
+                    if entry.type == "insert_hybrid" then
+                        entry.target_fx_idx = final_insert_idx
+                        entry.type = "load_hybrid"
+                        execute_action()
+                    else
+                        LoadMapping(tr, f_idx, page_name, entry.hash, false, sub_slot)
+                    end
+                    reaper.TrackFX_Show(tr, final_insert_idx, 3)
+                end
+                
+            -- INSERT CHAIN
+            elseif entry.type == "insert_chain" then
+                for _, raw_item in ipairs(entry.raws) do
+                    local actual_plugin_name = raw_item:gsub("%{.-%}$", "")
+                    if target_container_idx ~= -1 then
+                        local ok_c, c_count_str = reaper.TrackFX_GetNamedConfigParm(tr, target_container_idx, "container_count")
+                        local c_count = ok_c and tonumber(c_count_str) or 0
+                        local dest_magic = 0x2000000 + (c_count + 1) * (fx_count + 1) + (target_container_idx + 1)
+                        local insert_pos = -1000 - dest_magic
+                        reaper.TrackFX_AddByName(tr, actual_plugin_name, false, insert_pos)
+                    else
+                        reaper.TrackFX_AddByName(tr, actual_plugin_name, false, -1)
+                    end
+                end
+                LoadMapping(tr, f_idx, page_name, entry.hash, false, sub_slot)
             end
             
-            LoadMapping(tr, f_idx, page_name, entry.hash, false, sub_slot)
             reaper.PreventUIRefresh(-1)
         end
     end
 
-    -- 2. Določimo ali potrebujemo varnostno brisanje (če nalagamo nove vtičnike na ta mesta)
     local requires_relink = (entry.type == "load" or entry.type == "load_variant" or entry.type == "insert" or entry.type == "insert_chain" or entry.type == "load_hybrid" or entry.type == "insert_hybrid")
     
     if requires_relink then
@@ -6861,7 +6875,6 @@ local function ExecuteCmd3_Mapping(choice, data)
             end
         end
 
-        -- ASINHRONA USMERJEVALNA LOGIKA ZA IZVEDBO (če je relink)
         if next(buttons_to_clear) then
             if found_active_mapping then
                 table.insert(pending_os_tasks, function()
@@ -6874,7 +6887,7 @@ local function ExecuteCmd3_Mapping(choice, data)
                         reaper.gmem_write(PROJECT_BASE + 7, 0)
                     end
                 end)
-                return -- Prekinemo neposredno izvajanje, vrstica bo prevzela vajeti
+                return
             else
                 execute_wipe()
                 execute_action()
@@ -6886,7 +6899,6 @@ local function ExecuteCmd3_Mapping(choice, data)
         UpdatePluginStructure(data.tr, data.sl, data.c_guid)
 
     else
-        -- 3. TO SO VSE OSTALE AKCIJE (Save, Copy, Paste, Clear) - izvedejo se takoj!
         execute_action()
         UpdatePluginStructure(data.tr, data.sl, data.c_guid)
     end
@@ -6912,9 +6924,9 @@ function DrawMenus()
     local just_opened = (popup_state.open_time and (current_time - popup_state.open_time) < 0.15)
     local close_requested = false
 
-    -- =========================================================================
+    -- =====================================================
     -- TRANSPARENT OVERLAY WINDOW (CAPTURE CLICKS & ESC)
-    -- =========================================================================
+    -- ====================================================
     local viewport = reaper.ImGui_GetMainViewport(ctx)
     local vx, vy = reaper.ImGui_Viewport_GetPos(viewport)
     local vw, vh = reaper.ImGui_Viewport_GetSize(viewport)
@@ -6961,9 +6973,9 @@ function DrawMenus()
         return
     end
 
-    -- =========================================================================
+    -- =========================================================
     -- CUSTOM MENU WINDOW (DRAWN ABOVE TRANSPARENT OVERLAY)
-    -- =========================================================================
+    -- =========================================================
     reaper.ImGui_SetNextWindowPos(ctx, popup_state.mouse_x, popup_state.mouse_y)
 
     reaper.ImGui_PushStyleVar(ctx, reaper.ImGui_StyleVar_WindowRounding(), 6.0)
@@ -7092,7 +7104,6 @@ local function GetNextElementPos(slot_idx, page, new_w, new_h, PANNEL_h)
     
     if page == 2 or page == 3 then
         for _, el in ipairs(elements) do
-            -- POPRAVEK: Tudi tukaj dodamo 'and el[2] == 6'
             if el[12] == page and el[1] >= 900 and el[2] == 6 then
                 divider_y = el[4]
                 divider_h = el[7] or (el[5] == 6 and 10 or 31)
@@ -7148,7 +7159,7 @@ local function GetAvailableParamID(elements, tab_id, el_type, y_pos)
         end
     end
     
-    -- Uporabimo eksplicitno izbrano sekcijo iz Builderja (1 = Top, 2 = Bottom)
+    -- use selected section in Builderja (1 = Top, 2 = Bottom)
     local is_top_section = (builder_state.target_sec == 1)
     local allowed_ids = {}
     
@@ -7157,10 +7168,8 @@ local function GetAvailableParamID(elements, tab_id, el_type, y_pos)
         
     elseif tab_id == 1 then -- EQ (14 Knobs, 6 Switches)
         if el_type == 1 or el_type == 3 or el_type == 7 then 
-            -- Gumbi imajo prekinjeno zaporedje za ohranitev starih stikal
             allowed_ids = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}
         else 
-            -- Stikala ostanejo tam, kjer so bila (prvih 6 od starih 8)
             allowed_ids = {15, 16, 17, 18, 19, 20}
         end
         
@@ -7206,7 +7215,7 @@ end
 
 
 local function DrawLayoutBuilderToolbox()
-    -- 1. PREBERI STANif current_slot <= 0 thenJE IZ GMEM (Sinhronizira Meni 99 in Shift+Alt+Klik)
+
     local current_slot = math.floor(reaper.gmem_read(PROJECT_BASE + 8))
     local sl_base = 0
     if current_slot > 0 then
@@ -7218,7 +7227,6 @@ local function DrawLayoutBuilderToolbox()
                 builder_state.open = true
                 builder_state.just_opened = true -- Pravilno sproži pozicioniranje!
                 
-                -- LUA ZAHTEVA: Prebudi JSFX in zahtevaj svež izvoz!
                 reaper.gmem_write(sl_base + 427, 1)
             end
         else
@@ -7228,13 +7236,13 @@ local function DrawLayoutBuilderToolbox()
 
     if not builder_state.open then return end
 
-    -- VSI STYLE VARS
+    -- STYLE VARS
     reaper.ImGui_PushStyleVar(ctx, reaper.ImGui_StyleVar_WindowRounding(), 8.0)
     reaper.ImGui_PushStyleVar(ctx, reaper.ImGui_StyleVar_FrameRounding(),   6.0)
     reaper.ImGui_PushStyleVar(ctx, reaper.ImGui_StyleVar_GrabRounding(),    6.0)
     reaper.ImGui_PushStyleVar(ctx, reaper.ImGui_StyleVar_FrameBorderSize(), 1.0)
 
-    -- VSE STYLE COLORS
+    -- STYLE COLORS
     reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_TitleBgActive(),   0x222222FF)
     reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_TitleBg(),         0x101010FF)
     reaper.ImGui_PushStyleColor(ctx, reaper.ImGui_Col_WindowBg(),        0x111111FF)
@@ -7266,7 +7274,7 @@ local function DrawLayoutBuilderToolbox()
     
         if current_slot > 0 then
             
-            -- 1. Poišči ime trenutnega vtičnika (potrebno za branje in pisanje prave višine)
+            -- Find name of current FX, requires read/write of exact height
             local current_tr, current_idx, current_jsfx_name
             if active_plugins then
                 for _, fx in ipairs(active_plugins) do
@@ -7278,20 +7286,19 @@ local function DrawLayoutBuilderToolbox()
                     end
                 end
             end
-            -- Fallback, če iz nekega razloga seznam ni osvežen
+            -- Fallback
             if not current_jsfx_name then 
                 local _, n = reaper.TrackFX_GetFXName(reaper.GetSelectedTrack(0,0) or reaper.GetMasterTrack(0), 0, "")
                 current_jsfx_name = n:match("StripLink.-%s") and n:gsub("^JS:%s*", ""):gsub("%s+%[.-%]$", "") or "StripLink Module v2"
             end
             
-            -- 2. Preberi GLOBALNO višino (Unscrollable Slot Height) direktno iz JSFX datoteke!
+            -- Global Height directly from JSFX!
             local global_slot_height = GetJSFXHeightFromFile(current_jsfx_name)
             
-            -- 3. Preberi LOKALNO višino instance (Panel Size) iz gmem 431
+            --  LOKAL instance height  (Panel Size) gmem 431
             local sl_base = PROJECT_BASE + current_slot * 500
             local instance_panel_h = math.floor(reaper.gmem_read(sl_base + 426))
             
-            -- Varovalka 1
             if instance_panel_h < global_slot_height then 
                 instance_panel_h = global_slot_height 
                 reaper.gmem_write(sl_base + 426, instance_panel_h)
@@ -7300,7 +7307,6 @@ local function DrawLayoutBuilderToolbox()
             local current_page = math.floor(reaper.gmem_read(sl_base + 290))
             --if current_page == 0 then current_page = 1 end
             
-            -- ZAGOTOVIMO OBSTOJ TABELE ZA TRENUTNI SLOT
             if not user_layouts[current_slot] then 
                 user_layouts[current_slot] = GetDefaultLayout(instance_panel_h) 
             end
@@ -7309,7 +7315,7 @@ local function DrawLayoutBuilderToolbox()
             local outbox = PROJECT_BASE + 500000 + (current_slot * 3000)
             local mailbox = PROJECT_BASE + 200000 + (current_slot * 3000)
             
-            -- DODANO: Zakasnjena obnova selekcije
+            -- delayed refresh ...
             if builder_state.restore_sel and reaper.gmem_read(mailbox) == 0 then
                 reaper.gmem_write(outbox - 4, builder_state.restore_sel)
                 builder_state.restore_sel = nil
@@ -7322,7 +7328,7 @@ local function DrawLayoutBuilderToolbox()
                     return 
                 end
                 
-                -- VAROVALKA 2: Prepreči branje, če JSFX še ni ugasnil zahteve po izvozu
+                -- dont allow reading if not yet exported
                 if reaper.gmem_read(sl_base + 427) == 1 then return end
             
                 if reaper.gmem_read(mailbox) == 1 then return end 
@@ -7333,16 +7339,6 @@ local function DrawLayoutBuilderToolbox()
                 local outbox_count = math.floor(reaper.gmem_read(outbox - 1))
                 local limit = math.min(#my_elements, outbox_count)
                 
-                local gap = 4 
-                local max_top_y = 100   -- LOKALNA LOGIČNA MEJA POD HEADERJEM (JSFX kompenzira meter!)
-                local min_bot_y = instance_panel_h - 5
-                
-                local divider_y = 350
-                local divider_h = 31
-                
-                -- ========================================================
-                -- POMOŽNI FUNKCIJI S TOLERANČNIM PRINCIPOM ("Buffer")
-                -- ========================================================
                 local function BoundingBoxX(nx, nw)
                     local hw = math.floor(nw / 2)
                     if nw >= 125 then
@@ -7375,144 +7371,35 @@ local function DrawLayoutBuilderToolbox()
                     end
                     return ny, false
                 end
-                -- ========================================================
-                
-                -- Izračun specifičnih mej in prepoznavanje dividerja SAMO za DYN/FX
-                if current_page == 2 or current_page == 3 then
-                    for i = 1, limit do
-                        local el = my_elements[i]
-                        if el[12] == current_page and el[1] >= 900 and el[2] == 6 then
-                            divider_y = el[4]
-                            divider_h = el[7] or (el[5] == 6 and 10 or 31)
-                            break
-                        end
-                    end
-                    
-                    -- 2. Drugi prehod: Izračun mej (SAMO za funkcijske kontrole sekcij!)
-                    for i = 1, limit do
-                        local el = my_elements[i]
-                        local el_type = el[2]
-                        
-                        -- Filtramo LE funkcijske kontrole (Knob, Switch, Tube, Meter, Selector, InputGain)
-                        -- Teksti (4), dekorativni separatorji (6 z ID < 900), Grupe (8) in AutoGain (9, 10) so IZKLJUČENI!
-                        
-                        --local is_functional_control = (el_type == 1 or el_type == 2 or el_type == 3 or el_type == 5 or el_type == 7 or el_type == 12)
-                        -- Leave meters without constraints, so users can place 2 vertical meters one beside antother
-                        local is_functional_control = (el_type == 1 or el_type == 2 or el_type == 3 or el_type == 7 or el_type == 12)
-                        
-                        if el[12] == current_page and el[1] < 900 and is_functional_control then
-                            local param_id = el[5]
-                            local is_bottom = false
-                            
-                            if current_page == 2 then
-                                -- DYN 1 (Top): 21..29, metri 1,3,5 | DYN 2 (Bottom): 30..38, metri 2,4,6
-                                if (param_id >= 30 and param_id <= 38) or param_id == 2 or param_id == 4 or param_id == 6 then 
-                                    is_bottom = true 
-                                elseif (param_id >= 21 and param_id <= 29) or param_id == 1 or param_id == 3 or param_id == 5 then
-                                    is_bottom = false
-                                else
-                                    is_bottom = (el[4] >= divider_y)
-                                end
-                            elseif current_page == 3 then
-                                -- FX PRE (Top): 39..44 | FX POST (Bottom): 45..56
-                                if param_id >= 45 and param_id <= 56 then 
-                                    is_bottom = true 
-                                elseif param_id >= 39 and param_id <= 44 then
-                                    is_bottom = false
-                                else
-                                    is_bottom = (el[4] >= divider_y)
-                                end
-                            end
-                            
-                            local el_h = el[7] or 30
-                            if is_bottom then
-                                if el[4] < min_bot_y then min_bot_y = el[4] end
-                            else
-                                local bottom_edge = el[4] + el_h
-                                if bottom_edge > max_top_y then max_top_y = bottom_edge end
-                            end
-                        end
-                    end
-                    
-                    -- Varovalka za razmik med sekcijama
-                    if min_bot_y < max_top_y + divider_h + gap * 2 then
-                        min_bot_y = max_top_y + divider_h + gap * 2
-                    end
-                end
+
                 
                 local needs_push = false
-                local live_divider_y = divider_y
                 
                 for i = 1, limit do
-                    -- VAROVALKA: Omejimo logiko izključno na elemente trenutnega zavihka
+
                     if my_elements[i][12] == current_page then
                         local new_x = reaper.gmem_read(outbox + ((i - 1) * 13) + 2)
                         local new_y = reaper.gmem_read(outbox + ((i - 1) * 13) + 3)
                         local new_w = reaper.gmem_read(outbox + ((i - 1) * 13) + 5)
                         local new_h = reaper.gmem_read(outbox + ((i - 1) * 13) + 6)
-                        local new_dx = reaper.gmem_read(outbox + ((i - 1) * 13) + 11) -- Očita DX
-                        local new_dy = reaper.gmem_read(outbox + ((i - 1) * 13) + 12) -- Očita DY
+                        local new_dx = reaper.gmem_read(outbox + ((i - 1) * 13) + 11)
+                        local new_dy = reaper.gmem_read(outbox + ((i - 1) * 13) + 12)
                         
                         local push_x, push_y = false, false
                         
-                        -- ZAGOTOVIMO VARNO X OS ZA VSE ELEMENTE (razen sistemskega dividerja, ki se centrira ročno)
                         if not (my_elements[i][1] >= 900 and my_elements[i][2] == 6) then
                             new_x, push_x = BoundingBoxX(new_x, new_w)
-                        end
-                        
-                        if current_page == 0 or current_page == 1 then
-                            -- Samo globalne meje (100 do dno)
-                            new_y, push_y = BoundingBoxY(new_y, new_h, 100, instance_panel_h - new_h)
                         else
-                            if my_elements[i][1] >= 900 and my_elements[i][2] == 6 then
-                                live_divider_y = new_y
-                                
-                                new_y, push_y = BoundingBoxY(new_y, new_h, max_top_y + gap, min_bot_y - new_h - gap)
-                                
-                                local target_x = math.floor((125 - new_w) / 2)
-                                if new_x ~= target_x then
-                                    new_x = target_x
-                                    push_x = true 
-                                end
-                            else
-                                local el_type = my_elements[i][2]
-                                
-                                -- Tekst (4), dekorativne črte (6), Grupa (8) in AutoGain (9, 10) so povsem prosto premični od 100px do dna:
-                                -- also no constraints for meters!
-                                --if el_type == 4 or (el_type == 6 and my_elements[i][1] < 900) or el_type == 8 or el_type == 9 or el_type == 10 then
-                                if el_type == 4 or el_type == 5 or (el_type == 6 and my_elements[i][1] < 900) or el_type == 8 or el_type == 9 or el_type == 10 then
-                                    new_y, push_y = BoundingBoxY(new_y, new_h, 100, instance_panel_h - new_h)
-                                else
-                                    -- Samo pravi funkcijski parametri (Gumbi, Stikala, Tube, Metri) ostajajo omejeni z ločilnikom:
-                                    local param_id = my_elements[i][5]
-                                    local is_bottom = false
-                                    
-                                    if current_page == 2 then
-                                        if (param_id >= 30 and param_id <= 38) or param_id == 2 or param_id == 4 or param_id == 6 then 
-                                            is_bottom = true 
-                                        elseif (param_id >= 21 and param_id <= 29) or param_id == 1 or param_id == 3 or param_id == 5 then
-                                            is_bottom = false
-                                        else
-                                            is_bottom = (my_elements[i][4] >= divider_y)
-                                        end
-                                    elseif current_page == 3 then
-                                        if param_id >= 45 and param_id <= 56 then 
-                                            is_bottom = true 
-                                        elseif param_id >= 39 and param_id <= 44 then
-                                            is_bottom = false
-                                        else
-                                            is_bottom = (my_elements[i][4] >= divider_y)
-                                        end
-                                    end
-
-                                    if is_bottom then
-                                        new_y, push_y = BoundingBoxY(new_y, new_h, divider_y + divider_h + gap, instance_panel_h - new_h)
-                                    else
-                                        new_y, push_y = BoundingBoxY(new_y, new_h, 100, divider_y - new_h - gap)
-                                    end
-                                end
+                            -- Sistem divider is always centered
+                            local target_x = math.floor((125 - new_w) / 2)
+                            if new_x ~= target_x then
+                                new_x = target_x
+                                push_x = true 
                             end
                         end
+                        
+                        -- All elements have equal Y below header
+                        new_y, push_y = BoundingBoxY(new_y, new_h, 100, instance_panel_h - new_h)
                         
                         if push_x or push_y then
                             my_elements[i][3] = new_x
@@ -7523,7 +7410,6 @@ local function DrawLayoutBuilderToolbox()
                             my_elements[i][14] = new_dy
                             needs_push = true
                         else
-                            -- Tudi če ni push-a, obvezno osvežimo cache z offseti
                             my_elements[i][3] = new_x
                             my_elements[i][4] = new_y
                             my_elements[i][6] = new_w
@@ -7541,7 +7427,7 @@ local function DrawLayoutBuilderToolbox()
             
             SyncCurrentPositions()
             
-            -- POMOŽNA FUNKCIJA ZA RISANJE GUMBOV Z IKONO (izris in avtomatski centriran odmik)
+            -- DRAW ELEMENTS & icon
             local function DrawIconButton(label, icon_img, w, h)
                 local clicked = reaper.ImGui_Button(ctx, label, w, h)
                 if icon_img and reaper.ImGui_ValidatePtr(icon_img, 'ImGui_Image*') then
@@ -7561,7 +7447,7 @@ local function DrawLayoutBuilderToolbox()
                 return clicked
             end
     
-            -- 1. SEKCIJA: SHRANJEVANJE IN ZAPIRANJE
+            -- Save & Close----------------------------
             reaper.ImGui_SeparatorText(ctx, "ACTIONS")
             if reaper.ImGui_Button(ctx, "SAVE LAYOUT & CLOSE", 150, 35) then
                 SyncCurrentPositions()
@@ -7571,9 +7457,8 @@ local function DrawLayoutBuilderToolbox()
             end
             reaper.ImGui_SameLine(ctx)
             
-            -- ==========================================
-            -- GUMB ZA ČIŠČENJE PLATNA Z POTRDITVIJO
-            -- ==========================================
+
+            -- Clear layout---------------------------
             if reaper.ImGui_Button(ctx, "CLEAR LAYOUT", -1, 35) then
                 table.insert(pending_os_tasks, function()
                     local confirm = reaper.MB(
@@ -7584,38 +7469,36 @@ local function DrawLayoutBuilderToolbox()
                     )
                     
                     if confirm == 6 then
-                        -- Uporabimo pravilno ime spremenljivke za višino 'instance_panel_h'
                         local ag_pwr_y = instance_panel_h - 35
                         local ag_lck_y = ag_pwr_y - 18
                         
                         user_layouts[current_slot] = {
-                            -- OVR Zavihek (0)
+                            -- OVR (0)
                             {904, 9, 42, ag_pwr_y, 68, 40, 35, 0, "", 14, 0, 0, 0, 0},
                             {905, 10, 53, ag_lck_y, 64, 17, 17, 0, "", 14, 0, 0, 0, 0},
-                            -- EQ Zavihek (1)
+                            -- EQ (1)
                             {904, 9, 42, ag_pwr_y, 68, 40, 35, 0, "", 14, 0, 1, 0, 0},
                             {905, 10, 53, ag_lck_y, 64, 17, 17, 0, "", 14, 0, 1, 0, 0},
-                            -- DYN Zavihek (2) - Divider + AG + Lock
+                            -- DYN (2) - Divider + AG + Lock
                             {902, 6, 6, 350, 5, 113, 10, 0, "", 14, 0, 2, 0, 0},
                             {904, 9, 42, ag_pwr_y, 68, 40, 35, 0, "", 14, 0, 2, 0, 0},
                             {905, 10, 53, ag_lck_y, 64, 17, 17, 0, "", 14, 0, 2, 0, 0},
-                            -- FX Zavihek (3) - Divider + AG + Lock
+                            -- FX (3) - Divider + AG + Lock
                             {903, 6, 6, 350, 5, 113, 10, 0, "", 14, 0, 3, 0, 0},
                             {904, 9, 42, ag_pwr_y, 68, 40, 35, 0, "", 14, 0, 3, 0, 0},
                             {905, 10, 53, ag_lck_y, 64, 17, 17, 0, "", 14, 0, 3, 0, 0}
                         }
                         
-                        -- PONASTAVITEV BARV ZAVIHKOV (Parametri 6, 7 in 8 v Lui)
+                        -- RESET TAB color
                         if current_tr and current_idx then
                             reaper.TrackFX_SetParam(current_tr, current_idx, 6, 0x161616) -- Reset EQ Color
                             reaper.TrackFX_SetParam(current_tr, current_idx, 7, 0x161616) -- Reset DYN Color
                             reaper.TrackFX_SetParam(current_tr, current_idx, 8, 0x161616) -- Reset FX Color
                         end
         
-                        -- Pošljemo posodobitev v JSFX
                         PushUILayout(current_slot)
                         
-                        -- Ponastavimo selekcijo
+
                         builder_selected_idx = 1
                         local outbox = PROJECT_BASE + 500000 + (current_slot * 3000)
                         reaper.gmem_write(outbox - 4, 0)
@@ -7623,10 +7506,10 @@ local function DrawLayoutBuilderToolbox()
                 end)
             end
             
-            -- 1.2 SEKCIJA: HEIGHT SETTINGS
+            -- HEIGHT SETTINGS
             reaper.ImGui_SeparatorText(ctx, "HEIGHT SETTINGS")
             
-            -- GLOBALNI DRSNIK
+            -- GLOBAL
             if not builder_state.global_slot_h then builder_state.global_slot_h = global_slot_height end
             reaper.ImGui_TextDisabled(ctx, "Unscrollable Slot Height (Global)")
             reaper.ImGui_SetNextItemWidth(ctx, 190)
@@ -7640,7 +7523,6 @@ local function DrawLayoutBuilderToolbox()
                     reaper.SetExtState(NS, "PANNEL_HEIGHT_" .. safe_jsfx_name, tostring(builder_state.global_slot_h), true)
                     global_slot_height = builder_state.global_slot_h
                     
-                    -- Varovalka 2
                     if reaper.gmem_read(sl_base + 426) < global_slot_height then
                         reaper.gmem_write(sl_base + 426, global_slot_height)
                     end
@@ -7664,23 +7546,23 @@ local function DrawLayoutBuilderToolbox()
                 end
             end
             
-            -- LOKALNI DRSNIK (z vgrajeno varovalko proti rezanju)
+            -- LOCAL
             reaper.ImGui_TextDisabled(ctx, "Panel Size (Instance)")
             reaper.ImGui_SetNextItemWidth(ctx, 190)
             local changed_i, new_i = reaper.ImGui_SliderInt(ctx, "##i_h", instance_panel_h, global_slot_height, 1000, "%d px")
             if changed_i then
-                -- Najnižja dovoljena točka je vedno osnovna višina vtičnika (npr. 635 px)
+                -- lowest coordinate is always default pannel height (e.g. 635 px)
                 local max_y = global_slot_height
                 if user_layouts[current_slot] then
                     for _, el in ipairs(user_layouts[current_slot]) do
-                        -- Ignoriramo sistemska Auto Gain gumba na dnu
+                        -- Ignore Auto Gain on bottom
                         if el[1] < 900 and el[2] ~= 9 and el[2] ~= 10 then
                             local bottom_edge = (el[4] or 0) + (el[7] or 30)
                             if bottom_edge > max_y then max_y = bottom_edge end
                         end
                     end
                     
-                    -- Dinamično premaknemo Auto Gain gumba na novo dno
+                    -- Dynamically move AG to new bottom
                     local ag_pwr_y = new_i - 35
                     local ag_lck_y = ag_pwr_y - 18
                     for _, el in ipairs(user_layouts[current_slot]) do
@@ -7689,7 +7571,7 @@ local function DrawLayoutBuilderToolbox()
                     end
                 end
                 
-                -- Varovalka: Ne dovoli manj kot global_slot_height (635 px) in ne pod najnižji gumb
+                -- Do not allow less than global_slot_height and not beolw the "lowest" element
                 if new_i < max_y then new_i = max_y end
                 
                 reaper.gmem_write(sl_base + 426, new_i)
@@ -7697,11 +7579,10 @@ local function DrawLayoutBuilderToolbox()
                 PushUILayout(current_slot)
             end
             
-            -- 1.3 SEKCIJA: TAB COLOR
+            -- TAB COLOR
              if current_page >= 1 and current_page <= 3 then
                  reaper.ImGui_SeparatorText(ctx, "TAB COLOR (Per Instance)")
                  
-                 -- Pravilni indeks (sliderji 7, 8 in 9 so parametri 6, 7 in 8)
                  local slider_idx = 5 + current_page
                  
                  local current_color_raw = 0x161616
@@ -7710,15 +7591,15 @@ local function DrawLayoutBuilderToolbox()
                      if current_color_raw == 0 then current_color_raw = 0x161616 end
                  end
                  
-                 -- Pretvorba iz JSFX (0xRRGGBB) v ImGui (0xAARRGGBB) s polno Alpha vrednostjo (0xFF)
+                 -- Convert from JSFX (0xRRGGBB) into ImGui (0xAARRGGBB) with full alpha (0xFF)
                  local imgui_color = (0xFF << 24) | current_color_raw
                  
                  reaper.ImGui_SetNextItemWidth(ctx, 190)
                  local changed_c, new_c = reaper.ImGui_ColorEdit3(ctx, "Color##TabColor", imgui_color, reaper.ImGui_ColorEditFlags_NoInputs())
                  
                  if changed_c and current_tr and current_idx then
-                     -- Pretvorba iz ImGui (0xAARRGGBB) nazaj v JSFX (0xRRGGBB)
-                     -- Odstranimo Alpha bajt (prvih 8 bitov) z uporabo preproste bitne maske
+                     -- Convert ImGui (0xAARRGGBB) back to JSFX (0xRRGGBB)
+                     -- remove alpha bytes
                      local jsfx_color = new_c & 0x00FFFFFF
                      
                      reaper.TrackFX_SetParam(current_tr, current_idx, slider_idx, jsfx_color)
@@ -7728,7 +7609,7 @@ local function DrawLayoutBuilderToolbox()
             -- =========================================================================
             
             
-            -- 1.5 SEKCIJA: TARGET SECTION (Vidno SAMO na DYN [2] in FX [3] zavihku)
+            -- TARGET SECTION (only  DYN [2] & FX [3])
             if current_page == 2 or current_page == 3 then
                 reaper.ImGui_SeparatorText(ctx, "TARGET SECTION")
                 
@@ -7745,14 +7626,14 @@ local function DrawLayoutBuilderToolbox()
                     builder_state.target_sec = 2
                 end
             else
-                -- Na EQ zavihku (Page 1) avtomatsko vsilimo zgornjo sekcijo
+                -- EQ tab
                 builder_state.target_sec = 1
             end
             
-            -- 2. SEKCIJA: DODAJANJE ELEMENTOV
+            -- ADDING ELEMENTS
             reaper.ImGui_SeparatorText(ctx, "ADD ELEMENT")
             
-            -- Gumb KNOB
+            -- KNOB
             if DrawIconButton("     KNOB", icon_knob, 80, 30) then
                 SyncCurrentPositions()
                 local element_count = #my_elements
@@ -7772,14 +7653,14 @@ local function DrawLayoutBuilderToolbox()
             
             reaper.ImGui_SameLine(ctx)
             
-            -- Gumb SWITCH
+            -- SWITCH
             if DrawIconButton("    SWITCH", icon_switch, 80, 30) then
                 SyncCurrentPositions()
                 local element_count = #my_elements
                 local nov_id = element_count + 100
                 local spawn_x, spawn_y = GetNextElementPos(current_slot, current_page, 32, 25, instance_panel_h)
                 
-                -- POIŠČI PROST ID ZA SWITCH NA TEM ZAVIHKU
+                -- Find empty ID
                 local param_target = GetAvailableParamID(my_elements, current_page, 2, spawn_y)
                 
                 if param_target > 0 then
@@ -7795,14 +7676,14 @@ local function DrawLayoutBuilderToolbox()
             
             reaper.ImGui_SameLine(ctx)
             
-            -- Gumb TUBE
+            -- TUBE
             if DrawIconButton("    TUBE", icon_tube, 80, 30) then
                 SyncCurrentPositions()
                 local element_count = #my_elements
                 local nov_id = element_count + 100
                 local spawn_x, spawn_y = GetNextElementPos(current_slot, current_page, 45, 15, instance_panel_h)
                 
-                -- POIŠČI PROST ID ZA TUBE NA TEM ZAVIHKU
+                -- Find empty ID
                 local param_target = GetAvailableParamID(my_elements, current_page, 1, spawn_y)
                 
                 if param_target > 0 then
@@ -7815,7 +7696,7 @@ local function DrawLayoutBuilderToolbox()
                 end
             end
             
-            -- Gumb METER (Type 5)
+            -- METER (Type 5)
             local meters_avail = CheckMeterAvailability(current_page, my_elements, -1)
             local can_add_gr = (builder_state.target_sec == 1) and meters_avail.gr_top or ((builder_state.target_sec == 2) and meters_avail.gr_bot)
             local can_add_meter = meters_avail.level or can_add_gr
@@ -7824,17 +7705,17 @@ local function DrawLayoutBuilderToolbox()
             if DrawIconButton("    METER", icon_meter, 80, 30) then
                 SyncCurrentPositions()
                 
-                -- Določitev privzetega tipa metra ob spawnu glede na razpoložljivost
+                -- assign default meter type depending on availability
                 local default_m_type = 0 -- Default je Level
                 if not meters_avail.level and can_add_gr then
-                    default_m_type = (builder_state.target_sec == 1) and 1 or 2 -- Horiz DYN1 ali DYN2
+                    default_m_type = (builder_state.target_sec == 1) and 1 or 2 -- Horiz DYN1 or DYN2
                 end
                 
                 local m_w, m_h = 114, 14
                 local element_count = #my_elements
                 local nov_id = element_count + 100
                 
-                -- Spawn_y bo avtomatsko v pravi sekciji zaradi builder_state.target_sec!
+                -- Spawn_y wil automatically be in the correct section!
                 local spawn_x, spawn_y = GetNextElementPos(current_slot, current_page, m_w, m_h, instance_panel_h)
                 
                 local nov_element = {nov_id, 5, spawn_x, spawn_y, default_m_type, m_w, m_h, 0, "", 14, 0, current_page, 0, 0}
@@ -7845,7 +7726,7 @@ local function DrawLayoutBuilderToolbox()
             
             reaper.ImGui_SameLine(ctx)
                     
-            -- Gumb INPUT GAIN (Type 12)
+            -- INPUT GAIN (Type 12)
             if DrawIconButton(" INPUT GAIN", nil, 80, 30) then
                 if #my_elements >= 230 then
                     table.insert(pending_os_tasks, function()
@@ -7865,7 +7746,7 @@ local function DrawLayoutBuilderToolbox()
             
             reaper.ImGui_SameLine(ctx)
             
-            -- Gumb TEXT
+            -- TEXT
             if DrawIconButton("     TEXT", icon_text, 80, 30) then
                 if #my_elements >= 230 then
                     table.insert(pending_os_tasks, function()
@@ -7895,7 +7776,6 @@ local function DrawLayoutBuilderToolbox()
                 
                 local spawn_x, spawn_y = GetNextElementPos(current_slot, current_page, 90, 18, instance_panel_h)
                 
-                -- POPRAVEK: Tukaj namesto 1 pošlješ 7 (čeprav zaradi deljene logike delujeta oba)
                 local param_target = GetAvailableParamID(my_elements, current_page, 7, spawn_y)
                 
                 if param_target > 0 then
@@ -7904,7 +7784,6 @@ local function DrawLayoutBuilderToolbox()
                     PushUILayout(current_slot)
                 else
                     table.insert(pending_os_tasks, function()
-                        -- POPRAVEK: Poenoteno besedilo z Gumbi in Tubami
                         reaper.MB("You have reached the maximum number of selectors\n(including knobs and tubes) for this section!", "StripLink Builder", 0)
                     end)
                 end
@@ -7931,7 +7810,7 @@ local function DrawLayoutBuilderToolbox()
                 end
             end
             
-            -- 3. SEKCIJA: ODSTRANJEVANJE ELEMENTA
+            -- REMOVING ELEMENTS
             reaper.ImGui_SeparatorText(ctx, "REMOVE ELEMENT")
             
             local elements = my_elements
@@ -7939,13 +7818,11 @@ local function DrawLayoutBuilderToolbox()
             if #elements > 0 then
                 local sel_from_jsfx = math.floor(reaper.gmem_read(outbox - 4))
                 if sel_from_jsfx > 0 and sel_from_jsfx <= #elements then
-                    -- Selekcijo sprejmemo le, če element pripada trenutno aktivnemu zavihku
                     if elements[sel_from_jsfx] and elements[sel_from_jsfx][12] == current_page then
                         builder_selected_idx = sel_from_jsfx
                     end
                 end
                 
-                -- Varovalka: Če izbrani element pripada drugemu zavihku, fokusiramo prvega veljavnega na tem zavihku
                 if not builder_selected_idx or not elements[builder_selected_idx] or elements[builder_selected_idx][12] ~= current_page then
                     builder_selected_idx = nil
                     for i, el in ipairs(elements) do
@@ -7958,7 +7835,7 @@ local function DrawLayoutBuilderToolbox()
                 
                 local current_el = builder_selected_idx and elements[builder_selected_idx] or nil
 
-                -- KLJUČNA VAROVALKA: Kodo izvedemo SAMO, če je na TRENUTNEM zavihku izbran veljaven element
+                -- Chck if element is valid
                 if current_el then
                     local type_str = (current_el[2] == 1 and "Knob" or (current_el[2] == 2 and "Switch" or "Tube"))
                     if current_el[2] == 4 then type_str = "Text" end
@@ -7973,7 +7850,7 @@ local function DrawLayoutBuilderToolbox()
                     
                     reaper.ImGui_SameLine(ctx)
                     
-                    -- Gumb REMOVE (Skrit za sistemske elemente)
+                    -- REMOVE (hiden for "system" elements)
                     local is_system_element = (current_el[1] >= 900)
                     
                     if not is_system_element then
@@ -7983,7 +7860,6 @@ local function DrawLayoutBuilderToolbox()
                             
                             table.remove(elements, builder_selected_idx)
                             
-                            -- ČE SMO BRISALI SELECTOR (7) ALI GROUP (8), ZBRIŠEMO ŠE DRUGEGA
                             if removed_type == 7 or removed_type == 8 then
                                 local target_to_remove = (removed_type == 7) and 8 or 7
                                 for j = #elements, 1, -1 do
@@ -8008,12 +7884,11 @@ local function DrawLayoutBuilderToolbox()
                         reaper.ImGui_TextDisabled(ctx, "[System element]")
                     end
                     
-                    -- Pazi, da Lua sama zapiše nazaj JSFX-u svojo selekcijo v primeru Property preklopa
                     if builder_selected_idx and builder_selected_idx > 0 then
                        reaper.gmem_write(outbox - 4, builder_selected_idx)
                     end
                     
-                    -- 3.5 SEKCIJA: PROPERTIES
+                    -- PROPERTIES
                     reaper.ImGui_SeparatorText(ctx, "PROPERTIES")
                     
                     local live_x = math.floor(reaper.gmem_read(outbox + ((builder_selected_idx - 1) * 13) + 2))
@@ -8027,7 +7902,7 @@ local function DrawLayoutBuilderToolbox()
                     local changed_x, str_x = false, tostring(live_x)
                     
                     reaper.ImGui_SetNextItemWidth(ctx, 30)
-                    -- Sistemskemu dividerju onemogočimo vpisovanje X koordinate
+                    -- Dont alow x change for divider!
                     if current_el[1] >= 900 and current_el[2] == 6 then
                         reaper.ImGui_BeginDisabled(ctx)
                         reaper.ImGui_InputText(ctx, id_x, tostring(live_x), flags)
@@ -8044,16 +7919,16 @@ local function DrawLayoutBuilderToolbox()
                                 
                    local base_w, base_h = 54, 54
                    if el_type == 2 then 
-                       base_w, base_h = 32, 25 -- Standardna osnova (default)
+                       base_w, base_h = 32, 25 -- default
                        
-                       -- PREVERIMO BARVO/TIP STIKALA DIREKTNO IZ GMEM-a
+                       -- check color/type from GMEM
                        local btn_idx = current_el[5] or 0
                        if current_slot > 0 and btn_idx > 0 then
                            local k_idx = btn_idx - 1
                            local raw_status = reaper.gmem_read(PROJECT_BASE + current_slot * 500 + 150 + k_idx)
                            local cur_color = raw_status % 100
                            
-                           -- Dinamično prilagajanje drsnika glede na izbrano stikalo
+                           -- dynamically adapt according to the selected switch
                            if cur_color == 5 then
                                base_w = 32
                                base_h = 50
@@ -8071,12 +7946,12 @@ local function DrawLayoutBuilderToolbox()
                     elseif el_type == 5 then 
                         local sub_type = current_el[5] or 0
                         if sub_type == 3 or sub_type == 4 then
-                            base_w, base_h = 14, 114 -- Vertikalni metri
+                            base_w, base_h = 14, 114 -- Vertical meters
                         elseif sub_type == 5 or sub_type == 6 then
-                            base_w, base_h = 114, 64 -- Analogni GR metri
+                            base_w, base_h = 114, 64 -- Analog GR meter
                             
                         else
-                            base_w, base_h = 114, 14 -- Horizontalni in Level metri
+                            base_w, base_h = 114, 14 -- Hor and Level meters
                         end
                     elseif el_type == 6 then
                         base_w = 113
@@ -8127,7 +8002,7 @@ local function DrawLayoutBuilderToolbox()
                         PushUILayout(current_slot)
                     end
                     ---------------------------------------------------------
-                    -- PORAVNAVA (LABEL POSITION & ANCHOR)
+                    -- LABEL POSITION & ANCHOR
                     ---------------------------------------------------------
                    if el_type == 1 or el_type == 2 or el_type == 3 or el_type == 7 then
                         reaper.ImGui_SeparatorText(ctx, "LABEL POSITION & ANCHOR")
@@ -8135,10 +8010,10 @@ local function DrawLayoutBuilderToolbox()
                         local raw_dx = current_el[13] or 0
                         local raw_dy = current_el[14] or 0
                         
-                        -- Razpakiramo naš decimalni format
+                        -- Unpack decimal format
                         local c_dx, c_align, c_ref = UnpackDX(raw_dx)
                         
-                        -- 1. Dropdown za poravnavo
+                        -- Dropdown for alignment
                         reaper.ImGui_SetNextItemWidth(ctx, 100)
                         local align_opts = "0 - Free\0 1 - Left\0 2 - Right\0 3 - Top\0 4 - Bottom\0"
                         local changed_align, new_align = reaper.ImGui_Combo(ctx, "Attachment Constraint##" .. builder_selected_idx, c_align, align_opts)
@@ -8147,7 +8022,7 @@ local function DrawLayoutBuilderToolbox()
                             if new_align > 0 then
                                 local p_text = current_el[9]
                                 if not p_text or p_text == "" then p_text = "ID:" .. tostring(current_el[5]) end
-                                -- Izmerimo širino trenutnega teksta za referenco
+
                                 ref_w = math.floor(reaper.ImGui_CalcTextSize(ctx, p_text))
                             end
                             c_dx = 0
@@ -8158,7 +8033,8 @@ local function DrawLayoutBuilderToolbox()
                             PushUILayout(current_slot)
                         end
                         
-                        -- 2. Input polja za DX in DY
+                        -- Input fields DX and DY
+
                         reaper.ImGui_SetNextItemWidth(ctx, 100)
                         local changed_dx, new_dx = reaper.ImGui_InputInt(ctx, "DX##" .. builder_selected_idx, c_dx, 1, 5)
                         if changed_dx then
@@ -8223,13 +8099,13 @@ local function DrawLayoutBuilderToolbox()
                         local cur_param = current_el[5] or 0
                         
                         local is_top_sec = true
-                        -- Preverimo dejansko identiteto metra, ne glede na to, kje na zaslonu se nahaja
+
                         if cur_param == 1 or cur_param == 3 or cur_param == 5 then
                             is_top_sec = true
                         elseif cur_param == 2 or cur_param == 4 or cur_param == 6 then
                             is_top_sec = false
                         else
-                            -- Če gre za osnovni Level Meter (0), uporabimo Y-pozicijo samo za določitev, v kateri GR meter se lahko pretvori
+
                             if current_page == 2 or current_page == 3 then
                                 local div_y = 350
                                 for _, e in ipairs(my_elements) do
@@ -8366,14 +8242,14 @@ local function DrawLayoutBuilderToolbox()
                         if is_auto then reaper.ImGui_EndDisabled(ctx) end
                     end
                 else
-                    -- Če na trenutnem zavihku ni nobenega izbranega elementa
+                    -- if no selected element on TAB ...
                     reaper.ImGui_TextDisabled(ctx, "No elements selected on this Tab!")
                 end
             else
                 reaper.ImGui_TextDisabled(ctx, "No elements on this Tab!")
             end
     
-            -- 4. SEKCIJA: NASTAVITVE MREŽE
+            -- GRID SETTINGS
             reaper.ImGui_SeparatorText(ctx, "GRID SETTINGS")
             
             local grid_val = math.floor(reaper.gmem_read(sl_base + 429))
@@ -8390,10 +8266,8 @@ local function DrawLayoutBuilderToolbox()
             reaper.ImGui_TextDisabled(ctx, "Current Grid: " .. new_grid .. " px")
         end
     end    
-    -- ENKRATNI ZAKLJUČEK OKNA
     reaper.ImGui_End(ctx)
     
-    -- ENKRATNO ČIŠČENJE STILOV (14 barv in 4 variabl-e)
     reaper.ImGui_PopStyleColor(ctx, 14)
     reaper.ImGui_PopStyleVar(ctx, 4)
 end
@@ -8410,25 +8284,25 @@ function Run()
     local tb_ok, tb_err = xpcall(DrawLayoutBuilderToolbox, debug.traceback)
     
     if not tb_ok then
-        -- 1. Varovalka: Kodo izvedemo SAMO ENKRAT
+
         if not __builder_error_logged then
             __builder_error_logged = true
             
             local err_msg = tostring(tb_err)
             local log_path = reaper.GetResourcePath() .. "/StripLink_BugLog.txt"
             
-            -- Poskusimo zapisati na disk
+            -- Try writing to disk
             local f = io.open(log_path, "a")
             if f then 
                 f:write(os.date() .. " - CRASH: " .. err_msg .. "\n")
                 f:close() 
             else
-                -- Če Linux blokira pisanje na disk, vržemo klasično pojavno okno SAMO ENKRAT!
-                reaper.MB("StripLink Builder Error:\n\n" .. err_msg .. "\n\nProsim, naredite posnetek zaslona tega okna in ga pošljite razvijalcu.", "StripLink: Debug Info", 0)
+                -- If Linux blocks writing show classic window (ONCE)!
+                reaper.MB("StripLink Builder Error:\n\n" .. err_msg .. "\n\nPlease send the contend of this window to the developer.", "StripLink: Debug Info", 0)
             end
         end
         
-        -- 2. Varno ugasnemo Builder v GMEM-u
+        -- savely close Builder in GMEM-u
         builder_state.open = false
         if PROJECT_BASE then
             local current_slot = math.floor(reaper.gmem_read(PROJECT_BASE + 8))
@@ -8477,7 +8351,6 @@ function Run()
         reaper.ShowConsoleMsg("\n=== STRIPLINK MANAGE ERROR ===\n" .. tostring(man_err) .. "\n==============================\n")
     end
     
-    -- ===== ZAMAKNJENO IZVAJANJE NALOG (ReaImGui Fix) =====
     if #pending_os_tasks > 0 and not popup_state.is_visible then
         if delay_frames > 0 then
             delay_frames = delay_frames - 1
@@ -8490,7 +8363,6 @@ function Run()
     else
         delay_frames = 2 
     end
-    -- =====================================================
     
     if open then
         reaper.defer(Run)

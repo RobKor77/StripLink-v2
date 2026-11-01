@@ -2,7 +2,7 @@
 // ============================================================================
 // StripLink Module v2
 // Developer: Wormhole Labs
-// Version: 2.0.2
+// Version: 2.0.3
 //
 // License & Copyright Information (Freeware):
 // StripLink is provided as freeware. You are fully permitted to use and 
@@ -687,7 +687,7 @@ function slim_horizontal_meter(xIn, yIn)
 
           // Define collision area for the tooltip
           this.rectIn(xIn, yIn, wIn, hIn);
-          // Ročna detekcija, ki obide blokado headerja
+
           is_over = (!gmem[p_base + 206]) && 
                     (mouse_x > xIn && mouse_x < xIn + wIn && 
                      mouse_y > yIn && mouse_y < yIn + hIn);
@@ -1181,7 +1181,6 @@ function vertical_gr_meter(el_ptr, xIn, yIn, meter_num, wIn, hIn)
               gfx_getimgdim(66, img_w, img_h);
               src_fill_h = scale_val * img_h;
               
-              // Risanje vedno od spodaj navzgor
               fixed_y_start = floor(yIn + heightIn) - fixed_fill_h;
               src_y_start   = img_h - src_fill_h;
 
@@ -1283,10 +1282,10 @@ function analog_gr_meter(el_ptr, xIn, yIn, meter_num, wIn, hIn)
      ((is_track_selected > 0 || global_meter_mode == 1) && slider2 > 0 && builder_mode_global == 0) ? (
           (meter_num == 1) ? (
               addr_gr = local_base + 320;
-              engine_mode = gmem[local_base + 328]; // PREBEREMO NAČIN (DYN 1)
+              engine_mode = gmem[local_base + 328]; // read mode DYN 1
           ) : (
               addr_gr = local_base + 322;
-              engine_mode = gmem[local_base + 329]; // PREBEREMO NAČIN (DYN 2)
+              engine_mode = gmem[local_base + 329]; // read mode DYN 2
           );
 
           gr_db = gmem[addr_gr];
@@ -1960,7 +1959,6 @@ instance (widthIn, heightIn, init_done, last_click_time)
 
 
      // DRAW HOVER
-
      (is_over && was_dragging == 0) ? (
        gfx_set(1, 1, 1, 0.15 * g_sec_a);
        gfx_circle(xIn, yIn, 9 * UI_EFF_SCALE, 1);
@@ -3195,7 +3193,7 @@ is_reading ? ovr_loaded_from_disk = 1;
 //....................................................................
 
 
-@gfx 125 635 //635(analog VU)...595(slim VU), defined by lua
+@gfx 125 680 //635(analog VU)...595(slim VU), defined by lua
 
 
 
@@ -3386,9 +3384,13 @@ slim_target_h = UI_W * slim_ratio;
 vu_y_offset_base = (global_vu_style == 1) ? floor(slim_target_h - (70 * UI_EFF_SCALE)) : 
                    (global_vu_style == 2) ? floor(-(70 * UI_EFF_SCALE)) : 0;
 
-// Read Panel Size from GMEM
-inst_panel_h = gmem[base + 426];
-(inst_panel_h <= 0) ? inst_panel_h = 635; // Fallback
+// Read Panel Size from GMEM (prioritize GMEM if valid, else use serialized/fallback)
+(gmem[base + 426] > 0) ? (
+    inst_panel_h = gmem[base + 426];
+) : (
+    (inst_panel_h <= 0) ? inst_panel_h = 635; // Fallback for brand new instances
+    gmem[base + 426] = inst_panel_h;          // Push serialized height back to GMEM for Lua
+);
 
 // use dynamic height
 total_ui_h = inst_panel_h * UI_EFF_SCALE + vu_y_offset_base;
@@ -3397,12 +3399,11 @@ total_ui_h = inst_panel_h * UI_EFF_SCALE + vu_y_offset_base;
 min_scroll = min(0, gfx_h - total_ui_h);
 (min_scroll > -2) ? min_scroll = 0; // tolerance
 
-// Če uporabnik trenutno ne vleče z miško, preberi skupni scroll iz gmem
 (!scroll_active) ? (
     new_scroll_y = max(min_scroll, min(0, gmem[p_base + 212]));
     (new_scroll_y != user_scroll_y) ? (
         user_scroll_y = new_scroll_y;
-        force_text_recalc = 1; // Prisilno preračuna pozicije statičnih oznak ob premiku
+        force_text_recalc = 1;
     );
 );
 
@@ -4023,7 +4024,7 @@ while (i < ui_element_count) (
             );
         );
         
-        // Draw lements  ....................
+        // Draw elements  ....................
         sl_idx    = get_sl_idx(el_param);
         addr_v    = base + 10 + el_param; 
         addr_lock = base + 1;             
@@ -4125,7 +4126,7 @@ while (i < ui_element_count) (
         );
         
         el_type == 9 ? (
-            // --- AUTO GAIN POWER (Type 9) ---
+            // AUTO GAIN POWER (Type 9)
             addr_ag   = base + 78;
             addr_hold = base + 79;
             ag_on     = gmem[addr_ag];
@@ -4414,7 +4415,6 @@ is_over_menu = (!gmem[p_base + 206]) && (mouse_x >= menu_icon_x && mouse_x <= me
 // MAPPING ................................................................................
 (rightMouse && !lastRightMouse && !g_consumed && current_page != 0 && mouse_y > (100 * UI_EFF_SCALE + vu_y_offset_base)) ? (
 
-  // Vzamemo mejo, ki smo jo ulovili pri izrisu
   split_y = global_split_y;
 
   // if no divider in Builder (or for static jsfx) use old hardcoded fallback
