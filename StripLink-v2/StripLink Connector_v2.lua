@@ -2,7 +2,7 @@
 -- ================================================================================
 -- StripLink Connector v2
 -- Developer: Wormhole Labs
--- Version: 2.0.2
+-- Version: 2.0.4
 -- License & Copyright Information (Freeware):
 -- StripLink is provided as freeware. You are fully permitted to use and 
 -- modify this software for your personal workflow. However, it is strictly 
@@ -1404,13 +1404,24 @@ function LoadMapping(track, fx_idx, page_name, section_hash_chain, silent, sub_s
                 local final_fx_idx = rel_to_fx_idx[rel_hash_idx]
                 
                 if final_fx_idx then
-                    local _, native_p_name = reaper.TrackFX_GetParamName(track, final_fx_idx, p_num, "")
-                    local final_p_name = (c_name and c_name ~= "") and c_name or native_p_name:gsub(":", "-")
-                    local target_guid = reaper.TrackFX_GetFXGUID(track, final_fx_idx)
-                    local current_fx_val = reaper.TrackFX_GetParamNormalized(track, final_fx_idx, p_num)
-                    local default_val_str = (c_def and c_def ~= "") and tostring(c_def):gsub(",", ".") or format_float(current_fx_val, 4)
-                    
-                    local val = table.concat({target_guid, 0, final_fx_idx, p_num, final_p_name, tostring(curve_val):gsub(",", "."), reaper.GetTrackGUID(track), default_val_str}, ":")                
+                   local _, native_p_name = reaper.TrackFX_GetParamName(track, final_fx_idx, p_num, "")
+                   local final_p_name = (c_name and c_name ~= "") and c_name or native_p_name:gsub(":", "-")
+                   local target_guid = reaper.TrackFX_GetFXGUID(track, final_fx_idx)
+                   local current_fx_val = reaper.TrackFX_GetParamNormalized(track, final_fx_idx, p_num)
+                   local default_val_str = (c_def and c_def ~= "") and tostring(c_def):gsub(",", ".") or format_float(current_fx_val, 4)
+                   
+                   local current_raw = reaper.TrackFX_GetParam(track, final_fx_idx, p_num)
+                   reaper.TrackFX_SetParamNormalized(track, final_fx_idx, p_num, 0.5)
+                   local test_raw, minv, maxv = reaper.TrackFX_GetParam(track, final_fx_idx, p_num)
+                   reaper.TrackFX_SetParam(track, final_fx_idx, p_num, current_raw)
+                   
+                   local is_linear = "0"
+                   if math.abs(minv) < 0.0001 and math.abs(maxv - 1.0) < 0.0001 and math.abs(test_raw - 0.5) < 0.001 then
+                       is_linear = "1"
+                   end
+                   
+                   local val = table.concat({target_guid, 0, final_fx_idx, p_num, final_p_name, tostring(curve_val):gsub(",", "."), reaper.GetTrackGUID(track), default_val_str, is_linear}, ":")
+                                       
                     reaper.SetProjExtState(0, NS, guid .. ":" .. k_idx, val)
                     
                     if not mapping_cache[slot] then mapping_cache[slot] = {} end
@@ -1907,6 +1918,7 @@ local function UpdateLink(slot, caller_guid, should_poll, track, fx_idx, just_mo
                     local _, native_param_name = reaper.TrackFX_GetParamName(target_track, actual_fx_idx, p_idx, "")
                     local is_bypass = native_param_name:lower():find("bypass") ~= nil
                     local p = tonumber((tostring(parts[6]):gsub(",", "."))) or 1.0
+                    local is_linear = tonumber(parts[9]) or 0 -- NAŠA ZASTAVICA
                     
                     local current_gmem_val = reaper.gmem_read(addr_val)
                     local mem_key = caller_guid .. ":" .. i
@@ -1933,9 +1945,10 @@ local function UpdateLink(slot, caller_guid, should_poll, track, fx_idx, just_mo
                         
                         reaper.TrackFX_SetParamNormalized(target_track, actual_fx_idx, p_idx, target_val)
                         
-                        -- Read raw val and send it back to wake unresponsive VST3s
-                        local raw_v = reaper.TrackFX_GetParam(target_track, actual_fx_idx, p_idx)
-                        reaper.TrackFX_SetParam(target_track, actual_fx_idx, p_idx, raw_v)
+                        -- VST3 / UAD KICK samo če smo dokazali linearnost
+                        if is_linear == 1 then
+                            reaper.TrackFX_SetParam(target_track, actual_fx_idx, p_idx, target_val)
+                        end
                         
                         expected_vst_values[mem_key] = reaper.TrackFX_GetParamNormalized(target_track, actual_fx_idx, p_idx)
                         
@@ -1996,8 +2009,12 @@ local function UpdateLink(slot, caller_guid, should_poll, track, fx_idx, just_mo
                                                         
                                                         reaper.TrackFX_SetParamNormalized(o_tr, o_idx, o_p, final_vst_v)
                                                         
-                                                        -- DODANO 2: Zapišemo pričakovano vrednost Slave-a, da se zanka ne ponovi!
-                                                        expected_vst_values[other_fx.guid .. ":" .. j] = reaper.TrackFX_GetParamNormalized(o_tr, o_idx, o_p)
+                                                        local o_is_linear = tonumber(o_parts[9]) or 0
+                                                        if o_is_linear == 1 then
+                                                            reaper.TrackFX_SetParam(o_tr, o_idx, o_p, final_vst_v)
+                                                        end
+                                                        
+                                                        expected_vst_values[other_fx.guid .. ":" .. j] = final_vst_v
                                                         
                                                         local _, o_buf = reaper.TrackFX_GetFormattedParamValue(o_tr, o_idx, o_p, "")
                                                         local o_disp = 0
@@ -2096,10 +2113,14 @@ local function UpdateLink(slot, caller_guid, should_poll, track, fx_idx, just_mo
                                                              local final_vst_v = target_is_rev and (1.0 - t_base_v) or t_base_v
                                                              
                                                              reaper.TrackFX_SetParamNormalized(o_tr, o_idx, o_p, final_vst_v)
-                                                             
-                                                             -- AVOID LOOP: write expected automatized slave value
-                                                             expected_vst_values[other_fx.guid .. ":" .. j] = reaper.TrackFX_GetParamNormalized(o_tr, o_idx, o_p)
-                                                             
+                                                            
+                                                             local o_is_linear = tonumber(o_parts[9]) or 0
+                                                             if o_is_linear == 1 then
+                                                                 reaper.TrackFX_SetParam(o_tr, o_idx, o_p, final_vst_v)
+                                                             end
+
+                                                             expected_vst_values[other_fx.guid .. ":" .. j] = final_vst_v
+                                                                                                                               
                                                              local _, o_buf = reaper.TrackFX_GetFormattedParamValue(o_tr, o_idx, o_p, "")
                                                              local o_disp = 0
                                                              if o_buf:match("^%a") then
@@ -2207,11 +2228,20 @@ local function LoadHybridMapping(tr, f_idx, section_name, target_fx_idx, target_
                     
                     local _, native_p_name = reaper.TrackFX_GetParamName(tr, target_fx_idx, p_num, "")
                     local final_p_name = (c_name and c_name ~= "") and c_name or native_p_name:gsub(":", "-")
-                    local current_fx_val = reaper.TrackFX_GetParamNormalized(tr, target_fx_idx, p_num)
-                    local default_val_str = (c_def and c_def ~= "") and tostring(c_def):gsub(",", ".") or format_float(current_fx_val, 4)
-                    
-                    local val = table.concat({t_guid, 0, target_fx_idx, p_num, final_p_name, tostring(curve_val):gsub(",", "."), reaper.GetTrackGUID(tr), default_val_str}, ":")                
-                    
+                   local current_fx_val = reaper.TrackFX_GetParamNormalized(tr, target_fx_idx, p_num)
+                   local default_val_str = (c_def and c_def ~= "") and tostring(c_def):gsub(",", ".") or format_float(current_fx_val, 4)
+                   
+                   local current_raw = reaper.TrackFX_GetParam(tr, target_fx_idx, p_num)
+                   reaper.TrackFX_SetParamNormalized(tr, target_fx_idx, p_num, 0.5)
+                   local test_raw, minv, maxv = reaper.TrackFX_GetParam(tr, target_fx_idx, p_num)
+                   reaper.TrackFX_SetParam(tr, target_fx_idx, p_num, current_raw)
+                   
+                   local is_linear = "0"
+                   if math.abs(minv) < 0.0001 and math.abs(maxv - 1.0) < 0.0001 and math.abs(test_raw - 0.5) < 0.001 then
+                       is_linear = "1"
+                   end
+                   
+                   local val = table.concat({t_guid, 0, target_fx_idx, p_num, final_p_name, tostring(curve_val):gsub(",", "."), reaper.GetTrackGUID(tr), default_val_str, is_linear}, ":")
                     reaper.SetProjExtState(0, NS, c_guid .. ":" .. btn_num, val)
                     if not mapping_cache[sl] then mapping_cache[sl] = {} end
                     mapping_cache[sl][btn_num] = val
@@ -2743,7 +2773,17 @@ local function RestorePluginStructure(track, fx_idx, slot)
                     def_val_str = format_float(current_fx_val, 4)
                 end
                 
-                local val = table.concat({t_guid, 0, t_idx, p_num, custom_name, tostring(curve_val):gsub(",", "."), tr_guid, def_val_str}, ":")
+                local current_raw = reaper.TrackFX_GetParam(track, t_idx, p_num)
+                reaper.TrackFX_SetParamNormalized(track, t_idx, p_num, 0.5)
+                local test_raw, minv, maxv = reaper.TrackFX_GetParam(track, t_idx, p_num)
+                reaper.TrackFX_SetParam(track, t_idx, p_num, current_raw)
+                
+                local is_linear = "0"
+                if math.abs(minv) < 0.0001 and math.abs(maxv - 1.0) < 0.0001 and math.abs(test_raw - 0.5) < 0.001 then
+                    is_linear = "1"
+                end
+                
+                local val = table.concat({t_guid, 0, t_idx, p_num, custom_name, tostring(curve_val):gsub(",", "."), tr_guid, def_val_str, is_linear}, ":")
                 
                 reaper.SetProjExtState(0, NS, striplink_guid .. ":" .. b, val)
                 if not mapping_cache[slot] then mapping_cache[slot] = {} end
@@ -4804,9 +4844,10 @@ function Main()
                             if not default_v then default_v = 0.5 end 
                             reaper.TrackFX_SetParamNormalized(target_track, target_fx_idx, p_idx, default_v)
                             
-                            -- VST3 KICK HACK for dbl click
-                            local raw_def = reaper.TrackFX_GetParam(target_track, target_fx_idx, p_idx)
-                            reaper.TrackFX_SetParam(target_track, target_fx_idx, p_idx, raw_def)
+                            local is_linear = tonumber(parts[9]) or 0
+                            if is_linear == 1 then
+                                reaper.TrackFX_SetParam(target_track, target_fx_idx, p_idx, default_v)
+                            end
                         end
                     end
                     reaper.gmem_write(PROJECT_BASE + 7, 0)
@@ -5202,7 +5243,21 @@ local function ExecuteCmd1(choice, data)
                 pn = pn:gsub(":", "-") 
                 
                 local current_fx_val = reaper.TrackFX_GetParamNormalized(target_track, fx_num, p_num)
-                local val = table.concat({target_guid, 0, fx_num, p_num, pn, "1.0", reaper.GetTrackGUID(target_track), format_float(current_fx_val, 4)}, ":")
+                                
+                -- LINEAR PRIFILING
+                local current_raw = reaper.TrackFX_GetParam(target_track, fx_num, p_num)
+                reaper.TrackFX_SetParamNormalized(target_track, fx_num, p_num, 0.5)
+                local test_raw, minv, maxv = reaper.TrackFX_GetParam(target_track, fx_num, p_num)
+                reaper.TrackFX_SetParam(target_track, fx_num, p_num, current_raw) -- Takojšnja povrnitev!
+                
+                local is_linear = "0"
+                if math.abs(minv) < 0.0001 and math.abs(maxv - 1.0) < 0.0001 and math.abs(test_raw - 0.5) < 0.001 then
+                    is_linear = "1"
+                end
+                
+                -- added FLAG for linearity check
+                local val = table.concat({target_guid, 0, fx_num, p_num, pn, "1.0", reaper.GetTrackGUID(target_track), format_float(current_fx_val, 4), is_linear}, ":")
+                                
                 reaper.SetProjExtState(0, NS, key, val)
                 if not mapping_cache[sl] then mapping_cache[sl] = {} end
                 mapping_cache[sl][btn_idx-1] = val
@@ -6008,7 +6063,13 @@ local function ExecuteCmd5(choice, data)
                      
                      local final_v = is_byp and (1 - master_val) or o_target
                      local target_track = parts[7] and reaper.BR_GetMediaTrackByGUID(0, parts[7]) or tr
+                      
                      reaper.TrackFX_SetParamNormalized(target_track, target_fx_idx, p_idx, final_v)
+                      
+                     local is_linear = tonumber(parts[9]) or 0
+                     if is_linear == 1 then
+                        reaper.TrackFX_SetParam(target_track, target_fx_idx, p_idx, final_v)
+                     end
                  end
             end
         end
@@ -8370,5 +8431,3 @@ function Run()
 end
 
 Run()
-
-

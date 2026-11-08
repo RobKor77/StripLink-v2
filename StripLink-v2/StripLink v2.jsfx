@@ -1,11 +1,8 @@
 // @description StripLink Series
 // @author Wormhole Labs
-// @version 2.0.3
+// @version 2.0.4
 // @changelog
-//   - Removed constraint of elements' Y coordinate to section, because of saving issues with different/conflicting layouts.
-//   - Fixed Hybrid save function.
-//   - Fixed panel height loading upon project open.
-//   - Minor corrections on some UI elements - switches.
+//   - Fixed issue with UAD plugins not mirroring the Striplink's settings while in play mode.
 // @provides
 //   [effect nomain] StripLink BUS v2.jsfx
 //   [effect nomain] StripLink Module v2.jsfx
@@ -1463,6 +1460,7 @@ local(sl_idx, addr_v, addr_l, addr_n, addr_d, addr_s, cur_seq, cur_name_code, ra
             actual_v = floor(valOld * div_val + 0.5) / div_val;
             slider(sl_idx) = actual_v; gmem[addr_v] = actual_v;
         ) : ( slider(sl_idx) = valOld; gmem[addr_v] = valOld; );
+        sl_idx > 0 ? slider_automate(2^(sl_idx-1));
       );
     ) : ( dragging = 0; gmem[addr_l] = 0; );
 
@@ -1561,7 +1559,9 @@ local(sl_idx, addr_v, addr_l, addr_n, addr_d, addr_s, cur_seq, cur_name_code, ra
       step = (div_val > 0) ? (1 / div_val) : (ctrlDown ? (0.005 * global_mouse_std * fine_mult) : (0.02 * global_mouse_std));
       new_val = slider(sl_idx) + (mouse_wheel > 0 ? step : -step);
       slider(sl_idx) = max(0, min(1, new_val));
-      gmem[addr_v] = slider(sl_idx); gmem[addr_l] = btn_idx; mouse_wheel = 0; g_consumed = 1; 
+      gmem[addr_v] = slider(sl_idx);
+      sl_idx > 0 ? slider_automate(2^(sl_idx-1));
+      gmem[addr_l] = btn_idx; mouse_wheel = 0; g_consumed = 1; 
   );
 
   (is_over && !lastLeftMouse) ? (
@@ -1594,6 +1594,7 @@ local(sl_idx, addr_v, addr_l, addr_n, addr_d, addr_s, cur_seq, cur_name_code, ra
             actual_v = floor(valOld * div_val + 0.5) / div_val;
             slider(sl_idx) = actual_v; gmem[addr_v] = actual_v;
         ) : ( slider(sl_idx) = valOld; gmem[addr_v] = valOld; );
+        sl_idx > 0 ? slider_automate(2^(sl_idx-1));
       );
     ) : ( dragging = 0; gmem[addr_l] = 0; );
 
@@ -1607,10 +1608,10 @@ local(sl_idx, addr_v, addr_l, addr_n, addr_d, addr_s, cur_seq, cur_name_code, ra
   gfx_a = ((dragging || is_over) ? 1.0 : (is_linked ? 1.0 : 0.3)) * g_sec_a;
   gfx_blit(img_idx, 1, 0, 0, kframe * p_size, p_size, p_size, xIn, yIn, widthIn, heightIn);
 
-  // Additive Blending Hover za posvetlitev ob prehodu miške
+  // Additive Blending Hover
   ((is_over && (was_dragging == 0 || !leftMouse)) || dragging) ? (
-      gfx_mode = 1; // Vklopi Additive način (seštevanje barv)
-      gfx_a = 0.25 * g_sec_a; // Moč posvetlitve
+      gfx_mode = 1; 
+      gfx_a = 0.25 * g_sec_a; // hover intensity
       gfx_blit(img_idx, 1, 0, 0, kframe * p_size, p_size, p_size, xIn, yIn, widthIn, heightIn);
       gfx_mode = 0; // reset!
   );
@@ -1663,8 +1664,9 @@ instance(dragging, xOld, valOld, is_over, tw, th, window_peak, display_peak, fra
  
      // Scroll
      (is_over && mouse_wheel != 0) ? (
-         step = ctrlDown ? (0.1 * global_mouse_std * fine_mult) : (0.5 * global_mouse_std); 
+         step = ctrlDown ? (0.1 * global_mouse_std * fine_mult) : (0.5 * global_mouse_std);
          slider10 = max(-12, min(12, slider10 + (mouse_wheel > 0 ? step : -step)));
+         slider_automate(2^9);
          mouse_wheel = 0;
          g_consumed = 1;
      );
@@ -1687,6 +1689,7 @@ instance(dragging, xOld, valOld, is_over, tw, th, window_peak, display_peak, fra
                  db_per_pixel = 24 / travel_w;
                  sens = ctrlDown ? (db_per_pixel * global_mouse_fine * global_mouse_std) : (db_per_pixel * global_mouse_std); 
                  slider10 = max(-12, min(12, valOld + mouse_diff * sens));
+                 slider_automate(2^9);
                  xOld = mouse_x;
                  valOld = slider10;
              );
@@ -1736,7 +1739,6 @@ instance(dragging, xOld, valOld, is_over, tw, th, window_peak, display_peak, fra
 
 
     // PEAK INDICATOR (Thin red line)
-
     peak_db = (in_meter > 0.00001) ? 20 * log10(in_meter) : -60;
     peak_scale = max(0, min(1, (peak_db + min_db) / min_db));
     

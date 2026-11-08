@@ -1,7 +1,7 @@
 // @noindex
 // ============================================================================
 // StripLink BUS v2
-// Version: 2.0.3
+// Version: 2.0.4
 // Developer: Wormhole Labs
 //
 // License & Copyright Information (Freeware):
@@ -1544,6 +1544,7 @@ local(sl_idx, addr_v, addr_l, addr_n, addr_d, addr_s, cur_seq, cur_name_code, ra
             slider(sl_idx) = actual_v; gmem[addr_v] = actual_v;
         ) : ( slider(sl_idx) = valOld; gmem[addr_v] = valOld; );
       );
+      sl_idx > 0 ? slider_automate(2^(sl_idx-1));
     ) : ( dragging = 0; gmem[addr_l] = 0; );
   ) : (sl_idx > 0 && slot_valid == 1) ? ( slider(sl_idx) = gmem[addr_v]; slider_last[sl_idx] = gmem[addr_v]; );
 
@@ -1641,7 +1642,9 @@ local(sl_idx, addr_v, addr_l, addr_n, addr_d, addr_s, cur_seq, cur_name_code, ra
       step = (div_val > 0) ? (1 / div_val) : 0.05;
       new_val = slider(sl_idx) + (mouse_wheel > 0 ? step : -step);
       slider(sl_idx) = max(0, min(1, new_val));
-      gmem[addr_v] = slider(sl_idx); gmem[addr_l] = btn_idx; mouse_wheel = 0; g_consumed = 1; 
+      gmem[addr_v] = slider(sl_idx);
+      sl_idx > 0 ? slider_automate(2^(sl_idx-1));
+      gmem[addr_l] = btn_idx; mouse_wheel = 0; g_consumed = 1; 
   );
 
   (is_over && !lastLeftMouse) ? (
@@ -1675,6 +1678,7 @@ local(sl_idx, addr_v, addr_l, addr_n, addr_d, addr_s, cur_seq, cur_name_code, ra
             slider(sl_idx) = actual_v; gmem[addr_v] = actual_v;
         ) : ( slider(sl_idx) = valOld; gmem[addr_v] = valOld; );
       );
+      sl_idx > 0 ? slider_automate(2^(sl_idx-1));
     ) : ( dragging = 0; gmem[addr_l] = 0; );
   ) : (sl_idx > 0 && slot_valid == 1) ? ( slider(sl_idx) = gmem[addr_v]; slider_last[sl_idx] = gmem[addr_v]; );
 
@@ -1743,6 +1747,7 @@ instance(dragging, xOld, valOld, is_over, tw, th, window_peak, display_peak, fra
     (is_over && mouse_wheel != 0) ? (
         step = ctrlDown ? (0.1 * global_mouse_std * fine_mult) : (0.5 * global_mouse_std); 
         slider10 = max(-12, min(12, slider10 + (mouse_wheel > 0 ? step : -step)));
+        slider_automate(2^9);
         mouse_wheel = 0;
         g_consumed = 1;
     );
@@ -1755,6 +1760,7 @@ instance(dragging, xOld, valOld, is_over, tw, th, window_peak, display_peak, fra
                 db_per_pixel = 24 / travel_w;
                 sens = ctrlDown ? (db_per_pixel * global_mouse_fine * global_mouse_std) : (db_per_pixel * global_mouse_std); 
                 slider10 = max(-12, min(12, valOld + mouse_diff * sens));
+                slider_automate(2^9);
                 xOld = mouse_x;
                 valOld = slider10;
             );

@@ -1,7 +1,7 @@
 // @noindex
 // ============================================================================
 // StripLink UC1 v2
-// Version: 2.0.3
+// Version: 2.0.4
 // Developer: Wormhole Labs
 //
 // License & Copyright Information (Freeware):
@@ -1439,6 +1439,7 @@ local(sl_idx, addr_v, addr_l, addr_n, addr_d, addr_s, cur_seq, cur_name_code, ra
             slider(sl_idx) = actual_v; gmem[addr_v] = actual_v;
         ) : ( slider(sl_idx) = valOld; gmem[addr_v] = valOld; );
       );
+      sl_idx > 0 ? slider_automate(2^(sl_idx-1));
     ) : ( dragging = 0; gmem[addr_l] = 0; );
   ) : (sl_idx > 0 && slot_valid == 1) ? ( slider(sl_idx) = gmem[addr_v]; slider_last[sl_idx] = gmem[addr_v]; );
 
@@ -1537,6 +1538,7 @@ local(sl_idx, addr_v, addr_l, addr_n, addr_d, addr_s, cur_seq, cur_name_code, ra
       new_val = max(0, min(1, slider(sl_idx) + (mouse_wheel > 0 ? step : -step)));
       slider(sl_idx) = new_val;
       gmem[addr_v] = new_val;
+      sl_idx > 0 ? slider_automate(2^(sl_idx-1));
       gmem[addr_l] = btn_idx; mouse_wheel = 0; g_consumed = 1; 
   );
 
@@ -1571,6 +1573,7 @@ local(sl_idx, addr_v, addr_l, addr_n, addr_d, addr_s, cur_seq, cur_name_code, ra
             slider(sl_idx) = actual_v; gmem[addr_v] = actual_v;
         ) : ( slider(sl_idx) = valOld; gmem[addr_v] = valOld; );
       );
+      sl_idx > 0 ? slider_automate(2^(sl_idx-1));
     ) : ( dragging = 0; gmem[addr_l] = 0; );
   ) : (sl_idx > 0 && slot_valid == 1) ? ( slider(sl_idx) = gmem[addr_v]; slider_last[sl_idx] = gmem[addr_v]; );
 

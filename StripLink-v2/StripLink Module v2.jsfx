@@ -2,7 +2,7 @@
 // ============================================================================
 // StripLink Module v2
 // Developer: Wormhole Labs
-// Version: 2.0.3
+// Version: 2.0.4
 //
 // License & Copyright Information (Freeware):
 // StripLink is provided as freeware. You are fully permitted to use and 
@@ -2102,6 +2102,7 @@ local(state_ptr, dragging, yOld, valOld, last_click_time, l_seq, init_done, step
           step = (div_val > 0) ? (1 / div_val) : (ctrlDown ? (0.001 * global_mouse_std * fine_mult) : (0.01 * global_mouse_std));
           slider(sl_idx) = max(0, min(1, slider(sl_idx) + (mouse_wheel > 0 ? step : -step)));
           gmem[addr_v] = slider(sl_idx); gmem[addr_l] = btn_idx;
+          sl_idx > 0 ? slider_automate(2^(sl_idx-1));
           mouse_wheel = 0; g_consumed = 1;
       );
 
@@ -2137,6 +2138,7 @@ local(state_ptr, dragging, yOld, valOld, last_click_time, l_seq, init_done, step
                 ) : (
                     slider(sl_idx) = valOld; gmem[addr_v] = valOld;
                 );
+                sl_idx > 0 ? slider_automate(2^(sl_idx-1)); 
             );
         ) : ( dragging = 0; gmem[addr_l] = 0; );
       );
@@ -2616,6 +2618,7 @@ local(local_scale, h_meter, y_slider, h_slider_track, h_slider_grip, w_slider_gr
             //step = ctrlDown ? 0.1 : 0.5;
             step = ctrlDown ? (0.1 * global_mouse_std * fine_mult) : (0.5 * global_mouse_std);
             slider10 = max(-12, min(12, slider10 + (mouse_wheel > 0 ? step : -step)));
+            slider_automate(2^9);
             mouse_wheel = 0;
             g_consumed = 1;
         );
@@ -2639,6 +2642,7 @@ local(local_scale, h_meter, y_slider, h_slider_track, h_slider_grip, w_slider_gr
                     //sens = ctrlDown ? (db_per_pixel * 0.1) : db_per_pixel;
                     sens = ctrlDown ? (db_per_pixel * global_mouse_fine * global_mouse_std) : (db_per_pixel * global_mouse_std);
                     slider10 = max(-12, min(12, valOld + mouse_diff * sens));
+                    slider_automate(2^9);
                     xOld = mouse_x;
                     valOld = slider10;
                 );
