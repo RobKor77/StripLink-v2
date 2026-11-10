@@ -2,7 +2,7 @@
 -- ================================================================================
 -- StripLink Connector v2
 -- Developer: Wormhole Labs
--- Version: 2.0.4
+-- Version: 2.0.5
 -- License & Copyright Information (Freeware):
 -- StripLink is provided as freeware. You are fully permitted to use and 
 -- modify this software for your personal workflow. However, it is strictly 
@@ -2995,6 +2995,134 @@ local function RebuildLayoutFromJSFX(slot_idx)
     return true
 end
 
+-- ============================================================================
+-- DYNAMIC JSFX RESIZER (FOLDER SCANNER HACK WITH ATOMIC WRITE)
+-- ============================================================================
+local function UpdateAllJSFXWindowSizes(style_val)
+    local modified_any = false
+    local i = 0
+    
+    -- Scan all files in the directory where this Lua script is located
+    while true do
+        local filename = reaper.EnumerateFiles(script_path, i)
+        if not filename then break end -- End of file list
+        
+        local lower_name = filename:lower()
+        
+        -- Check if file starts with "striplink" AND IS NOT aggregator, lua, ini or png
+        if lower_name:match("^striplink") and not lower_name:find("aggregator") 
+           and not lower_name:match("%.lua$") and not lower_name:match("%.ini$") 
+           and not lower_name:match("%.png$") then
+            
+            local is_bus = lower_name:find("bus") ~= nil
+            local is_module = lower_name:find("module") ~= nil
+            
+            -- Set target dimensions based on plugin type and selected style
+            local target_w = is_bus and 170 or 125
+            local target_h = 0
+            
+            if is_module then
+                local base_name = filename:gsub("%.[jJ][sS][fF][xX]$", ""):gsub("%s+", "_")
+                local base_h = tonumber(reaper.GetExtState(NS, "PANNEL_HEIGHT_" .. base_name)) or 635
+                
+                if style_val == 1 then 
+                    target_h = base_h - 40  -- Slim VU
+                elseif style_val == 2 then 
+                    target_h = base_h - 70  -- Hidden VU
+                else 
+                    target_h = base_h       -- Classic VU
+                end
+            elseif is_bus then
+                if style_val == 1 then target_h = 646 
+                elseif style_val == 2 then target_h = 615
+                else target_h = 689 end
+            else
+                if style_val == 1 then target_h = 595 
+                elseif style_val == 2 then target_h = 565
+                else target_h = 635 end
+            end
+            
+            local filepath = script_path .. filename
+            local f = io.open(filepath, "r")
+            
+            if f then
+                local content = f:read("*all")
+                f:close()
+                
+                -- Regex pattern to find @gfx followed by numbers
+                local search_pattern = "@gfx%s+%d+%s+%d+"
+                local replacement = string.format("@gfx %d %d", target_w, target_h)
+                
+                local new_content, num_replacements = content:gsub(search_pattern, replacement)
+                
+                -- Save only if replacement was successful (using ATOMIC WRITE)
+                if num_replacements > 0 then
+                    local tmp_path = filepath .. ".tmp"
+                    local fw = io.open(tmp_path, "w")
+                    if fw then
+                        fw:write(new_content)
+                        fw:close()
+                        
+                        -- Atomic File Swap (safe for Linux/macOS to prevent 0-byte file crashes)
+                        if package.config:sub(1,1) == "\\" then
+                            os.remove(filepath)
+                        end
+                        os.rename(tmp_path, filepath)
+                        
+                        modified_any = true
+                    else
+                        table.insert(pending_os_tasks, function()
+                            reaper.MB("Critical error during UI resize!\n\nCould not write to temporary file. Please check folder permissions.", "StripLink Error", 0)
+                        end)
+                    end
+                end
+            end
+        end
+        
+        i = i + 1
+    end
+    
+    return modified_any
+end
+
+-- ============================================================================
+-- DYNAMIC PANNEL RESIZER (JSFX)
+-- ============================================================================
+local function ApplyPANNELHeightToJSFX(jsfx_name, target_h)
+    local filepath = script_path .. jsfx_name
+    local f = io.open(filepath, "r")
+    if not f then
+        filepath = script_path .. jsfx_name .. ".jsfx"
+        f = io.open(filepath, "r")
+    end
+    if not f then return false end
+    
+    local content = f:read("*all")
+    f:close()
+    
+    -- recognize pattern e.g."@gfx 125 635" and change just the value
+    local search_pattern = "(@gfx%s+%d+%s+)%d+"
+    local replacement = "%1" .. tostring(target_h)
+    
+    local new_content, num_replacements = content:gsub(search_pattern, replacement)
+    
+    if num_replacements > 0 then
+        local tmp_path = filepath .. ".tmp"
+        local fw = io.open(tmp_path, "w")
+        if fw then
+            fw:write(new_content)
+            fw:close()
+            -- automatic file overwrite
+            os.remove(filepath)
+            os.rename(tmp_path, filepath)
+            return true
+        end
+    end
+    return false
+end
+
+
+
 -- =========================================================================
 -- MANAGE ALL 
 -- =========================================================================
@@ -3128,6 +3256,7 @@ function ManageAll()
         reaper.gmem_write(PROJECT_BASE + 211, tonumber(ext_m_f) or 0.1)
                 
         local found_plugins = {}
+        local recompile_jsfx_names = {}
         
         -- =======================================================
         -- DETECT DOUBLE GUIDs(always active)
@@ -3152,7 +3281,7 @@ function ManageAll()
                     local guid = reaper.TrackFX_GetFXGUID(track, fx_idx)
                     
                     -- =======================================================
-                    -- CLENE DETECTION
+                    -- CLONE DETECTION
                     -- =======================================================
                     if seen_guids[guid] then
                         if not warned_clones[guid] then
@@ -3256,6 +3385,28 @@ function ManageAll()
                                 local _, saved_local_page = reaper.GetProjExtState(0, NS, "LOCAL_TAB_" .. guid)
                                 if saved_local_page ~= "" then reaper.gmem_write(PROJECT_BASE + slot * 500 + 290, tonumber(saved_local_page) or 0) end
                                 
+
+                                -- AUTO-PATCHING PANEL HEIGHT
+                                local is_module_plugin = fx_name_str:lower():find("module") ~= nil
+                                if is_module_plugin then
+                                    local safe_jsfx_name = GetBaseJSFXName(track, fx_idx)
+                                    local ext_name = safe_jsfx_name:gsub("%s+", "_")
+                                    local saved_h_str = reaper.GetExtState(NS, "PANNEL_HEIGHT_" .. ext_name)
+                                    local saved_h = tonumber(saved_h_str)
+                                    
+                                    if saved_h and saved_h >= 635 then
+                                        reaper.gmem_write(slot_base + 426, saved_h)
+                                        
+                                        local actual_file_h = GetJSFXHeightFromFile(safe_jsfx_name)
+                                        if actual_file_h ~= saved_h then
+                                            if ApplyPANNELHeightToJSFX(safe_jsfx_name, saved_h) then
+                                                recompile_jsfx_names[safe_jsfx_name] = true -- Zaznamujemo za globalni recompile
+                                            end
+                                        end
+                                    end
+                                end
+                                
+                                
                                 -- AGGRESSIVE ORPHAN CLEANUP
                                 if not HasAnyLinks(guid) then
                                     local sb = PROJECT_BASE + slot * 500
@@ -3297,6 +3448,28 @@ function ManageAll()
         end
         
         active_plugins = found_plugins
+        -- =======================================================
+        -- GLOBAL RECOMPILE (forces Reaper to release cache
+        -- =======================================================
+        if next(recompile_jsfx_names) then
+            reaper.PreventUIRefresh(1)
+            -- 1. Ugasnemo VSE instance hkrati
+            for _, fx in ipairs(active_plugins) do
+                local n = GetBaseJSFXName(fx.tr, fx.idx)
+                if recompile_jsfx_names[n] then
+                    reaper.TrackFX_SetOffline(fx.tr, fx.idx, true)
+                end
+            end
+            -- 2. Prižgemo nazaj (Reaper mora na novo prebrati .jsfx z diska)
+            for _, fx in ipairs(active_plugins) do
+                local n = GetBaseJSFXName(fx.tr, fx.idx)
+                if recompile_jsfx_names[n] then
+                    reaper.TrackFX_SetOffline(fx.tr, fx.idx, false)
+                end
+            end
+            reaper.TrackList_AdjustWindows(true)
+            reaper.PreventUIRefresh(-1)
+        end
 
         -- =======================================================
         -- USER WARNING
@@ -5540,132 +5713,6 @@ local function ExecuteCmd2(choice, data)
     if tr then UpdatePluginStructure(tr, sl, c_guid) end
 end
 
-
--- ============================================================================
--- DYNAMIC JSFX RESIZER (FOLDER SCANNER HACK WITH ATOMIC WRITE)
--- ============================================================================
-local function UpdateAllJSFXWindowSizes(style_val)
-    local modified_any = false
-    local i = 0
-    
-    -- Scan all files in the directory where this Lua script is located
-    while true do
-        local filename = reaper.EnumerateFiles(script_path, i)
-        if not filename then break end -- End of file list
-        
-        local lower_name = filename:lower()
-        
-        -- Check if file starts with "striplink" AND IS NOT aggregator, lua, ini or png
-        if lower_name:match("^striplink") and not lower_name:find("aggregator") 
-           and not lower_name:match("%.lua$") and not lower_name:match("%.ini$") 
-           and not lower_name:match("%.png$") then
-            
-            local is_bus = lower_name:find("bus") ~= nil
-            local is_module = lower_name:find("module") ~= nil
-            
-            -- Set target dimensions based on plugin type and selected style
-            local target_w = is_bus and 170 or 125
-            local target_h = 0
-            
-            if is_module then
-                local base_name = filename:gsub("%.[jJ][sS][fF][xX]$", ""):gsub("%s+", "_")
-                local base_h = tonumber(reaper.GetExtState(NS, "PANNEL_HEIGHT_" .. base_name)) or 635
-                
-                if style_val == 1 then 
-                    target_h = base_h - 40  -- Slim VU
-                elseif style_val == 2 then 
-                    target_h = base_h - 70  -- Hidden VU
-                else 
-                    target_h = base_h       -- Classic VU
-                end
-            elseif is_bus then
-                if style_val == 1 then target_h = 646 
-                elseif style_val == 2 then target_h = 615
-                else target_h = 689 end
-            else
-                if style_val == 1 then target_h = 595 
-                elseif style_val == 2 then target_h = 565
-                else target_h = 635 end
-            end
-            
-            local filepath = script_path .. filename
-            local f = io.open(filepath, "r")
-            
-            if f then
-                local content = f:read("*all")
-                f:close()
-                
-                -- Regex pattern to find @gfx followed by numbers
-                local search_pattern = "@gfx%s+%d+%s+%d+"
-                local replacement = string.format("@gfx %d %d", target_w, target_h)
-                
-                local new_content, num_replacements = content:gsub(search_pattern, replacement)
-                
-                -- Save only if replacement was successful (using ATOMIC WRITE)
-                if num_replacements > 0 then
-                    local tmp_path = filepath .. ".tmp"
-                    local fw = io.open(tmp_path, "w")
-                    if fw then
-                        fw:write(new_content)
-                        fw:close()
-                        
-                        -- Atomic File Swap (safe for Linux/macOS to prevent 0-byte file crashes)
-                        if package.config:sub(1,1) == "\\" then
-                            os.remove(filepath)
-                        end
-                        os.rename(tmp_path, filepath)
-                        
-                        modified_any = true
-                    else
-                        table.insert(pending_os_tasks, function()
-                            reaper.MB("Critical error during UI resize!\n\nCould not write to temporary file. Please check folder permissions.", "StripLink Error", 0)
-                        end)
-                    end
-                end
-            end
-        end
-        
-        i = i + 1
-    end
-    
-    return modified_any
-end
-
--- ============================================================================
--- DYNAMIC PANNEL RESIZER (JSFX)
--- ============================================================================
-local function ApplyPANNELHeightToJSFX(jsfx_name, target_h)
-    local filepath = script_path .. jsfx_name
-    local f = io.open(filepath, "r")
-    if not f then
-        filepath = script_path .. jsfx_name .. ".jsfx"
-        f = io.open(filepath, "r")
-    end
-    if not f then return false end
-    
-    local content = f:read("*all")
-    f:close()
-    
-    -- recognize pattern e.g."@gfx 125 635" and change just the value
-    local search_pattern = "(@gfx%s+%d+%s+)%d+"
-    local replacement = "%1" .. tostring(target_h)
-    
-    local new_content, num_replacements = content:gsub(search_pattern, replacement)
-    
-    if num_replacements > 0 then
-        local tmp_path = filepath .. ".tmp"
-        local fw = io.open(tmp_path, "w")
-        if fw then
-            fw:write(new_content)
-            fw:close()
-            -- automatic file overwrite
-            os.remove(filepath)
-            os.rename(tmp_path, filepath)
-            return true
-        end
-    end
-    return false
-end
 
 local function ExecuteCmd3_Settings(choice, data)
     if choice == 1 then

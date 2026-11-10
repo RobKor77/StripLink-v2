@@ -1,8 +1,8 @@
 // @description StripLink Series
 // @author Wormhole Labs
-// @version 2.0.4
+// @version 2.0.5
 // @changelog
-//   - Fixed issue with UAD plugins not mirroring the Striplink's settings while in play mode.
+//   - Fixed issue with reverting Module height to default on each update. User's previously saved setting is now respected.
 // @provides
 //   [effect nomain] StripLink BUS v2.jsfx
 //   [effect nomain] StripLink Module v2.jsfx
