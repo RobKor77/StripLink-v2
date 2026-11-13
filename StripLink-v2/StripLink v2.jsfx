@@ -1,8 +1,9 @@
 // @description StripLink Series
 // @author Wormhole Labs
-// @version 2.0.5
+// @version 2.0.6
 // @changelog
-//   - Fixed issue with reverting Module height to default on each update. User's previously saved setting is now respected.
+//   - Fixed issue with last touched linking.
+//   - Fixed issue with undo steps.
 // @provides
 //   [effect nomain] StripLink BUS v2.jsfx
 //   [effect nomain] StripLink Module v2.jsfx

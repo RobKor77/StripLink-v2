@@ -2,7 +2,7 @@
 -- ================================================================================
 -- StripLink Connector v2
 -- Developer: Wormhole Labs
--- Version: 2.0.5
+-- Version: 2.0.6
 -- License & Copyright Information (Freeware):
 -- StripLink is provided as freeware. You are fully permitted to use and 
 -- modify this software for your personal workflow. However, it is strictly 
@@ -247,6 +247,7 @@ local throttle_timer = 0
 local global_last_touch_tr   = -2
 local global_last_touch_guid = ""
 local global_last_touch_p    = -1
+local global_last_touch_fx   = -1
 
 -- ============================================================================
 -- IDENTIFICATION AND HASHING (NATIVE LUA)
@@ -1924,6 +1925,8 @@ local function UpdateLink(slot, caller_guid, should_poll, track, fx_idx, just_mo
                     local mem_key = caller_guid .. ":" .. i
                     if not last_gmem_values[mem_key] then last_gmem_values[mem_key] = { val = current_gmem_val, time = 0 } end
                              
+                    local gmem_changed_now = false
+                    
                     if just_moved then
                         -- Plugin changed slots, GMEM is stale. Do NOT trigger a fake tweak!
                         last_gmem_values[mem_key].val = current_gmem_val
@@ -1931,9 +1934,10 @@ local function UpdateLink(slot, caller_guid, should_poll, track, fx_idx, just_mo
                     elseif math.abs(last_gmem_values[mem_key].val - current_gmem_val) > 0.0001 then
                         last_gmem_values[mem_key].val = current_gmem_val
                         last_gmem_values[mem_key].time = reaper.time_precise()
+                        gmem_changed_now = true
                     end
                     local is_immune = (reaper.time_precise() - last_gmem_values[mem_key].time) < 0.5
-
+            
                     if not just_moved and (active_lock == btn_num or is_immune) then
                         local p_abs = math.abs(p)
                         local is_rev = (p < 0)
@@ -1943,14 +1947,16 @@ local function UpdateLink(slot, caller_guid, should_poll, track, fx_idx, just_mo
                         -- Force strict float boundaries (0.0 to 1.0) to prevent VST3 value rejection
                         target_val = math.max(0.0, math.min(1.0, target_val))
                         
-                        reaper.TrackFX_SetParamNormalized(target_track, actual_fx_idx, p_idx, target_val)
-                        
-                        -- VST3 / UAD KICK samo če smo dokazali linearnost
-                        if is_linear == 1 then
-                            reaper.TrackFX_SetParam(target_track, actual_fx_idx, p_idx, target_val)
+                        if gmem_changed_now then
+                            reaper.TrackFX_SetParamNormalized(target_track, actual_fx_idx, p_idx, target_val)
+                            
+                            -- VST3 / UAD KICK samo če smo dokazali linearnost
+                            if is_linear == 1 then
+                                reaper.TrackFX_SetParam(target_track, actual_fx_idx, p_idx, target_val)
+                            end
+                            
+                            expected_vst_values[mem_key] = reaper.TrackFX_GetParamNormalized(target_track, actual_fx_idx, p_idx)
                         end
-                        
-                        expected_vst_values[mem_key] = reaper.TrackFX_GetParamNormalized(target_track, actual_fx_idx, p_idx)
                         
                         local cur_group = group_cache[slot] and group_cache[slot][i] or 0
                         if active_lock == btn_num and cur_group > 0 and active_plugins then
@@ -2995,6 +3001,7 @@ local function RebuildLayoutFromJSFX(slot_idx)
     return true
 end
 
+
 -- ============================================================================
 -- DYNAMIC JSFX RESIZER (FOLDER SCANNER HACK WITH ATOMIC WRITE)
 -- ============================================================================
@@ -3120,7 +3127,6 @@ local function ApplyPANNELHeightToJSFX(jsfx_name, target_h)
     end
     return false
 end
-
 
 
 -- =========================================================================
@@ -3281,7 +3287,7 @@ function ManageAll()
                     local guid = reaper.TrackFX_GetFXGUID(track, fx_idx)
                     
                     -- =======================================================
-                    -- CLONE DETECTION
+                    -- CLENE DETECTION
                     -- =======================================================
                     if seen_guids[guid] then
                         if not warned_clones[guid] then
@@ -3382,9 +3388,6 @@ function ManageAll()
                                 local _, saved_ag_math = reaper.GetProjExtState(0, NS, "AG_MATH_" .. guid)
                                 if saved_ag_math ~= "" then reaper.gmem_write(PROJECT_BASE + slot * 500 + 339, tonumber(saved_ag_math) or 0) end
 
-                                local _, saved_local_page = reaper.GetProjExtState(0, NS, "LOCAL_TAB_" .. guid)
-                                if saved_local_page ~= "" then reaper.gmem_write(PROJECT_BASE + slot * 500 + 290, tonumber(saved_local_page) or 0) end
-                                
 
                                 -- AUTO-PATCHING PANEL HEIGHT
                                 local is_module_plugin = fx_name_str:lower():find("module") ~= nil
@@ -3406,6 +3409,8 @@ function ManageAll()
                                     end
                                 end
                                 
+                                local _, saved_local_page = reaper.GetProjExtState(0, NS, "LOCAL_TAB_" .. guid)
+                                if saved_local_page ~= "" then reaper.gmem_write(PROJECT_BASE + slot * 500 + 290, tonumber(saved_local_page) or 0) end
                                 
                                 -- AGGRESSIVE ORPHAN CLEANUP
                                 if not HasAnyLinks(guid) then
@@ -3448,8 +3453,9 @@ function ManageAll()
         end
         
         active_plugins = found_plugins
+        
         -- =======================================================
-        -- GLOBAL RECOMPILE (forces Reaper to release cache
+        -- GLOBAL RECOMPILE (forces Reaper to release cache)
         -- =======================================================
         if next(recompile_jsfx_names) then
             reaper.PreventUIRefresh(1)
@@ -3856,6 +3862,24 @@ builder_state = {
 }
 
 function Main()
+    -- Caching Last Touched FX safely (ignoring StripLink itself)
+    local retval, tr_num, fx_num, p_num = reaper.GetLastTouchedFX()
+    if retval then
+        local target_track
+        if tr_num == 0 then target_track = reaper.GetMasterTrack(0)
+        else target_track = reaper.GetTrack(0, tr_num - 1) end
+        
+        if target_track then
+            local _, fx_name = reaper.TrackFX_GetFXName(target_track, fx_num, "")
+            if not fx_name:lower():find("striplink") and not fx_name:lower():find("aggregator") then
+                global_last_touch_tr = tr_num
+                global_last_touch_fx = fx_num
+                global_last_touch_p = p_num
+                global_last_touch_guid = reaper.TrackFX_GetFXGUID(target_track, fx_num)
+            end
+        end
+    end
+    
     PROJECT_BASE = 3000000 + (GetProjectIndex() * 1000000)
     
     reaper.gmem_write(100000, PROJECT_BASE)
@@ -5384,11 +5408,14 @@ local function ExecuteCmd1(choice, data)
             if mapping_cache[sl].encoded_name then mapping_cache[sl].encoded_name[btn_idx-1] = 0 end
         end
         reaper.SetProjExtState(0, NS, "STEPS:" .. c_guid .. ":" .. (btn_idx - 1), "")
-        reaper.SetProjExtState(0, NS, "COLOR:" .. c_guid .. ":" .. (btn_idx - 1), "")
+        
         reaper.SetProjExtState(0, NS, "UNIT:" .. c_guid .. ":" .. (btn_idx - 1), "")
         reaper.SetProjExtState(0, NS, "GROUP:" .. c_guid .. ":" .. (btn_idx - 1), "")
         
-        reaper.gmem_write(addr_status, 13)
+        local _, col_str = reaper.GetProjExtState(0, NS, "COLOR:" .. c_guid .. ":" .. (btn_idx - 1))
+        local color_num = tonumber(col_str) or 13
+        reaper.gmem_write(addr_status, color_num) 
+        
         reaper.gmem_write(addr_name, 0) 
         reaper.gmem_write(addr_val, 0)
         reaper.gmem_write(base_addr + 80 + (btn_idx - 1), 0)
@@ -5399,75 +5426,82 @@ local function ExecuteCmd1(choice, data)
         reaper.gmem_write(base_addr + 3, (cur_seq + 1) % 1000) 
                             
     elseif sel and sel.last_touched then
-        local retval, tr_num, item_num, take_num, fx_num, p_num = reaper.GetTouchedOrFocusedFX(0)
-        
-        -- Ignore item FX (item_num == -1 means the FX is on a track)
-        if retval and item_num == -1 then
+        if global_last_touch_guid and global_last_touch_guid ~= "" then
             local target_track
-            if tr_num == -1 then
+            if global_last_touch_tr == 0 then
                 target_track = reaper.GetMasterTrack(0)
-            elseif tr_num >= 0 then
-                target_track = reaper.GetTrack(0, tr_num)
+            else
+                target_track = reaper.GetTrack(0, global_last_touch_tr - 1)
             end
             
             if target_track then
-                local target_guid = reaper.TrackFX_GetFXGUID(target_track, fx_num)
-                local _, pn = reaper.TrackFX_GetParamName(target_track, fx_num, p_num, "")
-                pn = pn:gsub(":", "-") 
+                local fx_num = global_last_touch_fx
+                local p_num = global_last_touch_p
+                local current_guid = reaper.TrackFX_GetFXGUID(target_track, fx_num)
                 
-                local current_fx_val = reaper.TrackFX_GetParamNormalized(target_track, fx_num, p_num)
-                                
-                -- LINEAR PRIFILING
-                local current_raw = reaper.TrackFX_GetParam(target_track, fx_num, p_num)
-                reaper.TrackFX_SetParamNormalized(target_track, fx_num, p_num, 0.5)
-                local test_raw, minv, maxv = reaper.TrackFX_GetParam(target_track, fx_num, p_num)
-                reaper.TrackFX_SetParam(target_track, fx_num, p_num, current_raw) -- Takojšnja povrnitev!
-                
-                local is_linear = "0"
-                if math.abs(minv) < 0.0001 and math.abs(maxv - 1.0) < 0.0001 and math.abs(test_raw - 0.5) < 0.001 then
-                    is_linear = "1"
+                -- Varnostno preverjanje, če je bil vtičnik vmes premaknjen
+                if current_guid == global_last_touch_guid then
+                    local target_guid = current_guid
+                    local _, pn = reaper.TrackFX_GetParamName(target_track, fx_num, p_num, "")
+                    pn = pn:gsub(":", "-") 
+                    
+                    local current_fx_val = reaper.TrackFX_GetParamNormalized(target_track, fx_num, p_num)
+                    
+                    -- LINEAR PRIFILING
+                    local current_raw = reaper.TrackFX_GetParam(target_track, fx_num, p_num)
+                    reaper.TrackFX_SetParamNormalized(target_track, fx_num, p_num, 0.5)
+                    local test_raw, minv, maxv = reaper.TrackFX_GetParam(target_track, fx_num, p_num)
+                    reaper.TrackFX_SetParam(target_track, fx_num, p_num, current_raw)
+                    
+                    local is_linear = "0"
+                    if math.abs(minv) < 0.0001 and math.abs(maxv - 1.0) < 0.0001 and math.abs(test_raw - 0.5) < 0.001 then
+                        is_linear = "1"
+                    end
+                    
+                    local val = table.concat({target_guid, 0, fx_num, p_num, pn, "1.0", reaper.GetTrackGUID(target_track), format_float(current_fx_val, 4), is_linear}, ":")
+                                    
+                    reaper.SetProjExtState(0, NS, key, val)
+                    if not mapping_cache[sl] then mapping_cache[sl] = {} end
+                    mapping_cache[sl][btn_idx-1] = val
+    
+                    local current_slot_base = PROJECT_BASE + sl * 500
+                    local _, color_str = reaper.GetProjExtState(0, NS, "COLOR:" .. c_guid .. ":" .. (btn_idx - 1))
+                    local color_val = tonumber(color_str) or 13
+                    local unit_id = get_unit_id(pn)
+                    
+                    reaper.SetProjExtState(0, NS, "UNIT:" .. c_guid .. ":" .. (btn_idx - 1), tostring(unit_id))
+                    reaper.gmem_write(addr_status, (unit_id * 1000) + 100 + color_val)
+                    
+                    local step_size, _, _, n_steps = reaper.TrackFX_GetParameterStepSizes(target_track, fx_num, p_num)
+                    local raw_step = type(step_size) == "number" and step_size or (tonumber(n_steps) or 0)
+                    local final_steps = 0
+                    if raw_step > 0 then final_steps = math.floor((1 / raw_step) + 0.5) + 1 end
+                    
+                    reaper.gmem_write(PROJECT_BASE + 60000 + (sl * 100) + (btn_idx - 1), final_steps)
+                    reaper.SetProjExtState(0, NS, "STEPS:" .. c_guid .. ":" .. (btn_idx - 1), tostring(final_steps))
+                    
+                    local is_bypass = pn:lower():find("bypass") ~= nil
+                    local enc_n = encode_param_name_to_number(pn)
+                    if not mapping_cache[sl].encoded_name then mapping_cache[sl].encoded_name = {} end
+                    mapping_cache[sl].encoded_name[btn_idx-1] = enc_n
+                    reaper.gmem_write(addr_val, is_bypass and (1 - current_fx_val) or current_fx_val)
+                    reaper.gmem_write(addr_name, enc_n)
+                    
+                    local cur_seq = reaper.gmem_read(current_slot_base + 3)
+                    reaper.gmem_write(current_slot_base + 3, (cur_seq + 1) % 1000)
+                else
+                    table.insert(pending_os_tasks, function()
+                        reaper.MB("Ciljni vtičnik je bil izbrisan ali premaknjen. Prosim ponovno premakni parameter.", "StripLink", 0)
+                    end)
                 end
-                
-                -- added FLAG for linearity check
-                local val = table.concat({target_guid, 0, fx_num, p_num, pn, "1.0", reaper.GetTrackGUID(target_track), format_float(current_fx_val, 4), is_linear}, ":")
-                                
-                reaper.SetProjExtState(0, NS, key, val)
-                if not mapping_cache[sl] then mapping_cache[sl] = {} end
-                mapping_cache[sl][btn_idx-1] = val
-
-                local current_slot_base = PROJECT_BASE + sl * 500
-                local _, color_str = reaper.GetProjExtState(0, NS, "COLOR:" .. c_guid .. ":" .. (btn_idx - 1))
-                local color_val = tonumber(color_str) or 1
-                local unit_id = get_unit_id(pn)
-                
-                reaper.SetProjExtState(0, NS, "UNIT:" .. c_guid .. ":" .. (btn_idx - 1), tostring(unit_id))
-                reaper.gmem_write(addr_status, (unit_id * 1000) + 100 + color_val)
-                
-                local step_size, _, _, n_steps = reaper.TrackFX_GetParameterStepSizes(target_track, fx_num, p_num)
-                local raw_step = type(step_size) == "number" and step_size or (tonumber(n_steps) or 0)
-                local final_steps = 0
-                if raw_step > 0 then final_steps = math.floor((1 / raw_step) + 0.5) + 1 end
-                
-                reaper.gmem_write(PROJECT_BASE + 60000 + (sl * 100) + (btn_idx - 1), final_steps)
-                reaper.SetProjExtState(0, NS, "STEPS:" .. c_guid .. ":" .. (btn_idx - 1), tostring(final_steps))
-                
-                local is_bypass = pn:lower():find("bypass") ~= nil
-                local enc_n = encode_param_name_to_number(pn)
-                if not mapping_cache[sl].encoded_name then mapping_cache[sl].encoded_name = {} end
-                mapping_cache[sl].encoded_name[btn_idx-1] = enc_n
-                reaper.gmem_write(addr_val, is_bypass and (1 - current_fx_val) or current_fx_val)
-                reaper.gmem_write(addr_name, enc_n)
-                
-                local cur_seq = reaper.gmem_read(current_slot_base + 3)
-                reaper.gmem_write(current_slot_base + 3, (cur_seq + 1) % 1000)
             else
                 table.insert(pending_os_tasks, function()
-                    reaper.MB("Could not determine the track of the last touched parameter.", "StripLink", 0)
+                    reaper.MB("Sistem ni našel sledi parametra na obstoječem vtičniku.", "StripLink", 0)
                 end)
             end
         else
             table.insert(pending_os_tasks, function()
-                reaper.MB("The system did not detect any parameter movement.\n\nPlease tweak the desired parameter in any plugin first and try again.", "StripLink: Wiggle-to-link", 0)
+                reaper.MB("Pred povezovanjem fizično premakni parameter na kateremkoli drugem vtičniku. StripLink se ne more povezati sam nase.", "StripLink: Wiggle-to-link", 0)
             end)
         end
 
@@ -6283,18 +6317,19 @@ local function ClearSectionMapping(c_guid, sl, btn_list)
             if mapping_cache[sl].encoded_name then mapping_cache[sl].encoded_name[k_idx] = 0 end
         end
         reaper.SetProjExtState(0, NS, "STEPS:" .. c_guid .. ":" .. k_idx, "")
-        reaper.SetProjExtState(0, NS, "COLOR:" .. c_guid .. ":" .. k_idx, "")
         reaper.SetProjExtState(0, NS, "UNIT:" .. c_guid .. ":" .. k_idx, "")
         reaper.SetProjExtState(0, NS, "GROUP:" .. c_guid .. ":" .. k_idx, "")
         
-        reaper.gmem_write(base_addr + 150 + k_idx, 13) 
+        local _, col_str = reaper.GetProjExtState(0, NS, "COLOR:" .. c_guid .. ":" .. k_idx)
+        local color_num = tonumber(col_str) or 13
+        reaper.gmem_write(base_addr + 150 + k_idx, color_num) 
+        
         reaper.gmem_write(base_addr + 11 + k_idx, 0)
         reaper.gmem_write(base_addr + 80 + k_idx, 0)
         reaper.gmem_write(base_addr + 220 + k_idx, 0)
         reaper.gmem_write(base_addr + 360 + k_idx, 0)
         reaper.gmem_write(PROJECT_BASE + 60000 + (sl * 100) + k_idx, 0)
     end
-    -- Force UI refresh!
     reaper.gmem_write(base_addr + 3, (reaper.gmem_read(base_addr + 3) + 1) % 1000)
 end
 
