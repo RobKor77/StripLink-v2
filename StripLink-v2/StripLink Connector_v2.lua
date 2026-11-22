@@ -2,7 +2,7 @@
 -- ================================================================================
 -- StripLink Connector v2
 -- Developer: Wormhole Labs
--- Version: 2.0.6
+-- Version: 2.0.7
 -- License & Copyright Information (Freeware):
 -- StripLink is provided as freeware. You are fully permitted to use and 
 -- modify this software for your personal workflow. However, it is strictly 
@@ -11,8 +11,8 @@
 -- ================================================================================
 --  GMEM MEMORY MAP
 -- ================================================================================
---  PROJECT_BASE = 3000000 + (ProjectIndex * 1000000)
---  gmem[100000] = PROJECT_BASE (Omogoča JSFX-u, da najde pravi projekt)
+--  PROJECT_BASE = 200000 + (ProjectIndex * 1900000)
+--  gmem[100000] = PROJECT_BASE
 -- 
 --  1. GLOBALS & COMMANDS (Offset from PROJECT_BASE)
 -- --------------------------------------------------------------------------------
@@ -90,16 +90,16 @@
 -- 
 --  3. OUT-OF-BAND MEMORY
 -- --------------------------------------------------------------------------------
---  p_base + 50000 + (Slot * 200) + i      : OVR Button Assign (Dynamic Module)
---  p_base + 50000 + (Slot * 200) + 64 + i : OVR Meter Assign (Dynamic Modul)
+--  p_base + 100000 + (Slot * 200) + i      : OVR Button Assign (Dynamic Module)
+--  p_base + 100000 + (Slot * 200) + 64 + i : OVR Meter Assign (Dynamic Modul)
 --  
---  p_base + 60000 + (Slot * 100) + i      : STEPS CACHE (steps for Selectors/knobs)
+--  p_base + 150000 + (Slot * 100) + i      : STEPS CACHE (steps for Selectors/knobs)
 -- 
 --  4. Communication and Layout buffer (for Layout Builder and saving)
 -- --------------------------------------------------------------------------------
---  p_base + 150000 + (Slot * 2000) : DNA String Array (save template)
---  p_base + 200000 + (Slot * 3000) : MAILBOX (Smer: Lua -> JSFX Layout refresh)
---  p_base + 500000 + (Slot * 3000) : OUTBOX (Smer: JSFX -> Lua Layout export)
+--  p_base + 200000 + (Slot * 2000) : DNA String Array (save template)
+--  p_base + 600000 + (Slot * 3000) : MAILBOX (Smer: Lua -> JSFX Layout refresh)
+--  p_base + 1200000 + (Slot * 3000) : OUTBOX (Smer: JSFX -> Lua Layout export)
 -- ================================================================================
 
 
@@ -958,9 +958,45 @@ end
 
 local UpdatePluginStructure
 
+
+
+user_layouts = {}
+
+local function GetDefaultLayout(panel_h)
+
+    if not panel_h or panel_h < 400 then panel_h = 635 end
+    
+    local ag_pwr_y = panel_h - 35
+    local ag_lck_y = ag_pwr_y - 18
+    
+
+    return {
+        -- Format: {id, type, x, y, param, w, h, txt2, text, sz, bold, TAB_ID, dx, dy}
+        -- Page 0 (OVR)
+        {904, 9, 42, ag_pwr_y, 68, 40, 35, 0, "", 14, 0, 0, 0, 0},
+        {905, 10, 53, ag_lck_y, 64, 17, 17, 0, "", 14, 0, 0, 0, 0},
+        -- Page 1 (EQ)
+        {1,  1,  6, 133,  1, 54, 54, 0, "", 14, 0, 1, 0, 0},
+        {2,  1, 65, 133,  2, 54, 54, 0, "", 14, 0, 1, 0, 0},
+        {17, 2,  6, 115, 13, 32, 25, 0, "", 14, 0, 1, 0, 0},
+        {13, 3,  6, 202,  3, 45, 15, 0, "", 14, 0, 1, 0, 0},
+        -- Auto Gain
+        {904, 9, 42, ag_pwr_y, 68, 40, 35, 0, "", 14, 0, 1, 0, 0},
+        {905, 10, 53, ag_lck_y, 64, 17, 17, 0, "", 14, 0, 1, 0, 0},
+        -- Page 2 (DYN)
+        {902, 6, 6, 350, 5, 113, 10, 0, "", 14, 0, 2, 0, 0},
+        {904, 9, 42, ag_pwr_y, 68, 40, 35, 0, "", 14, 0, 2, 0, 0},
+        {905, 10, 53, ag_lck_y, 64, 17, 17, 0, "", 14, 0, 2, 0, 0},
+        -- Page 3 (FX)
+        {903, 6, 6, 350, 5, 113, 10, 0, "", 14, 0, 3, 0, 0},
+        {904, 9, 42, ag_pwr_y, 68, 40, 35, 0, "", 14, 0, 3, 0, 0},
+        {905, 10, 53, ag_lck_y, 64, 17, 17, 0, "", 14, 0, 3, 0, 0}
+    }
+end
+
+
 -- ===================================================
--- SAVE MAPPING (RAM-BASED & CHAIN READY)
--- ===================================================
+-- SAVE MAPPING
 
 function SaveMapping(track, fx_idx, page_name, section_hash_chain, sub_slot)
 
@@ -1438,7 +1474,7 @@ function LoadMapping(track, fx_idx, page_name, section_hash_chain, silent, sub_s
                     local final_steps = 0
                     if raw_step > 0 then final_steps = math.floor((1 / raw_step) + 0.5) + 1 end
                     
-                    reaper.gmem_write(PROJECT_BASE + 60000 + (slot * 100) + k_idx, final_steps)
+                    reaper.gmem_write(PROJECT_BASE + 150000 + (slot * 100) + k_idx, final_steps)
                     reaper.SetProjExtState(0, NS, "STEPS:" .. guid .. ":" .. k_idx, tostring(final_steps))
                     
                     local cur_v = reaper.TrackFX_GetParamNormalized(track, final_fx_idx, p_num)
@@ -1469,7 +1505,7 @@ function LoadMapping(track, fx_idx, page_name, section_hash_chain, silent, sub_s
                     reaper.gmem_write(base + 80 + k_idx, 0)
                     reaper.gmem_write(base + 220 + k_idx, 0)
                     reaper.gmem_write(base + 360 + k_idx, 0)
-                    reaper.gmem_write(PROJECT_BASE + 60000 + (slot * 100) + k_idx, 0)
+                    reaper.gmem_write(PROJECT_BASE + 150000 + (slot * 100) + k_idx, 0)
                 end
             end
         else
@@ -2603,7 +2639,7 @@ end
 -- Serializes the mapping structure from Lua to JSFX for Track Template storage
 local function WriteStructureToJSFX(slot, struct_string)
     local p_base = PROJECT_BASE
-    local addr_str_buf = p_base + 150000 + slot * 2000
+    local addr_str_buf = p_base + 200000 + slot * 2000
     local base = p_base + slot * 500
 
     reaper.gmem_write(addr_str_buf, #struct_string)
@@ -2619,7 +2655,7 @@ end
 -- Restores the mapping structure from JSFX (e.g., when a Track Template is loaded)
 local function ReadStructureFromJSFX(slot)
     local p_base = PROJECT_BASE
-    local addr_str_buf = p_base + 150000 + slot * 2000
+    local addr_str_buf = p_base + 200000 + slot * 2000
     local base = p_base + slot * 500
     
     local str_len = reaper.gmem_read(addr_str_buf)
@@ -2803,7 +2839,7 @@ local function RestorePluginStructure(track, fx_idx, slot)
                 local final_steps = 0
                 if raw_step > 0 then final_steps = math.floor((1 / raw_step) + 0.5) + 1 end
                 
-                reaper.gmem_write(PROJECT_BASE + 60000 + (slot * 100) + b, final_steps)
+                reaper.gmem_write(PROJECT_BASE + 150000 + (slot * 100) + b, final_steps)
                 reaper.SetProjExtState(0, NS, "STEPS:" .. striplink_guid .. ":" .. b, tostring(final_steps))
                 
                 local is_bypass = custom_name:lower():find("bypass") ~= nil
@@ -2826,44 +2862,9 @@ end
 
 
 
--- Globalna tabela najinih postavitev (kasneje se bo to shranjevalo v INI datoteko)
-user_layouts = {} -- Inicialno prazna, polni se dinamično
-
-local function GetDefaultLayout(panel_h)
-
-    if not panel_h or panel_h < 400 then panel_h = 635 end
-    
-    local ag_pwr_y = panel_h - 35
-    local ag_lck_y = ag_pwr_y - 18
-    
-
-    return {
-        -- Format: {id, type, x, y, param, w, h, txt2, text, sz, bold, TAB_ID, dx, dy}
-        -- Page 0 (OVR)
-        {904, 9, 42, ag_pwr_y, 68, 40, 35, 0, "", 14, 0, 0, 0, 0},
-        {905, 10, 53, ag_lck_y, 64, 17, 17, 0, "", 14, 0, 0, 0, 0},
-        -- Page 1 (EQ)
-        {1,  1,  6, 133,  1, 54, 54, 0, "", 14, 0, 1, 0, 0},
-        {2,  1, 65, 133,  2, 54, 54, 0, "", 14, 0, 1, 0, 0},
-        {17, 2,  6, 115, 13, 32, 25, 0, "", 14, 0, 1, 0, 0},
-        {13, 3,  6, 202,  3, 45, 15, 0, "", 14, 0, 1, 0, 0},
-        -- Auto Gain
-        {904, 9, 42, ag_pwr_y, 68, 40, 35, 0, "", 14, 0, 1, 0, 0},
-        {905, 10, 53, ag_lck_y, 64, 17, 17, 0, "", 14, 0, 1, 0, 0},
-        -- Page 2 (DYN)
-        {902, 6, 6, 350, 5, 113, 10, 0, "", 14, 0, 2, 0, 0},
-        {904, 9, 42, ag_pwr_y, 68, 40, 35, 0, "", 14, 0, 2, 0, 0},
-        {905, 10, 53, ag_lck_y, 64, 17, 17, 0, "", 14, 0, 2, 0, 0},
-        -- Page 3 (FX)
-        {903, 6, 6, 350, 5, 113, 10, 0, "", 14, 0, 3, 0, 0},
-        {904, 9, 42, ag_pwr_y, 68, 40, 35, 0, "", 14, 0, 3, 0, 0},
-        {905, 10, 53, ag_lck_y, 64, 17, 17, 0, "", 14, 0, 3, 0, 0}
-    }
-end
-
 local function LayoutMatchesOutbox(slot_idx, layout)
     if not layout then return false end
-    local outbox = PROJECT_BASE + 500000 + (slot_idx * 3000)
+    local outbox = PROJECT_BASE + 1200000 + (slot_idx * 3000)
     local count = math.floor(reaper.gmem_read(outbox - 1) + 0.5)
     if count ~= #layout then return false end
     for i = 1, count do
@@ -2879,15 +2880,15 @@ local function LayoutMatchesOutbox(slot_idx, layout)
 end
 
 local function InvalidateSlotOutbox(slot)
-    reaper.gmem_write(PROJECT_BASE + 500000 + (slot * 3000) - 1, 0)
+    reaper.gmem_write(PROJECT_BASE + 1200000 + (slot * 3000) - 1, 0)
     reaper.gmem_write(PROJECT_BASE + slot * 500 + 427, 1)
 end
 
 function PullUILayout(slot_idx, page)
     if not user_layouts[slot_idx] then return end
     
-    local mailbox = PROJECT_BASE + 200000 + (slot_idx * 3000)
-    local outbox = PROJECT_BASE + 500000 + (slot_idx * 3000)
+    local mailbox = PROJECT_BASE + 600000 + (slot_idx * 3000)
+    local outbox = PROJECT_BASE + 1200000 + (slot_idx * 3000)
     
     if reaper.gmem_read(mailbox) == 1 then return end
     
@@ -2935,7 +2936,7 @@ function PushUILayout(slot_idx)
     end
     
     local elements = user_layouts[slot_idx]
-    local mailbox = PROJECT_BASE + 200000 + (slot_idx * 3000)
+    local mailbox = PROJECT_BASE + 600000 + (slot_idx * 3000)
     
     reaper.gmem_write(mailbox + 1, #elements)
     
@@ -2961,7 +2962,7 @@ function PushUILayout(slot_idx)
 end
 
 local function RebuildLayoutFromJSFX(slot_idx)
-    local outbox = PROJECT_BASE + 500000 + (slot_idx * 3000)
+    local outbox = PROJECT_BASE + 1200000 + (slot_idx * 3000)
     
     local loaded_h = math.floor(reaper.gmem_read(outbox - 3))
     if loaded_h > 0 then reaper.gmem_write(PROJECT_BASE + slot_idx * 500 + 426, loaded_h) end
@@ -3137,7 +3138,7 @@ local last_structure_check = 0
 function ManageAll()
     local cur_project = reaper.EnumProjects(-1)
 
-    PROJECT_BASE = 3000000 + (GetProjectIndex() * 1000000)
+    PROJECT_BASE = 200000 + (GetProjectIndex() * 1900000)
     local current_time = reaper.time_precise()
 
     local fx_just_moved_flags = {}
@@ -3421,7 +3422,7 @@ function ManageAll()
                                         reaper.gmem_write(sb + 80 + b, 0)
                                         reaper.gmem_write(sb + 150 + b, 13)
                                         reaper.gmem_write(sb + 220 + b, 0)
-                                        reaper.gmem_write(PROJECT_BASE + 60000 + (slot * 100) + b, 0)
+                                        reaper.gmem_write(PROJECT_BASE + 150000 + (slot * 100) + b, 0)
                                         
                                         -- Wipe ExtState to prevent ghost values
                                         reaper.SetProjExtState(0, NS, guid .. ":" .. b, "")
@@ -3434,7 +3435,7 @@ function ManageAll()
                                 
                                 -- FULL reset of old layout for new FX
                                 user_layouts[slot] = nil 
-                                reaper.gmem_write(PROJECT_BASE + 500000 + (slot * 3000) - 1, 0)
+                                reaper.gmem_write(PROJECT_BASE + 1200000 + (slot * 3000) - 1, 0)
                             end
                             
                             table.insert(found_plugins, {
@@ -3541,6 +3542,16 @@ function ManageAll()
                     -- for Reordering
                     if just_moved then
                         local new_base = PROJECT_BASE + fx.slot * 500
+                    
+                        local _, saved_ag_pwr = reaper.GetProjExtState(0, NS, "AG_PWR_" .. fx.guid)
+                        if saved_ag_pwr ~= "" then reaper.gmem_write(new_base + 78, tonumber(saved_ag_pwr) or 0) end
+                        
+                        local _, saved_ag_lock = reaper.GetProjExtState(0, NS, "AG_LOCK_" .. fx.guid)
+                        if saved_ag_lock ~= "" then reaper.gmem_write(new_base + 79, tonumber(saved_ag_lock) or 0) end
+                        
+                        local _, saved_ag_math = reaper.GetProjExtState(0, NS, "AG_MATH_" .. fx.guid)
+                        if saved_ag_math ~= "" then reaper.gmem_write(new_base + 339, tonumber(saved_ag_math) or 0) end
+                        
                         for i = 0, 64 do
                             -- restore groups
                             local g_key = "GROUP:" .. fx.guid .. ":" .. i
@@ -3555,7 +3566,7 @@ function ManageAll()
                             local s_key = "STEPS:" .. fx.guid .. ":" .. i
                             local _, s_val = reaper.GetProjExtState(0, NS, s_key)
                             local final_steps = tonumber(s_val) or 0
-                            reaper.gmem_write(PROJECT_BASE + 60000 + (fx.slot * 100) + i, final_steps)
+                            reaper.gmem_write(PROJECT_BASE + 150000 + (fx.slot * 100) + i, final_steps)
                             
                             if not steps_cache[fx.slot] then steps_cache[fx.slot] = {} end
                             steps_cache[fx.slot][i] = final_steps
@@ -3650,7 +3661,7 @@ function ManageAll()
                                     if not unit_cache[fx.slot] then unit_cache[fx.slot] = {} end
                                     unit_cache[fx.slot][i] = tonumber(uni) or 0
                                 end
-                                reaper.gmem_write(PROJECT_BASE + 60000 + (fx.slot * 100) + i, final_steps)
+                                reaper.gmem_write(PROJECT_BASE + 150000 + (fx.slot * 100) + i, final_steps)
                             end
                         end
                         
@@ -3692,7 +3703,7 @@ function ManageAll()
                         end
                         
                         if not fx.layout_pushed or just_moved then
-                            local outbox = PROJECT_BASE + 500000 + (fx.slot * 3000)
+                            local outbox = PROJECT_BASE + 1200000 + (fx.slot * 3000)
                             local existing_count = math.floor(reaper.gmem_read(outbox - 1))
                             
                             if existing_count > 0 then
@@ -3702,12 +3713,12 @@ function ManageAll()
                         end
                         if fx.layout_pushed and not just_moved then
                               local sb      = PROJECT_BASE + fx.slot * 500
-                              local mailbox = PROJECT_BASE + 200000 + (fx.slot * 3000)
+                              local mailbox = PROJECT_BASE + 600000 + (fx.slot * 3000)
                               local lay     = user_layouts[fx.slot]
                               local pending = reaper.gmem_read(mailbox) == 1
                                            or reaper.gmem_read(sb + 496) == 1
                                            or reaper.gmem_read(sb + 427) == 1
-                              local ob_count = math.floor(reaper.gmem_read(PROJECT_BASE + 500000 + fx.slot * 3000 - 1) + 0.5)
+                              local ob_count = math.floor(reaper.gmem_read(PROJECT_BASE + 1200000 + fx.slot * 3000 - 1) + 0.5)
                               
                               if lay and not pending and ob_count > 0 and not LayoutMatchesOutbox(fx.slot, lay) then
                                   fx.desync_n = (fx.desync_n or 0) + 1
@@ -3880,7 +3891,7 @@ function Main()
         end
     end
     
-    PROJECT_BASE = 3000000 + (GetProjectIndex() * 1000000)
+    PROJECT_BASE = 200000 + (GetProjectIndex() * 1900000)
     
     reaper.gmem_write(100000, PROJECT_BASE)
 
@@ -5107,7 +5118,7 @@ function Main()
                         local cur_mtr_packed = 0
                         
                         if is_module then
-                            local ext_ovr_base = PROJECT_BASE + 50000 + (sl * 200)
+                            local ext_ovr_base = PROJECT_BASE + 100000 + (sl * 200)
                             cur_btn = reaper.gmem_read(ext_ovr_base + slot_id)
                             cur_mtr_packed = reaper.gmem_read(ext_ovr_base + 64 + slot_id)
                         else
@@ -5420,7 +5431,7 @@ local function ExecuteCmd1(choice, data)
         reaper.gmem_write(addr_val, 0)
         reaper.gmem_write(base_addr + 80 + (btn_idx - 1), 0)
         reaper.gmem_write(base_addr + 360 + (btn_idx - 1), 0)
-        reaper.gmem_write(PROJECT_BASE + 60000 + (sl * 100) + (btn_idx - 1), 0)
+        reaper.gmem_write(PROJECT_BASE + 150000 + (sl * 100) + (btn_idx - 1), 0)
         
         local cur_seq = reaper.gmem_read(base_addr + 3)
         reaper.gmem_write(base_addr + 3, (cur_seq + 1) % 1000) 
@@ -5477,7 +5488,7 @@ local function ExecuteCmd1(choice, data)
                     local final_steps = 0
                     if raw_step > 0 then final_steps = math.floor((1 / raw_step) + 0.5) + 1 end
                     
-                    reaper.gmem_write(PROJECT_BASE + 60000 + (sl * 100) + (btn_idx - 1), final_steps)
+                    reaper.gmem_write(PROJECT_BASE + 150000 + (sl * 100) + (btn_idx - 1), final_steps)
                     reaper.SetProjExtState(0, NS, "STEPS:" .. c_guid .. ":" .. (btn_idx - 1), tostring(final_steps))
                     
                     local is_bypass = pn:lower():find("bypass") ~= nil
@@ -5669,7 +5680,7 @@ local function ExecuteCmd1(choice, data)
         local raw_step = type(step_size) == "number" and step_size or (tonumber(n_steps) or 0)
         local final_steps = 0
         if raw_step > 0 then final_steps = math.floor((1 / raw_step) + 0.5) + 1 end
-        reaper.gmem_write(PROJECT_BASE + 60000 + (sl * 100) + (btn_idx - 1), final_steps)
+        reaper.gmem_write(PROJECT_BASE + 150000 + (sl * 100) + (btn_idx - 1), final_steps)
         reaper.SetProjExtState(0, NS, "STEPS:" .. c_guid .. ":" .. (btn_idx - 1), tostring(final_steps))
         
         local cur_v = reaper.TrackFX_GetParamNormalized(tr, sel.fx_idx, sel.param)
@@ -6212,7 +6223,7 @@ local function ExecuteCmd21(choice, data)
         
         -- PAMETNO BRANJE PRED ZAPISOM V NABIRALNIK
         if is_module then
-            local ext_ovr_base = PROJECT_BASE + 50000 + (data.sl * 200)
+            local ext_ovr_base = PROJECT_BASE + 100000 + (data.sl * 200)
             cur_packed = reaper.gmem_read(ext_ovr_base + 64 + sel.slot_id)
             cur_btn = reaper.gmem_read(ext_ovr_base + sel.slot_id)
         else
@@ -6328,7 +6339,7 @@ local function ClearSectionMapping(c_guid, sl, btn_list)
         reaper.gmem_write(base_addr + 80 + k_idx, 0)
         reaper.gmem_write(base_addr + 220 + k_idx, 0)
         reaper.gmem_write(base_addr + 360 + k_idx, 0)
-        reaper.gmem_write(PROJECT_BASE + 60000 + (sl * 100) + k_idx, 0)
+        reaper.gmem_write(PROJECT_BASE + 150000 + (sl * 100) + k_idx, 0)
     end
     reaper.gmem_write(base_addr + 3, (reaper.gmem_read(base_addr + 3) + 1) % 1000)
 end
@@ -6727,7 +6738,7 @@ local function ExecuteCmd3_Mapping(choice, data)
                             reaper.gmem_write(base_addr + 150 + k_idx, (unit_id * 1000) + 100 + color_num)
                             reaper.gmem_write(base_addr + 220 + k_idx, enc_n)
                             reaper.gmem_write(base_addr + 360 + k_idx, tonumber(saved.group) or 0)
-                            reaper.gmem_write(PROJECT_BASE + 60000 + (sl * 100) + k_idx, tonumber(saved.steps) or 0)
+                            reaper.gmem_write(PROJECT_BASE + 150000 + (sl * 100) + k_idx, tonumber(saved.steps) or 0)
                         end
                     else
                         reaper.SetProjExtState(0, NS, c_guid .. ":" .. k_idx, "")
@@ -6741,7 +6752,7 @@ local function ExecuteCmd3_Mapping(choice, data)
                         reaper.gmem_write(base_addr + 80 + k_idx, 0)
                         reaper.gmem_write(base_addr + 220 + k_idx, 0)
                         reaper.gmem_write(base_addr + 360 + k_idx, 0)
-                        reaper.gmem_write(PROJECT_BASE + 60000 + (sl * 100) + k_idx, 0)
+                        reaper.gmem_write(PROJECT_BASE + 150000 + (sl * 100) + k_idx, 0)
                     end
                 end
                 
@@ -7014,7 +7025,7 @@ local function ExecuteCmd3_Mapping(choice, data)
                 reaper.gmem_write(base_addr + 80 + k_idx, 0)
                 reaper.gmem_write(base_addr + 220 + k_idx, 0)
                 reaper.gmem_write(base_addr + 360 + k_idx, 0)
-                reaper.gmem_write(PROJECT_BASE + 60000 + (sl * 100) + k_idx, 0)
+                reaper.gmem_write(PROJECT_BASE + 150000 + (sl * 100) + k_idx, 0)
             end
         end
 
@@ -7455,8 +7466,8 @@ local function DrawLayoutBuilderToolbox()
             end
             local my_elements = user_layouts[current_slot]
             
-            local outbox = PROJECT_BASE + 500000 + (current_slot * 3000)
-            local mailbox = PROJECT_BASE + 200000 + (current_slot * 3000)
+            local outbox = PROJECT_BASE + 1200000 + (current_slot * 3000)
+            local mailbox = PROJECT_BASE + 600000 + (current_slot * 3000)
             
             -- delayed refresh ...
             if builder_state.restore_sel and reaper.gmem_read(mailbox) == 0 then
@@ -7643,7 +7654,7 @@ local function DrawLayoutBuilderToolbox()
                         
 
                         builder_selected_idx = 1
-                        local outbox = PROJECT_BASE + 500000 + (current_slot * 3000)
+                        local outbox = PROJECT_BASE + 1200000 + (current_slot * 3000)
                         reaper.gmem_write(outbox - 4, 0)
                     end
                 end)

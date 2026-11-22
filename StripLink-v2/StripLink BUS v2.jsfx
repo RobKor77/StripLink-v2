@@ -1,7 +1,7 @@
 // @noindex
 // ============================================================================
 // StripLink BUS v2
-// Version: 2.0.6
+// Version: 2.0.7
 // Developer: Wormhole Labs
 //
 // License & Copyright Information (Freeware):
@@ -183,7 +183,7 @@ max_gr_db = 12; // Full-scale range of the Gain Reduction meters (e.g., 6, 8, 12
 
 // --- RMS SETTINGS  ---
 rms_window_ms = 300;
-rms_buf = 10000; // Starting memory index for the circular buffer
+rms_buf = 500000; // Starting memory index for the circular buffer
 rms_idx = 0;
 rms_sum_sq = 0;
 
@@ -209,18 +209,18 @@ update_srate();
 
 
 
-
 // --- SYNCHRONIZATION FUNCTION ---
 function sync_slot() (
   p_base = gmem[100000];
-  base = p_base + slider2 * 500; 
+  slot_in_range = (p_base > 0 && slider2 >= 1 && slider2 <= 199) ? 1 : 0;
+  base = slot_in_range ? (p_base + slider2 * 500) : 0; 
   addr_lock    = base + 1;
   addr_status  = base + 2;
   addr_seq     = base + 3;
 
   // --- SECURITY CHECK ---
   // Compare instance hash with GMEM mailbox key (497) to prevent ghost states
-  slot_valid = (slider3 > 0 && abs(slider3 - gmem[base + 497]) < 1) ? 1 : 0;
+  slot_valid = (slot_in_range && slider3 > 0 && abs(slider3 - gmem[base + 497]) < 1) ? 1 : 0;
 );
 
 tr_idx_init = get_host_placement(p, f);
@@ -232,7 +232,7 @@ tr_idx_init = get_host_placement(p, f);
 
     sync_slot();
     
-(base > 0) ? gmem[base + 496] = 1;
+(slot_valid == 1) ? gmem[base + 496] = 1;
 
 function draw_text_centered(x, y, w_area, text, alpha_val) (
   gfx_set(1, 1, 1, alpha_val);
@@ -1480,7 +1480,7 @@ local(sl_idx, addr_v, addr_l, addr_n, addr_d, addr_s, cur_seq, cur_name_code, ra
 
   is_over = this.collision();
   
-  ext_steps_base = gmem[100000] + 60000 + (slider2 * 100);
+  ext_steps_base = gmem[100000] + 150000 + (slider2 * 100);
   steps_cache = gmem[ext_steps_base + (btn_idx - 1)];
   
   cur_seq = gmem[base + 3];
@@ -1621,7 +1621,7 @@ local(sl_idx, addr_v, addr_l, addr_n, addr_d, addr_s, cur_seq, cur_name_code, ra
   is_over = this.collision();
 
   v_raw = gmem[addr_d];
-  ext_steps_base = gmem[100000] + 60000 + (slider2 * 100);
+  ext_steps_base = gmem[100000] + 150000 + (slider2 * 100);
   this.steps_cache = gmem[ext_steps_base + (btn_idx - 1)]; 
   
   cur_seq = gmem[base + 3];
@@ -2029,14 +2029,14 @@ tr_idx_sl = get_host_placement(p, f);
     );
 
     new_loc = floor(slider4);
-    (new_loc != slider_last[4]) ? (
+    (new_loc != slider_last[4] && slot_valid == 1) ? (
       slider_last[4] = new_loc;
       slider4 = new_loc;
       gmem[base + 290] = new_loc;
     );
 
     new_glob = floor(slider5);
-    (new_glob != slider_last[5]) ? (
+    (new_glob != slider_last[5] && slot_valid == 1) ? (
       slider_last[5] = new_glob;
       slider5 = new_glob;
       p_base = gmem[100000];
@@ -2152,11 +2152,13 @@ tr_idx = get_host_placement(p, f);
 );
 sync_slot();
 
-// AMNSY: Clear gmem after clot change
-(slider2 != last_seen_slot_block) ? (
-    gmem[base + 490] = 0; // OVR mailbox
-    gmem[base + 499] = 0; // DNA mailbox
-    last_seen_slot_block = slider2;
+(p_base > 0 && slider2 >= 1 && slider2 <= 199) ? (
+    // AMNSY: Clear gmem after clot change
+    (slider2 != last_seen_slot_block) ? (
+        gmem[base + 490] = 0; // OVR mailbox
+        gmem[base + 499] = 0; // DNA mailbox
+        last_seen_slot_block = slider2;
+    );
 );
 
 // ===========================================================
@@ -2225,7 +2227,7 @@ slot_valid == 0 ? (
 // ---- JSFX -> LUA: Restoration from Track Template ---
 (p_base > 0 && tr_idx >= 0 && struct_pushed == 0 && slot_valid == 1) ? (
     (dna_len > 0) ? (
-        addr_str_buf = p_base + 150000 + slider2 * 2000;
+        addr_str_buf = p_base + 200000 + slider2 * 2000;
         gmem[addr_str_buf] = dna_len;
         
         i = 0;
@@ -2242,7 +2244,7 @@ slot_valid == 0 ? (
 
 // --- LUA -> JSFX: Saving raw numbers ---
 (gmem[base + 499] == 1 && slot_valid == 1) ? (
-    addr_str_buf = p_base + 150000 + slider2 * 2000;
+    addr_str_buf = p_base + 200000 + slider2 * 2000;
     dna_len = gmem[addr_str_buf];
     
     i = 0;
@@ -2359,7 +2361,7 @@ glob_seq_addr = p_base + 201;
 );
 
 // GLOBAL SYNC FROM OTHER PLUGINS
-(gmem[glob_seq_addr] > this.last_glob_seq) ? (
+(gmem[glob_seq_addr] > this.last_glob_seq && slot_valid == 1) ? (
   gmem[base + 290] = gmem[glob_pg_addr]; 
   this.last_glob_seq = gmem[glob_seq_addr];
   
@@ -2425,7 +2427,7 @@ is_hover_tab ? (
 );
 
 
-current_page = gmem[base + 290];
+(slot_valid == 1) ? current_page = gmem[base + 290];
 
 gfx_x = 0; gfx_y = 0; gfx_a = 1;
 

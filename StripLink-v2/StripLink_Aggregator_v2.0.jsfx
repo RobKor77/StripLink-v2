@@ -1,7 +1,7 @@
 // @noindex
 // ============================================================================
 // Aggregator for StripLink v2, StripLink BUS v2 & StripLink UC1 & StripLink Module v2
-// Version: 2.0.6
+// Version: 2.0.7
 // Developer: Wormhole Labs
 //
 // License & Copyright Information (Freeware):
@@ -225,7 +225,8 @@ spl0 = spl0 + 0.000000000000001;
 spl1 = spl1;
 
 p_base = gmem[100000];
-local_base = p_base + slider1 * 500;
+slot_in_range = (p_base > 0 && slider1 >= 1 && slider1 <= 199) ? 1 : 0;
+local_base = slot_in_range ? (p_base + slider1 * 500) : 0;
 
 // ==========================================================
 // ENVELOPES
@@ -678,7 +679,7 @@ spd_factor = gmem[local_base + 337];
 );
 
 // --- RESTORE AUTO GAIN MATH STATE FROM LUA ---
-(gmem[local_base + 339] > 0) ? (
+(slot_in_range == 1 && gmem[local_base + 339] > 0) ? (
     ag_current_gain = gmem[local_base + 339];
     ag_target_gain = ag_current_gain;
     gmem[local_base + 339] = 0; // Acknowledge and clear
@@ -848,7 +849,7 @@ spl12=0; spl13=0;
 // ==========================================================
 update_cnt += 1;
 
-(update_cnt >= update_rate && slider1 > 0) ? (
+(update_cnt >= update_rate && slot_in_range == 1) ? (
     gmem[local_base + 320] = m1_disp;
     gmem[local_base + 321] = m1_text_val;
     gmem[local_base + 322] = m2_disp;

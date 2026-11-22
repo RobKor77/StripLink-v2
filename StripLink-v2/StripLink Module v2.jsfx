@@ -2,7 +2,7 @@
 // ============================================================================
 // StripLink Module v2
 // Developer: Wormhole Labs
-// Version: 2.0.6
+// Version: 2.0.7
 //
 // License & Copyright Information (Freeware):
 // StripLink is provided as freeware. You are fully permitted to use and 
@@ -322,15 +322,13 @@ update_srate();
 // SYNCHRONIZATION .........................................................
 function sync_slot() (
  p_base = gmem[100000];
- base = p_base + slider2 * 500; 
+ base = (p_base > 0 && slider2 > 0) ? (p_base + slider2 * 500) : 0; 
  addr_lock    = base + 1;
  addr_status  = base + 2;
  addr_seq     = base + 3;
 
-
- // SECURITY CHECK ..........................................................
- slot_valid = (slider3 > 0 && abs(slider3 - gmem[base + 497]) < 1) ? 1 : 0;
-
+ // SECURITY CHECK
+ slot_valid = (base > 0 && slider3 > 0 && abs(slider3 - gmem[base + 497]) < 1) ? 1 : 0;
 );
 
 tr_idx_init = get_host_placement(p, f);
@@ -340,7 +338,7 @@ tr_idx_init = get_host_placement(p, f);
     );
     sync_slot();
     
-    (base > 0) ? gmem[base + 496] = 1;
+    (slot_valid == 1) ? gmem[base + 496] = 1;
 
 function draw_text_centered(x, y, w_area, text, alpha_val) (
   gfx_set(1, 1, 1, alpha_val);
@@ -1379,7 +1377,7 @@ local(state_ptr, dragging, xOld, valOld, last_click_time, l_seq, init_done, step
         mouse_y > yIn && mouse_y < yIn + heightIn
     );
     
-    ext_steps_base = gmem[100000] + 60000 + (slider2 * 100);
+    ext_steps_base = gmem[100000] + 150000 + (slider2 * 100);
     steps_cache = gmem[ext_steps_base + (btn_idx - 1)];
     div_val = (steps_cache > 1) ? (steps_cache - 1) : 0;
 
@@ -1864,8 +1862,10 @@ instance(widthIn, heightIn)
         gfx_blit(26, 1, 0, 0, 0, img_w, img_h, xIn-UI_EFF_SCALE, yIn, widthIn, heightIn);
     );
 
-    slider(12) = gmem[addr_hold];
-    slider_last[12] = gmem[addr_hold];
+    slot_valid == 1 ? (
+        slider(12) = gmem[addr_hold];
+        slider_last[12] = gmem[addr_hold];
+    );
 );
 
 
@@ -2023,7 +2023,7 @@ local(state_ptr, dragging, yOld, valOld, last_click_time, l_seq, init_done, step
     mouse_y > yIn && mouse_y < yIn + heightIn
   );
   
-  ext_steps_base = gmem[100000] + 60000 + (slider2 * 100);
+  ext_steps_base = gmem[100000] + 150000 + (slider2 * 100);
   steps_cache = gmem[ext_steps_base + (btn_idx - 1)]; 
 
   raw_status = gmem[addr_s];
@@ -2247,7 +2247,7 @@ local(cur_seq, cur_name_code, raw_status, is_linked, text_alpha, builder_mode, s
   (custom_steps >= 2 && custom_steps <= 20) ? (
     steps_cache = custom_steps;
   ) : (
-    ext_steps_base = gmem[100000] + 60000 + (slider2 * 100);
+    ext_steps_base = gmem[100000] + 150000 + (slider2 * 100);
     steps_cache = gmem[ext_steps_base + (btn_idx - 1)]; 
   );
 
@@ -2928,16 +2928,16 @@ tr_idx_sl = get_host_placement(p, f);
       );
       s_idx += 1;
     );
-
+    
     new_loc = floor(slider4);
-    (new_loc != slider_last[4]) ? (
+    (new_loc != slider_last[4] && slot_valid == 1) ? (
       slider_last[4] = new_loc;
       slider4 = new_loc;
       gmem[base + 290] = new_loc;
     );
 
     new_glob = floor(slider5);
-    (new_glob != slider_last[5]) ? (
+    (new_glob != slider_last[5] && slot_valid == 1) ? (
       slider_last[5] = new_glob;
       slider5 = new_glob;
       p_base = gmem[100000];
@@ -3067,27 +3067,29 @@ tr_idx = get_host_placement(p, f);
 
 sync_slot();
 
-// AMNESY: clear GMEM afeter moving to new slot
-(slider2 != last_seen_slot_block) ? (
-    gmem[p_base + 200000 + (slider2 * 3000)] = 0; // Layout mailbox
-    gmem[base + 490] = 0; // OVR mailbox
-    gmem[base + 499] = 0; // DNA mailbox
-    (p_base > 0 && slider2 > 0) ? (
-        gmem[p_base + 500000 + (slider2 * 3000) - 1] = 0; // Clear outbox from previous data
-        trigger_gmem_export = 1;                          // fresh export
-    );
-    last_seen_slot_block = slider2;
-);
+(p_base > 0 && slider2 >= 1 && slider2 <= 199) ? (
 
-// LUA (On-Demand)
-gmem[base + 427] == 1 ? (
-    trigger_gmem_export = 1;
-    gmem[base + 427] = 0;
+    // AMNESY: clear GMEM afeter moving to new slot
+    (slider2 != last_seen_slot_block) ? (
+        gmem[p_base + 600000 + (slider2 * 3000)] = 0; // Layout mailbox
+        gmem[base + 490] = 0; // OVR mailbox
+        gmem[base + 499] = 0; // DNA mailbox
+        gmem[p_base + 1200000 + (slider2 * 3000) - 1] = 0; // Clear outbox from previous data
+        trigger_gmem_export = 1;                          // fresh export
+        last_seen_slot_block = slider2;
+    );
+
+    // LUA (On-Demand)
+    gmem[base + 427] == 1 ? (
+        trigger_gmem_export = 1;
+        gmem[base + 427] = 0;
+    );
+
 );
 
 // export layout once (also when GUI is closed)
 (trigger_gmem_export == 1 && slot_valid == 1) ? (
-    outbox_base = p_base + 500000 + (slider2 * 3000);
+    outbox_base = p_base + 1200000 + (slider2 * 3000);
     gmem[outbox_base - 1] = ui_element_count; 
     gmem[outbox_base - 2] = gmem[base + 290]; // current_page
     gmem[outbox_base - 3] = inst_panel_h;
@@ -3223,7 +3225,7 @@ sync_slot();
 // JSFX CONTINUOUS BROADCAST (JSFX -> LUA)................................................
 (base > 0 && slot_valid == 1) ? (
 
-    ext_ovr_base = p_base + 50000 + (slider2 * 200); 
+    ext_ovr_base = p_base + 100000 + (slider2 * 200); 
     
     _s = 1;
     while (_s <= 64) (
@@ -3259,7 +3261,7 @@ slot_valid == 0 ? (
 // JSFX -> LUA: Restoration from Track Template .............................
 (p_base > 0 && tr_idx >= 0 && struct_pushed == 0 && slot_valid == 1) ? (
     (dna_len > 0) ? (
-        addr_str_buf = p_base + 150000 + slider2 * 2000;
+        addr_str_buf = p_base + 200000 + slider2 * 2000;
         gmem[addr_str_buf] = dna_len;
 
         i = 0;
@@ -3270,7 +3272,7 @@ slot_valid == 0 ? (
         gmem[base + 498] = 1;
         ) : (
             ui_element_count == 0 ? (
-                outbox_base = p_base + 500000 + (slider2 * 3000);
+                outbox_base = p_base + 1200000 + (slider2 * 3000);
                 gmem[outbox_base - 1] = 0; // force  ui_element_count = 0 into GMEM
                 gmem[base + 498] = 2; // tell Lua to generate default layout
             ) : (
@@ -3283,7 +3285,7 @@ slot_valid == 0 ? (
 
 // LUA -> JSFX: Saving raw numbers ......................................
 (gmem[base + 499] == 1 && slot_valid == 1) ? (
-    addr_str_buf = p_base + 150000 + slider2 * 2000;
+    addr_str_buf = p_base + 200000 + slider2 * 2000;
     dna_len = gmem[addr_str_buf];
     
 
@@ -3389,11 +3391,15 @@ vu_y_offset_base = (global_vu_style == 1) ? floor(slim_target_h - (70 * UI_EFF_S
                    (global_vu_style == 2) ? floor(-(70 * UI_EFF_SCALE)) : 0;
 
 // Read Panel Size from GMEM (prioritize GMEM if valid, else use serialized/fallback)
-(gmem[base + 426] > 0) ? (
-    inst_panel_h = gmem[base + 426];
+(p_base > 0 && slider2 >= 1 && slider2 <= 199) ? (
+    (gmem[base + 426] > 0) ? (
+        inst_panel_h = gmem[base + 426];
+    ) : (
+        (inst_panel_h <= 0) ? inst_panel_h = 635; // Fallback for brand new instances
+        gmem[base + 426] = inst_panel_h;          // Push serialized height back to GMEM for Lua
+    );
 ) : (
-    (inst_panel_h <= 0) ? inst_panel_h = 635; // Fallback for brand new instances
-    gmem[base + 426] = inst_panel_h;          // Push serialized height back to GMEM for Lua
+    (inst_panel_h <= 0) ? inst_panel_h = 635;
 );
 
 // use dynamic height
@@ -3415,11 +3421,9 @@ min_scroll = min(0, gfx_h - total_ui_h);
 vu_y_offset = vu_y_offset_base + user_scroll_y;
 
 
-
 act_slot = gmem[p_base + 8]; 
-is_selected_track = (slider2 == act_slot && slider2 > 0);
+is_selected_track = (gmem[base + 9] > 0 && slider2 > 0);
 text_brightness_boost = is_selected_track ? 0.3 : 0.0;
-
 
 sync_slot();
 // ....................................................................
@@ -3491,12 +3495,10 @@ glob_seq_addr = p_base + 201;
 
 
 // GLOBAL SYNC & MIDI FEEDBACK .....................................
-(gmem[glob_seq_addr] > this.last_glob_seq) ? (
+(gmem[glob_seq_addr] > this.last_glob_seq && slot_valid == 1) ? (
   gmem[base + 290] = gmem[glob_pg_addr]; 
   this.last_glob_seq = gmem[glob_seq_addr];
-
   
-  // Notify physical MIDI controllers about global tab change
   slider4 = gmem[glob_pg_addr]; slider_last[4] = slider4; slider_automate(2^3);
   slider5 = gmem[glob_pg_addr]; slider_last[5] = slider5; slider_automate(2^4);
 );
@@ -3561,7 +3563,7 @@ is_hover_tab ? (
 );
 
 
-current_page = gmem[base + 290];
+(slot_valid == 1) ? current_page = gmem[base + 290];;
 
 gfx_a = 1.0;
 
@@ -3605,7 +3607,7 @@ current_page > 0 ? (
 );
 
     // READ LAYOUT FROM LUA ..........................................................
-    layout_mailbox = p_base + 200000 + (slider2 * 3000);
+    layout_mailbox = p_base + 600000 + (slider2 * 3000);
     (gmem[layout_mailbox] == 1 && slot_valid == 1) ? (
         force_text_recalc = 1;
         ui_element_count = gmem[layout_mailbox + 1];
@@ -3802,7 +3804,7 @@ force_text_recalc == 1 ? (
                 _custom_steps >= 2 && _custom_steps <= 20 ? (
                     _steps = _custom_steps;
                 ) : (
-                    _ext_steps_base = gmem[100000] + 60000 + (slider2 * 100);
+                    _ext_steps_base = gmem[100000] + 150000 + (slider2 * 100);
                     _steps = gmem[_ext_steps_base + (_param - 1)];
                 );
                 _active_btns = (_steps >= 2 && _steps <= 6) ? _steps : 2;
@@ -3871,7 +3873,7 @@ force_text_recalc == 1 ? (
 // DYNAMIC RENDERING LOOP .....................................................
 
 i = 0;
-outbox_base = p_base + 500000 + (slider2 * 3000);
+outbox_base = p_base + 1200000 + (slider2 * 3000);
 
 while (i < ui_element_count) (
     idx = i * ui_stride;
@@ -4261,23 +4263,26 @@ while (i < ui_element_count) (
         gmem[outbox_base - 4] = builder_selection + 1;
     );
     
-    // Write strukture to OUTBOX (for all tabs) ............
-    gmem[outbox_base - 1] = ui_element_count; 
-    gmem[outbox_base - 2] = current_page;
-    
-    gmem[outbox_base + (i * 13) + 0] = el_ptr[0]; // ID
-    gmem[outbox_base + (i * 13) + 1] = el_ptr[1]; // Type
-    gmem[outbox_base + (i * 13) + 2] = el_ptr[2]; // X
-    gmem[outbox_base + (i * 13) + 3] = el_ptr[3]; // Y
-    gmem[outbox_base + (i * 13) + 4] = el_ptr[4]; // Param
-    gmem[outbox_base + (i * 13) + 5] = el_ptr[5]; // W
-    gmem[outbox_base + (i * 13) + 6] = el_ptr[6]; // H
-    gmem[outbox_base + (i * 13) + 7] = el_ptr[7]; // Txt2
-    gmem[outbox_base + (i * 13) + 8] = el_ptr[8]; // Font
-    gmem[outbox_base + (i * 13) + 9] = el_ptr[9]; // Bold
-    gmem[outbox_base + (i * 13) + 10] = el_ptr[18]; // TAB_ID
-    gmem[outbox_base + (i * 13) + 11] = el_ptr[15]; // DX
-    gmem[outbox_base + (i * 13) + 12] = el_ptr[16]; // DY
+
+    // Write strukture to OUTBOX
+    (slot_valid == 1) ? (
+        gmem[outbox_base - 1] = ui_element_count; 
+        gmem[outbox_base - 2] = current_page;
+        
+        gmem[outbox_base + (i * 13) + 0] = el_ptr[0]; // ID
+        gmem[outbox_base + (i * 13) + 1] = el_ptr[1]; // Type
+        gmem[outbox_base + (i * 13) + 2] = el_ptr[2]; // X
+        gmem[outbox_base + (i * 13) + 3] = el_ptr[3]; // Y
+        gmem[outbox_base + (i * 13) + 4] = el_ptr[4]; // Param
+        gmem[outbox_base + (i * 13) + 5] = el_ptr[5]; // W
+        gmem[outbox_base + (i * 13) + 6] = el_ptr[6]; // H
+        gmem[outbox_base + (i * 13) + 7] = el_ptr[7]; // Txt2
+        gmem[outbox_base + (i * 13) + 8] = el_ptr[8]; // Font
+        gmem[outbox_base + (i * 13) + 9] = el_ptr[9]; // Bold
+        gmem[outbox_base + (i * 13) + 10] = el_ptr[18]; // TAB_ID
+        gmem[outbox_base + (i * 13) + 11] = el_ptr[15]; // DX
+        gmem[outbox_base + (i * 13) + 12] = el_ptr[16]; // DY
+    );
     
     i += 1;
 );
