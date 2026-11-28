@@ -2,7 +2,7 @@
 -- ================================================================================
 -- StripLink Connector v2
 -- Developer: Wormhole Labs
--- Version: 2.0.7
+-- Version: 2.0.8
 -- License & Copyright Information (Freeware):
 -- StripLink is provided as freeware. You are fully permitted to use and 
 -- modify this software for your personal workflow. However, it is strictly 
@@ -112,13 +112,18 @@ reaper.gmem_attach(NS)
 
 local last_reg_clear = 0
 
+local warned_tab_limit = false
+
 local function GetProjectIndex()
- local cur = reaper.EnumProjects(-1) 
+    local cur = reaper.EnumProjects(-1) 
     local i = 0
     while true do
         local p = reaper.EnumProjects(i)
         if not p then return 0 end
-        if p == cur then return i end
+        if p == cur then
+            if i > 3 then return -1 end -- Max 4 project tabs
+            return i
+        end
         i = i + 1
     end
 end
@@ -128,7 +133,9 @@ end
 -- ============================================================================
 local function GetFXSlot(track)
     if not track or not reaper.ValidatePtr(track, "MediaTrack*") then return 0 end
-    return math.floor(reaper.GetMediaTrackInfo_Value(track, "IP_TRACKNUMBER"))
+    local slot = math.floor(reaper.GetMediaTrackInfo_Value(track, "IP_TRACKNUMBER"))
+    if slot < 1 or slot > 199 then return 0 end
+    return slot
 end
 
 PROJECT_BASE = 0
@@ -781,23 +788,6 @@ local function is_page_match(sec_page, act_page)
         return true
     end
     return false
-end
-
--- HELPER FUNC for NAME (For JSFX)
--- MAIN DICTIONARY
-local function char_to_code(c)
-    local byte = string.byte(c)
-    if not byte then return 0 end
-    if c:match("%l") then return 10 + (byte - string.byte('a') + 1)
-    elseif c:match("%u") then return 40 + (byte - string.byte('A') + 1)
-    elseif c:match("%d") then return 70 + (byte - string.byte('0'))
-    elseif c == "+" then return 81
-    elseif c == "-" then return 82
-    elseif c == "/" then return 83
-    elseif c == "." then return 84
-    elseif c == "(" then return 85
-    elseif c == ")" then return 86
-    else return 0 end
 end
 
 -- ENCODE TEXT IN BUILDER (Base50 - 9 elements)
@@ -1611,33 +1601,6 @@ function LoadMapping(track, fx_idx, page_name, section_hash_chain, silent, sub_s
     UpdatePluginStructure(track, slot, guid)
 end
 
-local function BuildFXMenu(track, caller_fx_idx)
-    local items, map, idx = {"Unlink meter           ", ""}, {}, 1
-    map[idx] = { unlink = true }
-
-    local function scan_fx(tr, parent_idx)
-        local count = parent_idx and tonumber(({reaper.TrackFX_GetNamedConfigParm(tr, parent_idx, "container_count")})[2]) or reaper.TrackFX_GetCount(tr)
-        for i = 0, count - 1 do
-            local current_fx_idx = parent_idx and tonumber(({reaper.TrackFX_GetNamedConfigParm(tr, parent_idx, "container_item." .. i)})[2]) or i
-            if current_fx_idx and current_fx_idx ~= caller_fx_idx then
-                local retval, name = reaper.TrackFX_GetFXName(tr, current_fx_idx, "")
-                local _, is_c = reaper.TrackFX_GetNamedConfigParm(tr, current_fx_idx, "container_count")
-                local clean_name = CleanFXName(name):gsub("|", "-"):gsub("<", "["):gsub(">", "]")
-                if is_c ~= "" then
-                    table.insert(items, ">[C] " .. clean_name)
-                    scan_fx(tr, current_fx_idx)
-                    table.insert(items, "<")
-                elseif not name:lower():find("striplink") then
-                    table.insert(items, clean_name)
-                    idx = idx + 1
-                    map[idx] = { fx_idx = current_fx_idx }
-                end
-            end
-        end
-    end
-    scan_fx(track, nil)
-    return table.concat(items, "|"), map
-end
 
 local function BuildMenu(track, caller_guid, btn_idx)
 
@@ -1938,9 +1901,12 @@ local function UpdateLink(slot, caller_guid, should_poll, track, fx_idx, just_mo
                         parts[3] = tostring(actual_fx_idx)
                     end
                     local new_val_str = table.concat(parts, ":")
-                    reaper.SetProjExtState(0, NS, caller_guid .. ":" .. i, new_val_str)
-                    if mapping_cache[slot] then mapping_cache[slot][i] = new_val_str end
+                    if new_val_str ~= param_val then
+                        reaper.SetProjExtState(0, NS, caller_guid .. ":" .. i, new_val_str)
+                        if mapping_cache[slot] then mapping_cache[slot][i] = new_val_str end
+                    end
                 end
+                
                 local is_active = (actual_fx_idx and actual_fx_idx ~= -1)
                     
                     local final_status = is_active and (100 + color_num) or color_num
@@ -3137,8 +3103,22 @@ local last_structure_check = 0
 
 function ManageAll()
     local cur_project = reaper.EnumProjects(-1)
+    local proj_idx = GetProjectIndex()
 
-    PROJECT_BASE = 200000 + (GetProjectIndex() * 1900000)
+    if proj_idx < 0 then
+        reaper.gmem_write(100000, 0) -- Lock JSFX on tab 5+
+        if not warned_tab_limit then
+            warned_tab_limit = true
+            table.insert(pending_os_tasks, function()
+                reaper.MB("StripLink supports up to 4 simultaneous Project Tabs.\n\nPlease close unused tabs to use StripLink in this project.", "StripLink: Project Tab Limit", 0)
+            end)
+        end
+        return
+    else
+        warned_tab_limit = false
+    end
+
+    PROJECT_BASE = 200000 + (proj_idx * 1900000)
     local current_time = reaper.time_precise()
 
     local fx_just_moved_flags = {}
@@ -3167,7 +3147,8 @@ function ManageAll()
 
     if selection_diff then
         manual_selection_list = current_reaper_selection
-        for i = 0, reaper.CountTracks(0) - 1 do
+        local max_sel_tracks = math.min(reaper.CountTracks(0), 199)
+        for i = 0, max_sel_tracks - 1 do
             local tr = reaper.GetTrack(0, i)
             local g = reaper.GetTrackGUID(tr)
             local slot_addr = PROJECT_BASE + (i + 1) * 500
@@ -3272,7 +3253,7 @@ function ManageAll()
         local trigger_clone_warning = false
         -- =======================================================
 
-        local total_tracks = reaper.CountTracks(0)
+        local total_tracks = math.min(reaper.CountTracks(0), 199)
         for s = 1, total_tracks do 
             reaper.gmem_write(PROJECT_BASE + s * 500 + 1, 0) 
         end
@@ -3331,7 +3312,7 @@ function ManageAll()
                             end
 
                             if is_brand_new then
-                                if has_sec_slider and current_hash ~= guid_hash then 
+                                if has_sec_slider and math.abs(current_hash - guid_hash) > 0.5 then 
                                     reaper.TrackFX_SetParam(track, fx_idx, sec_param_idx, guid_hash) 
                                 end
                                 
@@ -3365,7 +3346,7 @@ function ManageAll()
                                 fx_just_moved_flags[guid] = true
                                 InvalidateSlotOutbox(slot)
                             else
-                                if has_sec_slider and current_hash ~= guid_hash then 
+                                if has_sec_slider and math.abs(current_hash - guid_hash) > 0.5 then 
                                     reaper.TrackFX_SetParam(track, fx_idx, sec_param_idx, guid_hash) 
                                 end
                                 if prev_hash ~= guid_hash then 
@@ -3824,39 +3805,47 @@ local last_trigger_val = -1
 local last_sel_trig = -1 
 
 -- =========================================================================
--- REAIMGUI CONTEXT & STATE (Declared before Main to fix scope)
+-- REAIMGUI CONTEXT & STATE (On-Demand — 0% GPU when idle)
 -- =========================================================================
-local ctx = reaper.ImGui_CreateContext('StripLink')
-
+local ctx = nil
+local icons_ctx = nil
 local sep = package.config:sub(1, 1)
+local icon_remove, icon_knob, icon_switch, icon_tube, icon_text, icon_meter, icon_selector
+
 local function LoadSafeIcon(filename)
     local path = (script_path .. "Icons" .. sep .. filename):gsub("[\\/]+", sep)
     local f = io.open(path, "r")
     if f then 
         f:close()
         local img = reaper.ImGui_CreateImage(path)
-        reaper.ImGui_Attach(ctx, img)
+        if ctx and img then
+            reaper.ImGui_Attach(ctx, img)
+        end
         return img
     end
     return nil
 end
 
--- Icons
-local icon_remove = LoadSafeIcon("Remove_1.png")
-local icon_knob = LoadSafeIcon("Knob_1.png")
-local icon_switch = LoadSafeIcon("Switch_1.png")
-local icon_tube= LoadSafeIcon("Tube_1.png")
-local icon_text = LoadSafeIcon("Text_1.png")
-local icon_meter = LoadSafeIcon("Meter_1.png")
-local icon_selector = LoadSafeIcon("Selector_1.png")
+local function EnsureImGuiContext()
+    if not ctx or not reaper.ImGui_ValidatePtr(ctx, 'ImGui_Context*') then
+        ctx = reaper.ImGui_CreateContext('StripLink')
+        icons_ctx = nil
+    end
+end
 
--- =========================================================================
--- FONT SETUP (Linked to global ExtState)
--- =========================================================================
-local ext_font_val = reaper.GetExtState(NS, "GLOBAL_FONT_SIZE")
-local global_font_size = tonumber(ext_font_val) or 14
-local current_imgui_font = reaper.ImGui_CreateFont('Calibri', global_font_size)
-reaper.ImGui_Attach(ctx, current_imgui_font)
+local function EnsureBuilderIcons()
+    EnsureImGuiContext()
+    if not ctx then return end
+    if icons_ctx == ctx then return end
+    icons_ctx     = ctx
+    icon_remove   = LoadSafeIcon("Remove_1.png")
+    icon_knob     = LoadSafeIcon("Knob_1.png")
+    icon_switch   = LoadSafeIcon("Switch_1.png")
+    icon_tube     = LoadSafeIcon("Tube_1.png")
+    icon_text     = LoadSafeIcon("Text_1.png")
+    icon_meter    = LoadSafeIcon("Meter_1.png")
+    icon_selector = LoadSafeIcon("Selector_1.png")
+end
 
 local popup_state = {
     active_cmd = 0,
@@ -3891,7 +3880,13 @@ function Main()
         end
     end
     
-    PROJECT_BASE = 200000 + (GetProjectIndex() * 1900000)
+    local proj_idx = GetProjectIndex()
+    if proj_idx < 0 then
+        reaper.gmem_write(100000, 0)
+        return
+    end
+
+    PROJECT_BASE = 200000 + (proj_idx * 1900000)
     
     reaper.gmem_write(100000, PROJECT_BASE)
 
@@ -3963,9 +3958,11 @@ function Main()
                        reaper.SetTrackSelected(t, should_be_active)
                     end
                     
-                    local val = should_be_active and 1 or 0
-                    local slot_addr = PROJECT_BASE + (i + 1) * 500 + 9
-                    reaper.gmem_write(slot_addr, val)
+                    if i < 199 then
+                        local val = should_be_active and 1 or 0
+                        local slot_addr = PROJECT_BASE + (i + 1) * 500 + 9
+                        reaper.gmem_write(slot_addr, val)
+                    end
                 end
                 
                 if not is_ctrl then
@@ -4011,10 +4008,12 @@ function Main()
 
         if is_valid then
             local c_guid = reaper.TrackFX_GetFXGUID(tr, f_idx)
-            --local sl = math.floor(reaper.TrackFX_GetParam(tr, f_idx, 1) + 0.5)
             local sl = GetFXSlot(tr)
 
             if sl > 0 then
+                local needs_ui = (cmd == 1 or cmd == 2 or cmd == 3 or cmd == 4 or cmd == 5 or cmd == 6 or cmd == 20 or cmd == 21)
+                if needs_ui then EnsureImGuiContext() end
+
                 if cmd == 1 then
                     local menu, map = BuildMenu(tr, c_guid, btn_idx - 1)
                     local nx, ny = reaper.GetMousePosition()
@@ -5826,7 +5825,7 @@ local function ExecuteCmd3_Settings(choice, data)
         
         reaper.SetProjExtState(0, NS, "AG_SPEED_" .. data.c_guid, tostring(spd_factor))
         
-        local sl = math.floor(reaper.TrackFX_GetParam(data.tr, data.f_idx, 1) + 0.5)
+        local sl = GetFXSlot(data.tr)
         if sl > 0 then
             local local_base = PROJECT_BASE + sl * 500
             reaper.gmem_write(local_base + 337, spd_factor)
@@ -7059,6 +7058,7 @@ local function ExecuteCmd3_Mapping(choice, data)
 end
 
 function DrawMenus()
+    EnsureImGuiContext()
     -- Open request: set positions and activate state
     if popup_state.request_open then
         reaper.ImGui_SetNextWindowPos(ctx, popup_state.mouse_x, popup_state.mouse_y)
@@ -7379,7 +7379,7 @@ local function DrawLayoutBuilderToolbox()
         if jsfx_builder_mode == 1 then
             if not builder_state.open then
                 builder_state.open = true
-                builder_state.just_opened = true -- Pravilno sproži pozicioniranje!
+                builder_state.just_opened = true
                 
                 reaper.gmem_write(sl_base + 427, 1)
             end
@@ -7389,6 +7389,8 @@ local function DrawLayoutBuilderToolbox()
     end
 
     if not builder_state.open then return end
+    EnsureBuilderIcons()
+    if not ctx then return end
 
     -- STYLE VARS
     reaper.ImGui_PushStyleVar(ctx, reaper.ImGui_StyleVar_WindowRounding(), 8.0)
@@ -8427,6 +8429,7 @@ local function DrawLayoutBuilderToolbox()
 end
 
 -- === MAIN LOOP (DEFER) ===
+-- === MAIN LOOP (DEFER) ===
 local delay_frames = 0
 function Run()
     if not __startup_sync_done then
@@ -8438,7 +8441,6 @@ function Run()
     local tb_ok, tb_err = xpcall(DrawLayoutBuilderToolbox, debug.traceback)
     
     if not tb_ok then
-
         if not __builder_error_logged then
             __builder_error_logged = true
             
@@ -8456,9 +8458,11 @@ function Run()
             end
         end
         
-        -- savely close Builder in GMEM-u
+        -- safely close Builder in GMEM and reset ImGui context
         builder_state.open = false
-        if PROJECT_BASE then
+        ctx = nil
+        icons_ctx = nil
+        if PROJECT_BASE and PROJECT_BASE > 0 then
             local current_slot = math.floor(reaper.gmem_read(PROJECT_BASE + 8))
             if current_slot > 0 then
                 reaper.gmem_write(PROJECT_BASE + current_slot * 500 + 428, 0)
@@ -8466,38 +8470,33 @@ function Run()
         end
     end
 
-    local window_flags = reaper.ImGui_WindowFlags_NoDecoration() | 
-                         reaper.ImGui_WindowFlags_NoBackground() | 
-                         reaper.ImGui_WindowFlags_NoSavedSettings() |
-                         reaper.ImGui_WindowFlags_NoNav()
-                         
-    if not popup_state.is_visible and not popup_state.request_open then
-        window_flags = window_flags | reaper.ImGui_WindowFlags_NoInputs()
-        window_flags = window_flags | reaper.ImGui_WindowFlags_NoFocusOnAppearing()
-    end
-                         
-    reaper.ImGui_SetNextWindowSize(ctx, 0, 0)
-    reaper.ImGui_SetNextWindowPos(ctx, 0, 0)
-    
-    local visible, open = reaper.ImGui_Begin(ctx, 'StripLinkContext', true, window_flags)
-    
-    if visible then
+    if popup_state.is_visible or popup_state.request_open then
         local menu_ok, menu_err = xpcall(DrawMenus, debug.traceback)
         if not menu_ok then
             reaper.ShowConsoleMsg("\n=== STRIPLINK MENU ERROR ===\n" .. tostring(menu_err) .. "\n============================\n")
             popup_state.is_visible = false
+            popup_state.request_open = false
             popup_state.active_cmd = 0
-            reaper.gmem_write(PROJECT_BASE + 7, 0)
+            ctx = nil
+            icons_ctx = nil
+            if PROJECT_BASE and PROJECT_BASE > 0 then
+                reaper.gmem_write(PROJECT_BASE + 7, 0)
+                reaper.gmem_write(PROJECT_BASE + 206, 0)
+            end
+        end
+    else
+        if PROJECT_BASE and PROJECT_BASE > 0 then
             reaper.gmem_write(PROJECT_BASE + 206, 0)
         end
     end
-    reaper.ImGui_End(ctx)
     
     local main_ok, main_err = xpcall(Main, debug.traceback)
     if not main_ok then
         reaper.ShowConsoleMsg("\n=== STRIPLINK MAIN ERROR ===\n" .. tostring(main_err) .. "\n============================\n")
-        reaper.gmem_write(PROJECT_BASE + 7, 0)
-        reaper.gmem_write(PROJECT_BASE + 206, 0)
+        if PROJECT_BASE and PROJECT_BASE > 0 then
+            reaper.gmem_write(PROJECT_BASE + 7, 0)
+            reaper.gmem_write(PROJECT_BASE + 206, 0)
+        end
     end
     
     local man_ok, man_err = xpcall(ManageAll, debug.traceback)
@@ -8518,9 +8517,7 @@ function Run()
         delay_frames = 2 
     end
     
-    if open then
-        reaper.defer(Run)
-    end
+    reaper.defer(Run)
 end
 
 Run()

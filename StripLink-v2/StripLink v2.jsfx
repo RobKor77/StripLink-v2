@@ -1,9 +1,8 @@
 // @description StripLink Series
 // @author Wormhole Labs
-// @version 2.0.7
+// @version 2.0.8
 // @changelog
-//   - Prevented parameter overwriting in large projects (supports up to 199 tracks / 4 project tabs).
-//   - Auto Gain and Lock/Freeze statuses are now correctly preserved when moving tracks or reordering FX slots.
+//   - Optimized the ReaImGui code which may have caused Reaper to crash on some systems.
 // @provides
 //   [effect nomain] StripLink BUS v2.jsfx
 //   [effect nomain] StripLink Module v2.jsfx
